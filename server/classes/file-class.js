@@ -1,5 +1,5 @@
 class File {
-    constructor(name, id, permissions, parent){
+    constructor(name, id, permissions, parent) {
         this.name = name;
         this.id = id;
         this.permissions = permissions;
@@ -8,7 +8,7 @@ class File {
 }
 
 class Folder extends File {
-    constructor(file, files){
+    constructor(file, files) {
         super(file);
         this.files = files;
     }
