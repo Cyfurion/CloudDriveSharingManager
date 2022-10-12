@@ -2,7 +2,6 @@
 const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
-const CDSMSchema = require("./models/cdsm-models");
 
 // Make server
 dotenv.config()
