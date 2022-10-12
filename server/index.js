@@ -2,6 +2,7 @@
 const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
+const CDSMSchema = require("./models/cdsm-models");
 
 // Make server
 dotenv.config()
@@ -20,4 +21,4 @@ const db = require('./db')
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 // Put server on listen to port
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
