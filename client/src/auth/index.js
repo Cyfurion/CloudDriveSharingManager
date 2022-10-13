@@ -19,7 +19,7 @@ function AuthContextProvider(props) {
     });
 
     useEffect(() => {
-        const initClient = () => {
+        function initClient() {
             gapi.client.init({
                 'apiKey': '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',
                 'clientId': '51282406360-evee6rmf1ttv4ni30be7l0dhme9p61ou.apps.googleusercontent.com',
@@ -47,10 +47,14 @@ function AuthContextProvider(props) {
             type: AuthActionType.SET_ENDPOINT,
             payload: gapi
         });
-        // let request = gapi.client.drive.about.get({ 'fields': 'user' });
-        // request.execute(function(response) {
-        //     console.log(response);
-        // });
+        // testing
+        let request = gapi.client.request({
+            'method': 'GET',
+            'path': '/drive/v3/files'
+        });
+        request.execute(function(res) {
+            console.log(res);
+        })
     }
 
     return (
