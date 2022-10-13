@@ -2,6 +2,7 @@
  * This file handles authentication between the user and the cloud service.
  */
 
+import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
 import { gapi } from 'gapi-script';
 import React, { createContext, useEffect, useState } from 'react';
 
@@ -48,13 +49,8 @@ function AuthContextProvider(props) {
             payload: gapi
         });
         // testing
-        let request = gapi.client.request({
-            'method': 'GET',
-            'path': '/drive/v3/files'
-        });
-        request.execute(function(res) {
-            console.log(res);
-        })
+        let adapter = new GoogleCloudServiceAdapter(gapi);
+        adapter.retrieveSnapshot();
     }
 
     return (

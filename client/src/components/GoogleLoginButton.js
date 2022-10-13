@@ -9,6 +9,7 @@ export default function GoogleLoginButton() {
 
     const onSuccess = (res) => {
         auth.setGoogleEndpoint();
+
     }
 
     const onFailure = (res) => {
