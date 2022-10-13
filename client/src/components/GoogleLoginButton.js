@@ -8,20 +8,19 @@ export default function GoogleLoginButton() {
     const { auth } = useContext(AuthContext);
 
     const onSuccess = (res) => {
-        console.log("Success: ", res);
-        auth.initGoogleEndpoint(clientId);
+        auth.setGoogleEndpoint();
     }
 
     const onFailure = (res) => {
         console.log("Failure: ", res);
     }
 
-    return(
+    return (
         <GoogleLogin
             clientId={clientId}
             onSuccess={onSuccess}
             onFailure={onFailure}
-            isSignedIn={true}
+            scope='https://www.googleapis.com/auth/drive'
         />
     );
 }
