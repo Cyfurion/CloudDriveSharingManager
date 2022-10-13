@@ -4,7 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import AppLogo from './AppLogo';
 
-function TopBar() {
+export default function TopBar() {
 
   return (
     <AppBar position="static" style={{background:'#FFFFFF'}}>
@@ -17,4 +17,3 @@ function TopBar() {
   );
 }
 
-export default TopBar;
