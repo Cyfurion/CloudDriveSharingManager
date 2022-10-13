@@ -50,7 +50,7 @@ function AuthContextProvider(props) {
         });
         // testing
         let adapter = new GoogleCloudServiceAdapter(gapi);
-        adapter.retrieveSnapshot();
+        adapter.retrieve();
     }
 
     return (
