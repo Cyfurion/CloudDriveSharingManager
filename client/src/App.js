@@ -1,24 +1,21 @@
 import './App.css';
-import React from 'react';
-import { useEffect } from 'react';
-import LoginButton from "./components/login";
-import { gapi } from 'gapi-script';
-
-const clientId = "51282406360-evee6rmf1ttv4ni30be7l0dhme9p61ou.apps.googleusercontent.com";
+import { React } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthContextProvider } from './auth';
+import {
+    GoogleLoginButton
+} from './components';
 
 function App() {
-  useEffect(() => {
-    function start(){
-      gapi.client.init({
-        clientId: clientId,
-        scope: ""
-      })
-    };
-    gapi.load('client:auth2', start);
-  });
-  return(
-    <LoginButton/>
-  )
+    return (
+        <BrowserRouter>
+            <AuthContextProvider>
+                <Routes>
+                    <Route path='/' element={<GoogleLoginButton />} />
+                </Routes>
+            </AuthContextProvider>
+        </BrowserRouter>
+    )
 }
 
 export default App;
