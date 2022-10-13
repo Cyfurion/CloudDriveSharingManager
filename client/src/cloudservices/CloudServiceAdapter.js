@@ -1,12 +1,13 @@
 export class CloudServiceAdapter{
-    endpoint;
-    constructor(endpoint){
+    constructor(endpoint) {
         this.endpoint = endpoint;
     }
-    deploy(){
-        throw new Error("Must be implemented.");
+
+    deploy() {
+        throw new Error("deploy() must be implemented.");
     }
-    retrieveSnapshot(){
-        throw new Error("Must be implemented.");
+    
+    retrieve() {
+        throw new Error("retrieve() must be implemented.");
     }
 }
