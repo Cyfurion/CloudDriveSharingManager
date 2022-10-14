@@ -6,9 +6,11 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     }
 
     // Returns an array of every file accessible to the user.
-    retrieve() {
-        this.endpoint.filesListFolder({ path: '' }).then(function(response) {
-            return response.result.entries;
+    async retrieve() {
+        let response = await this.endpoint.filesListFolder({ 
+            path: '',
+            recursive: true
         });
+        return response.result.entries;
     }
 }

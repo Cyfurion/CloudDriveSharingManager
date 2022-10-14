@@ -3,6 +3,7 @@ import './App.css';
 import { React } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import { AdapterContextProvider } from './cloudservices';
 import { AuthContextProvider } from './auth';
 import {
     SplashScreen,
@@ -12,11 +13,13 @@ import {
 function App() {
     return (
         <BrowserRouter>
-            <AuthContextProvider>
-                <Routes>
-                    <Route path='/' element={<SplashScreen />}/>
-                </Routes>
-            </AuthContextProvider>
+            <AdapterContextProvider>
+                <AuthContextProvider>
+                    <Routes>
+                        <Route path='/' element={<SplashScreen />}/>
+                    </Routes>
+                </AuthContextProvider>
+            </AdapterContextProvider>
         </BrowserRouter>
     )
 }

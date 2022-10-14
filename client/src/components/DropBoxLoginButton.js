@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 const clientId = "uw4cgtludeaf8id";
 
-export default function DropBoxLoginButton() {
+export default function DropboxLoginButton() {
     function handleClick() {
         let dbx = new Dropbox({ clientId: clientId });
         dbx.auth.getAuthenticationUrl('http://localhost:3000').then((authUrl) => {

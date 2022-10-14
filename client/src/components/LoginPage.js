@@ -1,7 +1,7 @@
 import React from "react";
 import {GoogleLoginButton} from './';
 import { Typography, Box} from "@mui/material";
-import {DropBoxLoginButton} from './';
+import {DropboxLoginButton} from './';
 
 export default function LoginPage(){
 
@@ -16,18 +16,20 @@ export default function LoginPage(){
                 alignItems:'center',
                 flexDirection:'column',
                 justifyContent:'center'
-                }}>
+            }}
+        >
             <Typography 
                 sx={{
                     fontSize: 40,
                     fontFamily: 'monospace',
                     fontWeight: 'bold',
                     padding: 5
-                }}>
+                }}
+            >
                 Service Login
             </Typography>
             <GoogleLoginButton/>
-            <DropBoxLoginButton/>
+            <DropboxLoginButton/>
         </Box>
     )
 }

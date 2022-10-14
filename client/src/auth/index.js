@@ -4,10 +4,9 @@
 import { Dropbox } from 'dropbox';
 import { gapi } from 'gapi-script';
 
-import { DropboxCloudServiceAdapter } from '../cloudservices/DropboxCloudServiceAdapter';
-import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
+import AdapterContext from '../cloudservices';
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Create authentication context.
@@ -16,8 +15,7 @@ const AuthContext = createContext();
 // This is every type of update to the authentication state that can be processed.
 export const AuthActionType = {
     SET_DROPBOX_ENDPOINT: "SET_DROPBOX_ENDPOINT",
-    SET_GOOGLE_ENDPOINT: "SET_GOOGLE_ENDPOINT",
-    IS_AUTHORIZED: "IS_AUTHORIZED"
+    SET_GOOGLE_ENDPOINT: "SET_GOOGLE_ENDPOINT"
 }
 
 function parseQueryString(str) {
@@ -55,18 +53,13 @@ function AuthContextProvider(props) {
         dropboxAuthEndpoint: null,
         isAuthorized: false
     });
+
+    const { adapter } = useContext(AdapterContext);
     const navigate = useNavigate();
 
     const authReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
-            case AuthActionType.IS_AUTHORIZED: {
-                return setAuth({
-                    googleAuthEndpoint: auth.googleAuthEndpoint,
-                    dropboxAuthEndpoint: auth.dropboxAuthEndpoint,
-                    isAuthorized: payload
-                });
-            }
             case AuthActionType.SET_DROPBOX_ENDPOINT: {
                 return setAuth({
                     googleAuthEndpoint: null,
@@ -92,19 +85,13 @@ function AuthContextProvider(props) {
             payload: endpoint
         });
         navigate('/');
-        // testing
-        let adapter = new DropboxCloudServiceAdapter(auth.dropboxAuthEndpoint);
-        console.log(adapter.retrieve());
     }
 
-    auth.setGoogleEndpoint = async function () {
+    auth.setGoogleEndpoint = function () {
         authReducer({
             type: AuthActionType.SET_GOOGLE_ENDPOINT,
             payload: gapi
         });
-        // testing
-        let adapter = new GoogleCloudServiceAdapter(gapi);
-        console.log(await adapter.retrieve());
     }
 
     useEffect(() => {
@@ -123,6 +110,14 @@ function AuthContextProvider(props) {
             auth.setDropboxEndpoint(new Dropbox({ accessToken: dropboxAccessToken }));
         }
     });
+    
+    useEffect(() => {
+        if (auth.dropboxAuthEndpoint) {
+            adapter.setDropboxAdapter(auth.dropboxAuthEndpoint);
+        } else if (auth.googleAuthEndpoint) {
+            adapter.setGoogleAdapter(auth.googleAuthEndpoint);
+        }
+    }, [auth]);
 
     return (
         <AuthContext.Provider value={{ auth }}>

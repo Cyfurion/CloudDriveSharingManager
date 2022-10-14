@@ -3,7 +3,7 @@ import AppLogo from "./AppLogo";
 import LoginPage from "./LoginPage";
 import TopBar from "./TopBar";
 import SplashScreen from "./SplashScreen"
-import DropBoxLoginButton from "./DropBoxLoginButton";
+import DropboxLoginButton from "./DropboxLoginButton";
 import QueryBuilderButton from "./QueryBuilderButton";
 import SearchBar from "./SearchBar";
 import LogOutButton from "./LogOutButton";
@@ -15,7 +15,7 @@ export {
     LoginPage,
     TopBar,
     SplashScreen,
-    DropBoxLoginButton,
+    DropboxLoginButton,
     QueryBuilderButton,
     SearchBar,
     LogOutButton,
