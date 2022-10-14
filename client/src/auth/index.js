@@ -1,49 +1,76 @@
 /**
  * This file handles authentication between the user and the cloud service.
  */
+import { Dropbox } from 'dropbox';
 import { gapi } from 'gapi-script';
-import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
 
-import React, { createContext, useEffect, useState } from 'react';
+import AdapterContext from '../cloudservices';
+
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Create authentication context.
 const AuthContext = createContext();
 
 // This is every type of update to the authentication state that can be processed.
 export const AuthActionType = {
-    SET_ENDPOINT: "SET_ENDPOINT",
-    IS_AUTHORIZED: "IS_AUTHORIZED"
+    SET_DROPBOX_ENDPOINT: "SET_DROPBOX_ENDPOINT",
+    SET_GOOGLE_ENDPOINT: "SET_GOOGLE_ENDPOINT"
+}
+
+function parseQueryString(str) {
+    const ret = Object.create(null);
+
+    if (typeof str !== 'string') { return ret; }
+
+    str = str.trim().replace(/^(\?|#|&)/, '');
+
+    if (!str) { return ret; }
+
+    str.split('&').forEach((param) => {
+        const parts = param.replace(/\+/g, ' ').split('=');
+        let key = parts.shift();
+        let val = parts.length > 0 ? parts.join('=') : undefined;
+
+        key = decodeURIComponent(key);
+
+        val = val === undefined ? null : decodeURIComponent(val);
+
+        if (ret[key] === undefined) {
+            ret[key] = val;
+        } else if (Array.isArray(ret[key])) {
+            ret[key].push(val);
+        } else {
+            ret[key] = [ret[key], val];
+        }
+    });
+    return ret;
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
-        authEndpoint: null,
+        googleAuthEndpoint: null,
+        dropboxAuthEndpoint: null,
         isAuthorized: false
     });
 
-    useEffect(() => {
-        function initClient() {
-            gapi.client.init({
-                'apiKey': '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',
-                'clientId': '51282406360-evee6rmf1ttv4ni30be7l0dhme9p61ou.apps.googleusercontent.com',
-                'scope': 'https://www.googleapis.com/auth/drive'
-            });
-        }
-        gapi.load('client:auth2', initClient);
-    });
+    const { adapter } = useContext(AdapterContext);
+    const navigate = useNavigate();
 
     const authReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
-            case AuthActionType.IS_AUTHORIZED: {
+            case AuthActionType.SET_DROPBOX_ENDPOINT: {
                 return setAuth({
-                    authEndpoint: auth.authEndpoint,
-                    isAuthorized: payload
+                    googleAuthEndpoint: null,
+                    dropboxAuthEndpoint: payload,
+                    isAuthorized: true
                 });
             }
-            case AuthActionType.SET_ENDPOINT: {
+            case AuthActionType.SET_GOOGLE_ENDPOINT: {
                 return setAuth({
-                    authEndpoint: payload.endpoint,
+                    googleAuthEndpoint: payload,
+                    dropboxAuthEndpoint: null,
                     isAuthorized: true
                 });
             }
@@ -52,13 +79,45 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.setGoogleEndpoint = async function () {
-        let adapter = new GoogleCloudServiceAdapter(gapi);
+    auth.setDropboxEndpoint = function (endpoint) {
         authReducer({
-            type: AuthActionType.SET_ENDPOINT,
+            type: AuthActionType.SET_DROPBOX_ENDPOINT,
+            payload: endpoint
+        });
+        navigate('/');
+    }
+
+    auth.setGoogleEndpoint = function () {
+        authReducer({
+            type: AuthActionType.SET_GOOGLE_ENDPOINT,
             payload: gapi
         });
     }
+
+    useEffect(() => {
+        // Initialize Google endpoint.
+        function initClient() {
+            gapi.client.init({
+                'apiKey': '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',
+                'clientId': '51282406360-evee6rmf1ttv4ni30be7l0dhme9p61ou.apps.googleusercontent.com',
+                'scope': 'https://www.googleapis.com/auth/drive'
+            });
+        }
+        gapi.load('client:auth2', initClient);
+        // Finalize Dropbox authentication (if authenticated).
+        let dropboxAccessToken = parseQueryString(window.location.hash).access_token;
+        if (dropboxAccessToken) {
+            auth.setDropboxEndpoint(new Dropbox({ accessToken: dropboxAccessToken }));
+        }
+    });
+    
+    useEffect(() => {
+        if (auth.dropboxAuthEndpoint) {
+            adapter.setDropboxAdapter(auth.dropboxAuthEndpoint);
+        } else if (auth.googleAuthEndpoint) {
+            adapter.setGoogleAdapter(auth.googleAuthEndpoint);
+        }
+    }, [auth]);
 
     return (
         <AuthContext.Provider value={{ auth }}>

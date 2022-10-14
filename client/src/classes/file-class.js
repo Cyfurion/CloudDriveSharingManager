@@ -1,15 +1,14 @@
 class File {
-    constructor(name, id, permissions, parent) {
-        this.name = name;
+    constructor(id, name, permissions) {
         this.id = id;
+        this.name = name;
         this.permissions = permissions;
-        this.parent = parent;
     }
 }
 
 class Folder extends File {
-    constructor(file, files) {
-        super(file);
+    constructor(id, name, permissions, files) {
+        super(id, name, permissions);
         this.files = files;
     }
 }
@@ -18,3 +17,4 @@ module.exports = {
     File,
     Folder
 }
+

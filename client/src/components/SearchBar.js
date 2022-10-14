@@ -1,5 +1,5 @@
 import SearchIcon from '@mui/icons-material/Search';
-import { styled, alpha, InputBase} from '@mui/material';
+import { styled, alpha, InputBase } from '@mui/material';
 
 export default function SearchBar() {
     const Search = styled('div')(({ theme }) => ({
