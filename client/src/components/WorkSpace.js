@@ -7,7 +7,7 @@ import {Divider, ListItem } from '@mui/material';
 
 
 export default function BasicTable() {
-    const { auth } = useContext(AuthContext);
+    let files = []
   return (
     <Box sx={{border: 5, borderColor: 'black',backgroundColor:'beige'}}>
         <ListItem  >
@@ -16,7 +16,7 @@ export default function BasicTable() {
             <Box sx={{ paddingLeft: 1, width: '33%'}}>Date Created</Box>
         </ListItem>
         <Divider />
-       { auth.jankFiles.map( ( file) =>(
+       { files.jankFiles.map( ( file) =>(
             <FileCard  name={file.name} ownerEmail={file.owners[0].emailAddress} dateCreated={file.createdTime}/>
         ))}
     </Box>

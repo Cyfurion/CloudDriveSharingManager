@@ -29,7 +29,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
-        console.log(files);
         return files;
     }
 }

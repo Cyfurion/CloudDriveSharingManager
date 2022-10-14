@@ -18,7 +18,6 @@ export const AuthActionType = {
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         authEndpoint: null,
-        jankFiles: null,
         isAuthorized: false
     });
 
@@ -39,14 +38,12 @@ function AuthContextProvider(props) {
             case AuthActionType.IS_AUTHORIZED: {
                 return setAuth({
                     authEndpoint: auth.authEndpoint,
-                    jankFiles: null,
                     isAuthorized: payload
                 });
             }
             case AuthActionType.SET_ENDPOINT: {
                 return setAuth({
                     authEndpoint: payload.endpoint,
-                    jankFiles: payload.files,
                     isAuthorized: true
                 });
             }
@@ -59,7 +56,7 @@ function AuthContextProvider(props) {
         let adapter = new GoogleCloudServiceAdapter(gapi);
         authReducer({
             type: AuthActionType.SET_ENDPOINT,
-            payload: { endpoint: gapi, files: await adapter.retrieve() }
+            payload: gapi
         });
     }
 
