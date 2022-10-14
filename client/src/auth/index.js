@@ -11,12 +11,14 @@ const AuthContext = createContext();
 
 // This is every type of update to the authentication state that can be processed.
 export const AuthActionType = {
-    SET_ENDPOINT: "SET_ENDPOINT"
+    SET_ENDPOINT: "SET_ENDPOINT",
+    IS_AUTHORIZED: "IS_AUTHORIZED"
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
-        authEndpoint: null
+        authEndpoint: null,
+        isAuthorized: false
     });
 
     useEffect(() => {
@@ -33,9 +35,16 @@ function AuthContextProvider(props) {
     const authReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
+            case AuthActionType.IS_AUTHORIZED: {
+                return setAuth({
+                    authEndpoint: auth.authEndpoint,
+                    isAuthorized: payload
+                });
+            }
             case AuthActionType.SET_ENDPOINT: {
                 return setAuth({
-                    authEndpoint: payload
+                    authEndpoint: payload,
+                    isAuthorized: true
                 });
             }
             default:
