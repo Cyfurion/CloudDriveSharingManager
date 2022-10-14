@@ -3,7 +3,8 @@ import { React } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthContextProvider } from './auth';
 import {
-    LoginPage,
+    SplashScreen,
+    LoginPage
 } from './components';
 
 function App() {
@@ -11,7 +12,7 @@ function App() {
         <BrowserRouter>
             <AuthContextProvider>
                 <Routes>
-                    <Route path='/' element={<LoginPage/>} />
+                    <Route path='/' element={<SplashScreen/>} />
                 </Routes>
             </AuthContextProvider>
         </BrowserRouter>

@@ -1,13 +1,33 @@
 import React from "react";
-import Box from '@mui/material/Box';
 import {GoogleLoginButton} from './';
+import { Typography, Box} from "@mui/material";
+import {DropBoxLoginButton} from './';
 
 export default function LoginPage(){
 
     return(
-        <Box>
-            <h1> Service Login</h1>
-            <GoogleLoginButton></GoogleLoginButton>
+        <Box 
+            sx={{
+                height: '100vh', 
+                display:'flex', 
+                border:5,
+                borderColor:'black',
+                backgroundColor:'beige',
+                alignItems:'center',
+                flexDirection:'column',
+                justifyContent:'center'
+                }}>
+            <Typography 
+                sx={{
+                    fontSize: 40,
+                    fontFamily: 'monospace',
+                    fontWeight: 'bold',
+                    padding: 5
+                }}>
+                Service Login
+            </Typography>
+            <GoogleLoginButton/>
+            <DropBoxLoginButton/>
         </Box>
     )
 }

@@ -1,19 +1,31 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Container from '@mui/material/Container';
+import { Box, Toolbar, Grid} from '@mui/material';
+import UserNavBar from './UserNavBar';
 import AppLogo from './AppLogo';
+import { useContext } from 'react';
+import AuthContext from '../auth';
 
 export default function TopBar() {
+  const { auth } = useContext(AuthContext);
+  
+  if( auth.isAuthorized){
+    return (
+      <Box>
+      <Toolbar  noWrap sx={{ backgroundColor: 'beige'}}>
+      <AppLogo/>
+      <UserNavBar/>
+      </Toolbar>
+      </Box>
+    )
+  }
+
 
   return (
-    <AppBar position="static" style={{background:'#FFFFFF'}}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AppLogo />
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
+    <Box>
+      <Toolbar  noWrap sx={{ backgroundColor: 'beige'}}>
+      <AppLogo/>
+      </Toolbar>
+    </Box>
+  )
 }
 

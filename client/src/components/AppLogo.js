@@ -1,6 +1,15 @@
 
+import { Typography } from "@mui/material"
 export default function AppLogo() {
     return(
-        <h1 class="cdsm-logo"> Cloud Drive Sharing Manager </h1>
+        <Typography noWrap
+        sx={{
+            color: 'black',
+            fontFamily: 'monospace',
+            fontWeight: 40,
+            fontSize: 35
+        }}>
+            Cloud Drive Sharing Manager
+        </Typography>
     )
 }
