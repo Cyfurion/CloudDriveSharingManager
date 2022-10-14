@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthContextProvider } from './auth';
 import {
     SplashScreen,
-    LoginPage
+    WorkSpace
 } from './components';
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
         <BrowserRouter>
             <AuthContextProvider>
                 <Routes>
-                    <Route path='/' element={<LoginPage />}/>
+                    <Route path='/' element={<SplashScreen />}/>
                 </Routes>
             </AuthContextProvider>
         </BrowserRouter>
