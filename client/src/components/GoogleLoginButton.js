@@ -18,7 +18,6 @@ export default function GoogleLoginButton() {
 
     return (
         <GoogleLogin
-            theme="dark"
             clientId={clientId}
             onSuccess={onSuccess}
             onFailure={onFailure}

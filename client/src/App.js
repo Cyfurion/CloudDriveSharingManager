@@ -14,7 +14,7 @@ function App() {
         <BrowserRouter>
             <AuthContextProvider>
                 <Routes>
-                    <Route path='/' element={<SplashScreen/>} />
+                    <Route path='/' element={<LoginPage />}/>
                 </Routes>
             </AuthContextProvider>
         </BrowserRouter>
