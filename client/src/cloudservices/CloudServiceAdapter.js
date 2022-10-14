@@ -1,4 +1,4 @@
-export class CloudServiceAdapter{
+export class CloudServiceAdapter {
     constructor(endpoint) {
         this.endpoint = endpoint;
     }
@@ -6,7 +6,7 @@ export class CloudServiceAdapter{
     deploy() {
         throw new Error("deploy() must be implemented.");
     }
-    
+
     retrieve() {
         throw new Error("retrieve() must be implemented.");
     }
