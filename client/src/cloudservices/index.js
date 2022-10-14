@@ -1,7 +1,7 @@
 import { DropboxCloudServiceAdapter } from './DropboxCloudServiceAdapter';
 import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 // Create adapter context.
 const AdapterContext = createContext();
