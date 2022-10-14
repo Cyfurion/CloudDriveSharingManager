@@ -50,17 +50,6 @@ function AdapterContextProvider(props) {
         });
     }
 
-    useEffect(() => {
-        async function retrieve() {
-            if (adapter.dropboxAdapter) {
-                console.log(await adapter.dropboxAdapter.retrieve());
-            } else if (adapter.googleAdapter) {
-                console.log(await adapter.googleAdapter.retrieve());
-            }
-        }
-        retrieve();
-    }, [adapter]);
-
     return (
         <AdapterContext.Provider value={{ adapter }}>
             { props.children }

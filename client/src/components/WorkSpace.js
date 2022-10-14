@@ -5,16 +5,21 @@ import FileCard from './FileCard';
 import { Box } from '@mui/system';
 import { Divider, ListItem } from '@mui/material';
 
-
 export default function WorkSpace() {
     const { adapter } = useContext(AdapterContext);
 
     const [files, setFiles] = useState(null);
 
-    if (adapter.googleAdapter) {
-        adapter.googleAdapter.retrieve().then((value) => {
-            setFiles(value);
-        })
+    if (files == null) {
+        if (adapter.googleAdapter) {
+            adapter.googleAdapter.retrieve().then((value) => {
+                setFiles(value);
+            });
+        } else if (adapter.dropboxAdapter) {
+            adapter.dropboxAdapter.retrieve().then((value) => {
+                setFiles(value);
+            });
+        }
     }
 
     if (files === null) {
