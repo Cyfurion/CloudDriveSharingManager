@@ -8,7 +8,8 @@ import QueryBuilderButton from "./QueryBuilderButton";
 import SearchBar from "./SearchBar";
 import LogOutButton from "./LogOutButton";
 import UserNavBar from "./UserNavBar";
-import WorkSpace from "./WorkSpace"
+import WorkSpace from "./WorkSpace";
+import SideBar from "./SideBar";
 
 export {
     GoogleLoginButton,
@@ -21,5 +22,6 @@ export {
     SearchBar,
     LogOutButton,
     UserNavBar,
-    WorkSpace
+    WorkSpace,
+    SideBar
 }
