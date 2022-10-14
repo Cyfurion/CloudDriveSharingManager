@@ -7,14 +7,13 @@ import { WorkSpace } from './';
 export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
 
-    if( auth.isAuthorized ){
-        console.log(auth.jankFiles);
-        return(
-            <Box sx = {{textAlign:'inline'}} >
+    if (auth.isAuthorized) {
+        return (
+            <Box>
                 <TopBar />
                 <WorkSpace />
             </Box>
-        )
+        );
     }
     return ( 
         <Box >

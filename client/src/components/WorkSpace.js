@@ -1,24 +1,37 @@
-import * as React from 'react';
+import AdapterContext from '../cloudservices';
+
+import React, { useContext, useState } from 'react';
 import FileCard from './FileCard';
-import { Box , Container} from '@mui/system';
-import AuthContext from '../auth';
-import { useContext } from 'react';
-import {Divider, ListItem } from '@mui/material';
+import { Box } from '@mui/system';
+import { Divider, ListItem } from '@mui/material';
 
 
-export default function BasicTable() {
-    let files = []
-  return (
-    <Box sx={{border: 5, borderColor: 'black',backgroundColor:'beige'}}>
-        <ListItem  >
-            <Box sx={{ paddingLeft: 4, width:'33%'}}>Name</Box>
-            <Box sx={{ paddingLeft : 1, width: '33%'}}>Owner Email</Box>
-            <Box sx={{ paddingLeft: 1, width: '33%'}}>Date Created</Box>
-        </ListItem>
-        <Divider />
-       { files.jankFiles.map( ( file) =>(
-            <FileCard  name={file.name} ownerEmail={file.owners[0].emailAddress} dateCreated={file.createdTime}/>
-        ))}
-    </Box>
-  );
+export default function WorkSpace() {
+    const { adapter } = useContext(AdapterContext);
+
+    const [files, setFiles] = useState(null);
+
+    if (adapter.googleAdapter) {
+        adapter.googleAdapter.retrieve().then((value) => {
+            setFiles(value);
+        })
+    }
+
+    if (files === null) {
+        return <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige' }}>{"LOADING"}</Box>;
+    } else {
+        return (
+            <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige' }}>
+                <ListItem>
+                    <Box sx={{ paddingLeft: 4, width: '33%' }}>Name</Box>
+                    <Box sx={{ paddingLeft: 1, width: '33%' }}>Owner Email</Box>
+                    <Box sx={{ paddingLeft: 1, width: '33%' }}>Date Created</Box>
+                </ListItem>
+                <Divider />
+                {files.map((file) => (
+                    <FileCard name={file.name} ownerEmail={file.owners[0].emailAddress} dateCreated={file.createdTime} />
+                ))}
+            </Box>
+        );
+    }
 }

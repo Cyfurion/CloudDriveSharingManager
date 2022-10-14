@@ -1,4 +1,4 @@
-import { DropboxCloudServiceAdapter } from '../cloudservices/DropboxCloudServiceAdapter';
+import { DropboxCloudServiceAdapter } from './DropboxCloudServiceAdapter';
 import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
 
 import React, { createContext, useEffect, useState } from 'react';

@@ -11,6 +11,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
             path: '',
             recursive: true
         });
+        console.log(response.result.entries);
         return response.result.entries;
     }
 }
