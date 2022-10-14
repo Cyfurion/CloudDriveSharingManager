@@ -26,8 +26,8 @@ export default function WorkSpace() {
         return <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige'  }}>{"LOADING"}</Box>;
     } else {
         return (
-            <Box sx={{height:'73.5vh',border: 5, borderColor: 'black', backgroundColor: 'beige'}}>
-                <Box sx={{overflowY:'auto', maxHeight:'73.5vh'}} >
+            <Box sx={{overflowY:'auto', maxHeight: 688, border: 5, borderColor: 'black', backgroundColor: 'beige'}}>
+                <Box >
                 <ListItem>
                     <Box sx={{ paddingLeft: 4, width: '33%' }}>Name</Box>
                     <Box sx={{ paddingLeft: 1, width: '33%' }}>Owner Email</Box>

@@ -1,4 +1,4 @@
-import { Grid, Button, Typography, Box, Stack } from "@mui/material";
+import { Button, Typography, Box, Stack } from "@mui/material";
 import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import LockIcon from '@mui/icons-material/Lock';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -10,7 +10,7 @@ import HomeIcon from '@mui/icons-material/Home';
 
 export default function SideBar() {
     return (
-        <Box sx={{ border: 5, borderRight: 0}} >
+        <Box sx={{ border: 5, borderRight: 0, height: 688}} >
             <Stack sx={{ padding: 2}}spacing={3} backgroundColor='beige' alignItems='center'>
                 <Button variant='contained'sx={{
                     backgroundColor: '00AAFF',

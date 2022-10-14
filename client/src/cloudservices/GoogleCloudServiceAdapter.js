@@ -1,4 +1,5 @@
 import { CloudServiceAdapter } from "./CloudServiceAdapter";
+import Folder from "../classes/file-class";
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
