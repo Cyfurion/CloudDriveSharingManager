@@ -7,7 +7,8 @@ export default function UserNavBar() {
         container
         direction="row"
         justifyContent="flex"
-        alignItems="center"
+        alignItems="inline-box"      
+        maxHeight="65px"  
         >
         <Box>
             <AppLogo />

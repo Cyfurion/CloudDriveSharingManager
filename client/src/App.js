@@ -6,8 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AdapterContextProvider } from './cloudservices';
 import { AuthContextProvider } from './auth';
 import {
-    SplashScreen,
-    WorkSpace
+    SplashScreen
 } from './components';
 
 function App() {

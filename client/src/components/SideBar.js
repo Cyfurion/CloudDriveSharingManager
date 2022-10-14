@@ -1,4 +1,4 @@
-import { Grid, Button, Typography } from "@mui/material";
+import { Grid, Button, Typography, Box, Stack } from "@mui/material";
 import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import LockIcon from '@mui/icons-material/Lock';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -9,15 +9,15 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
 
 export default function SideBar() {
-    return ( 
-        <Grid container spacing={3}>
-            <Grid item xs={12}>
-                <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+    return (
+        <Box sx={{ border: 5, borderRight: 0}} >
+            <Stack sx={{ padding: 2}}spacing={3} backgroundColor='beige' alignItems='center'>
+                <Button variant='contained'sx={{
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<TroubleshootIcon sx={{color:'black'}}/>}
                 >
@@ -29,14 +29,12 @@ export default function SideBar() {
                     Analysis
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<LockIcon sx={{color:'black'}}/>}
                 >
@@ -48,14 +46,12 @@ export default function SideBar() {
                     Permissions
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<RefreshIcon sx={{color:'black'}}/>}
                 >
@@ -67,14 +63,12 @@ export default function SideBar() {
                     Refresh
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<HistoryIcon sx={{color:'black'}}/>}
                 >
@@ -86,14 +80,12 @@ export default function SideBar() {
                     History
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<FlipCameraIosIcon sx={{color:'black'}}/>}
                 >
@@ -105,14 +97,12 @@ export default function SideBar() {
                     Switch Snapshot
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<ScreenLockLandscapeIcon sx={{color:'black'}}/>}
                 >
@@ -124,14 +114,12 @@ export default function SideBar() {
                     Access Control Requirements
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<LockResetIcon sx={{color:'black'}}/>}
                 >
@@ -143,14 +131,12 @@ export default function SideBar() {
                     Validate ACRs
                     </Typography>
                 </Button>
-            </Grid>
-            <Grid item xs={12}>
                 <Button size='medium' variant='contained'sx={{
-                    backgroundColor: 'blue',
+                    backgroundColor: '00AAFF',
                     fontSize : 25,
                     color: 'white',
                     borderRadius: 4,
-                    width: '25%'
+                    width: '75%'
                     }}
                     startIcon={<HomeIcon sx={{color:'black'}}/>}
                 >
@@ -162,8 +148,7 @@ export default function SideBar() {
                     Home
                     </Typography>
                 </Button>
-            </Grid>
-        </Grid>
-
+            </Stack>
+        </Box>
     );
 }

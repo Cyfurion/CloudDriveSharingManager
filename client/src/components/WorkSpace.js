@@ -23,10 +23,11 @@ export default function WorkSpace() {
     }
 
     if (files === null) {
-        return <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige' }}>{"LOADING"}</Box>;
+        return <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige'  }}>{"LOADING"}</Box>;
     } else {
         return (
-            <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige' }}>
+            <Box sx={{height:'73.5vh',border: 5, borderColor: 'black', backgroundColor: 'beige'}}>
+                <Box sx={{overflowY:'auto', maxHeight:'73.5vh'}} >
                 <ListItem>
                     <Box sx={{ paddingLeft: 4, width: '33%' }}>Name</Box>
                     <Box sx={{ paddingLeft: 1, width: '33%' }}>Owner Email</Box>
@@ -36,6 +37,7 @@ export default function WorkSpace() {
                 {files.map((file) => (
                     <FileCard name={file.name} ownerEmail={file.owners[0].emailAddress} dateCreated={file.createdTime} />
                 ))}
+            </Box>
             </Box>
         );
     }

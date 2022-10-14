@@ -1,17 +1,27 @@
-import {LoginPage, TopBar} from './';
-import { Box } from '@mui/system';
+import {LoginPage,WorkSpace, TopBar, SideBar} from './';
+import { Box , Grid} from '@mui/material';
 import AuthContext from '../auth';
 import { useContext } from 'react';
-import { WorkSpace } from './';
 
 export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
 
     if (auth.isAuthorized) {
         return (
-            <Box>
-                <TopBar />
-                <WorkSpace />
+            <Box >
+                <Grid 
+            container 
+            >
+                <Grid item xs={12}>
+                    <TopBar />
+                </Grid>
+                <Grid item xs={2}>
+                    <SideBar />
+                </Grid>
+                <Grid item xs={10}>
+                    <WorkSpace />
+                </Grid>
+            </Grid>
             </Box>
         );
     }

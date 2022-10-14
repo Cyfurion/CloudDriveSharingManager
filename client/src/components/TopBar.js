@@ -19,7 +19,7 @@ export default function TopBar() {
 
   return (
     <Box>
-      <Toolbar sx={{ backgroundColor: 'beige'}}>
+      <Toolbar maxHeight="65px"  sx={{ backgroundColor: 'beige'}}>
       <AppLogo/>
       </Toolbar>
     </Box>
