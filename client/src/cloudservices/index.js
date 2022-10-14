@@ -1,7 +1,7 @@
 import { DropboxCloudServiceAdapter } from './DropboxCloudServiceAdapter';
 import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 // Create adapter context.
 const AdapterContext = createContext();
@@ -49,17 +49,6 @@ function AdapterContextProvider(props) {
             payload: new GoogleCloudServiceAdapter(endpoint)
         });
     }
-
-    useEffect(() => {
-        async function retrieve() {
-            if (adapter.dropboxAdapter) {
-                console.log(await adapter.dropboxAdapter.retrieve());
-            } else if (adapter.googleAdapter) {
-                console.log(await adapter.googleAdapter.retrieve());
-            }
-        }
-        retrieve();
-    }, [adapter]);
 
     return (
         <AdapterContext.Provider value={{ adapter }}>
