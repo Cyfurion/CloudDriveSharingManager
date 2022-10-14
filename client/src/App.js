@@ -7,7 +7,7 @@ import { AdapterContextProvider } from './cloudservices';
 import { AuthContextProvider } from './auth';
 import {
     SplashScreen,
-    LoginPage
+    WorkSpace
 } from './components';
 
 function App() {

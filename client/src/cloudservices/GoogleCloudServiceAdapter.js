@@ -13,7 +13,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                     'method': 'GET',
                     'path': '/drive/v3/files',
                     'params': {
-                        'fields': 'files(name),nextPageToken',
+                        'fields': 'files(name,createdTime,owners),nextPageToken',
                         'pageSize': 1000,
                         'pageToken': pageToken
                     }

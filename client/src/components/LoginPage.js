@@ -6,9 +6,9 @@ import {DropboxLoginButton} from './';
 export default function LoginPage(){
 
     return(
-        <Box 
+        <Box
             sx={{
-                height: '100vh', 
+                height: '93vh',
                 display:'flex', 
                 border:5,
                 borderColor:'black',
