@@ -1,5 +1,6 @@
-import { CloudServiceAdapter } from "./CloudServiceAdapter";
-import Folder from "../classes/file-class";
+import { CloudServiceAdapter } from './CloudServiceAdapter';
+import { File, Folder } from '../classes/file-class';
+import FileSnapshot from '../classes/filesnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
@@ -14,7 +15,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                     'method': 'GET',
                     'path': '/drive/v3/files',
                     'params': {
-                        'fields': 'files(name,createdTime,owners),nextPageToken',
+                        'fields': 'files(id,name,createdTime,owners,permissions),nextPageToken',
                         'pageSize': 1000,
                         'pageToken': pageToken
                     }
@@ -32,40 +33,44 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         } while (token);
         return files;
     }
-}
 
-function makeSnapshot(files){
-    let parentToChildMap = new Map();
-    let idToFileMap = new Map();
-    //making map of key = parent and value = list of children
-    for (let i=0; i<files.length; i++){
-        //change this when adding to file schema
-        let currentFile = new File(files[i].id, files[i].name, files[i].permissions);
-        idToFileMap.set(files[i].id, currentFile);
-        if(files[i].parents === undefined) {
-            files[i].parents = [""];
-        }
-        for(let j=0; j<files[i].parents.length; j++){
-            if(!parentToChildMap.has(files[i].parents[j])){
-                parentToChildMap.set(files[i].parents[j], [currentFile]);
-            }else{
-                parentToChildMap.get(files[i].parents[j]).push(currentFile);
+    makeSnapshot(files) {
+        let parentToChildMap = new Map();
+        let idToFileMap = new Map();
+        // making map of key = parent and value = list of children
+        for (let i = 0; i < files.length; i++) {
+            // change this when adding to file schema
+            let currentFile = new File(files[i].id, files[i].name, files[i].permissions);
+            idToFileMap.set(files[i].id, currentFile);
+            if (files[i].parents === undefined) {
+                files[i].parents = [""];
+            }
+            for (let j=0; j<files[i].parents.length; j++) {
+                if (!parentToChildMap.has(files[i].parents[j])) {
+                    parentToChildMap.set(files[i].parents[j], [currentFile]);
+                } else {
+                    parentToChildMap.get(files[i].parents[j]).push(currentFile);
+                }   
             }   
-        }   
+        }
+        let root = new Folder("root", "root", "root", []);
+        root.id = "";
+        snapshotHelper(parentToChildMap, idToFileMap, root);
+        return new FileSnapshot(
+            [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
+            root, 
+            (new Date()).toString()
+        );
     }
-    let root = new Folder("root", "root", "root", []);
-    root.id = "";
-    snapshotHelper(parentToChildMap, idToFileMap, root);
-    return root;
 }
 
-function snapshotHelper(parentToChildMap, idToFileMap, folder){
+function snapshotHelper(parentToChildMap, idToFileMap, folder) {
     let childrenList = parentToChildMap.get(folder.id);
-    for(let i=0; i<childrenList.length; i++){
-        if(parentToChildMap.has(childrenList[i].id)){
-            //childrenList[i] is folder
+    for (let i = 0; i < childrenList.length; i++) {
+        if (parentToChildMap.has(childrenList[i].id)) {
+            // childrenList[i] is folder
             let newFolder = new Folder(childrenList[i].id, childrenList[i].name, childrenList[i].permissions, []);
-            childrenList[i] =  newFolder;
+            childrenList[i] = newFolder;
             snapshotHelper(parentToChildMap, idToFileMap, newFolder);
         }
     }
