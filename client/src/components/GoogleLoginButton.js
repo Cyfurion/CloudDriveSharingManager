@@ -1,6 +1,7 @@
 import AuthContext from '../auth';
-import { useContext } from 'react';
+
 import { GoogleLogin } from 'react-google-login';
+import { useContext } from 'react';
 
 const clientId = "51282406360-evee6rmf1ttv4ni30be7l0dhme9p61ou.apps.googleusercontent.com";
 
@@ -9,7 +10,6 @@ export default function GoogleLoginButton() {
 
     const onSuccess = (res) => {
         auth.setGoogleEndpoint();
-
     }
 
     const onFailure = (res) => {

@@ -1,9 +1,9 @@
 /**
  * This file handles authentication between the user and the cloud service.
  */
-
-import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
 import { gapi } from 'gapi-script';
+import { GoogleCloudServiceAdapter } from '../cloudservices/GoogleCloudServiceAdapter';
+
 import React, { createContext, useEffect, useState } from 'react';
 
 // Create authentication context.

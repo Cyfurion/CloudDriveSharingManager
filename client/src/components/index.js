@@ -1,12 +1,11 @@
-import GoogleLoginButton from "./GoogleLoginButton";
 import AppLogo from "./AppLogo";
+import GoogleLoginButton from "./GoogleLoginButton";
 import LoginPage from "./LoginPage";
 import TopBar from "./TopBar"
 
-
 export {
-    GoogleLoginButton,
     AppLogo,
+    GoogleLoginButton,
     LoginPage,
     TopBar
 }
