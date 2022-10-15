@@ -15,7 +15,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                     'method': 'GET',
                     'path': '/drive/v3/files',
                     'params': {
-                        'fields': 'files(id,name,createdTime,owners,permissions),nextPageToken',
+                        'fields': 'files(id,name,parents,createdTime,owners,permissions),nextPageToken',
                         'pageSize': 1000,
                         'pageToken': pageToken
                     }
@@ -23,7 +23,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 request.execute(function(res) { resolve(res); });
             });
         }
-
         let files = [];
         let token = "";
         do {
@@ -31,25 +30,26 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
+        console.log(this.makeSnapshot(files));
         return files;
     }
 
     makeSnapshot(files) {
         let parentToChildMap = new Map();
         let idToFileMap = new Map();
-        // making map of key = parent and value = list of children
-        for (let i = 0; i < files.length; i++) {
-            // change this when adding to file schema
-            let currentFile = new File(files[i].id, files[i].name, files[i].permissions);
-            idToFileMap.set(files[i].id, currentFile);
-            if (files[i].parents === undefined) {
-                files[i].parents = [""];
+        // Making map of key = parent and value = list of children
+        for (let file of files) {
+            // TODO: change this when adding to file schema
+            let currentFile = new File(file.id, file.name, file.permissions);
+            idToFileMap.set(file.id, currentFile);
+            if (file.parents === undefined) {
+                file.parents = [""];
             }
-            for (let j=0; j<files[i].parents.length; j++) {
-                if (!parentToChildMap.has(files[i].parents[j])) {
-                    parentToChildMap.set(files[i].parents[j], [currentFile]);
+            for (let parent of file.parents) {
+                if (!parentToChildMap.has(parent)) {
+                    parentToChildMap.set(parent, [currentFile]);
                 } else {
-                    parentToChildMap.get(files[i].parents[j]).push(currentFile);
+                    parentToChildMap.get(parent).push(currentFile);
                 }   
             }   
         }
