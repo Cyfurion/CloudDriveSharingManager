@@ -8,20 +8,18 @@ export default function SplashScreen() {
 
     if (auth.isAuthorized) {
         return (
-            <Box >
-                <Grid 
-            container 
-            >
-                <Grid item xs={12}>
-                    <TopBar />
+            <Box>
+                <Grid container>
+                    <Grid item xs={12}>
+                        <TopBar />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <SideBar />
+                    </Grid>
+                    <Grid item xs={10}>
+                        <WorkSpace />
+                    </Grid>
                 </Grid>
-                <Grid item xs={2}>
-                    <SideBar />
-                </Grid>
-                <Grid item xs={10}>
-                    <WorkSpace />
-                </Grid>
-            </Grid>
             </Box>
         );
     }

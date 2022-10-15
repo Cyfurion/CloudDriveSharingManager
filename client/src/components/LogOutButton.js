@@ -5,5 +5,5 @@ export default function LogOutButton () {
         <Button>
             LogOut
         </Button>
-    )
+    );
 }
