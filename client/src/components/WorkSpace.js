@@ -9,12 +9,8 @@ export default function WorkSpace() {
     const [files, setFiles] = useState(null);
 
     if (files == null) {
-        if (adapter.googleAdapter) {
-            adapter.googleAdapter.retrieve().then((value) => {
-                setFiles(value);
-            });
-        } else if (adapter.dropboxAdapter) {
-            adapter.dropboxAdapter.retrieve().then((value) => {
+        if (adapter.adapter) {
+            adapter.adapter.retrieve().then((value) => {
                 setFiles(value);
             });
         }

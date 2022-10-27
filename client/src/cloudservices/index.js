@@ -8,44 +8,36 @@ const AdapterContext = createContext();
 
 // This is every type of update to the adapter state that can be processed.
 export const AdapterActionType = {
-    SET_DROPBOX_ADAPTER: "SET_DROPBOX_ADAPTER",
-    SET_GOOGLE_ADAPTER: "SET_GOOGLE_ADAPTER"
+    SET_ADAPTER: "SET_ADAPTER"
 }
 
 function AdapterContextProvider(props) {
     const [adapter, setAdapter] = useState({
-        dropboxAdapter: null,
-        googleAdapter: null
+        adapter: null
     });
 
     const adapterReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
-            case AdapterActionType.SET_DROPBOX_ADAPTER:
+            case AdapterActionType.SET_ADAPTER:
                 return setAdapter({
-                    dropboxAdapter: payload,
-                    googleAdapter: null
-                });
-            case AdapterActionType.SET_GOOGLE_ADAPTER:
-                return setAdapter({
-                    dropboxAdapter: null,
-                    googleAdapter: payload
+                    adapter: payload
                 });
             default:
-                return adapter;
+                throw new Error("Invalid AdapterActionType: " + type);
         }
     }
 
     adapter.setDropboxAdapter = function (endpoint) {
         adapterReducer({
-            type: AdapterActionType.SET_DROPBOX_ADAPTER,
+            type: AdapterActionType.SET_ADAPTER,
             payload: new DropboxCloudServiceAdapter(endpoint)
         });
     }
 
     adapter.setGoogleAdapter = function (endpoint) {
         adapterReducer({
-            type: AdapterActionType.SET_GOOGLE_ADAPTER,
+            type: AdapterActionType.SET_ADAPTER,
             payload: new GoogleCloudServiceAdapter(endpoint)
         });
     }
