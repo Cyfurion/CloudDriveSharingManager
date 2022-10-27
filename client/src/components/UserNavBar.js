@@ -3,25 +3,17 @@ import { Box, Grid } from "@mui/material";
 
 export default function UserNavBar() {
     return (
-        <Grid
-            container
-            direction="row"
-            justifyContent="flex"
-            alignItems="inline-box"      
-            maxHeight="65px"  
-        >
-            <Box>
+        <div class="flex flex-nowrap justify-between p-3">
+            <div>
                 <AppLogo />
-            </Box>
-            <Box>
+            </div>
+            <div class="flex">
                 <SearchBar />
-            </Box>
-            <Box>
                 <QueryBuilderButton />
-            </Box>
-            <Box>
+            </div>
+            <div>
                 <LogOutButton />
-            </Box>
-        </Grid>
+            </div>
+        </div>
     );
 }

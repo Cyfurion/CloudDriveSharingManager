@@ -1,32 +1,31 @@
 import {LoginPage,WorkSpace, TopBar, SideBar} from './';
-import { Box , Grid} from '@mui/material';
 import AuthContext from '../auth';
 import { useContext } from 'react';
 
 export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
 
+    let screen = <div>
+                    <TopBar />
+                    <div className=" bg-black h-1">  </div>
+                    <LoginPage/>
+                </div>;
+
     if (auth.isAuthorized) {
-        return (
-            <Box>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <TopBar />
-                    </Grid>
-                    <Grid item xs={2}>
+        screen = <div class="flex-nowrap">
+                    <TopBar />
+                    <div className=" bg-black h-1">  </div>
+                    <div className="grid grid-flow-col justify-start">
                         <SideBar />
-                    </Grid>
-                    <Grid item xs={10}>
-                        <WorkSpace />
-                    </Grid>
-                </Grid>
-            </Box>
-        );
+                        <div class=" w-[102rem] h-[54rem] flex flex-col overflow-scroll">
+                            <WorkSpace />
+                        </div>
+                    </div>
+                </div>;
     }
     return ( 
-        <Box >
-            <TopBar />
-            <LoginPage/>
-        </Box>
+        <div class=" min-w-fit min-h-screen bg-yellow-50 "> 
+            {screen}
+        </div>
     );
 }

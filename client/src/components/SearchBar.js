@@ -47,6 +47,6 @@ export default function SearchBar() {
                 placeholder="Search in Drive"
                 inputProps={{ 'aria-label': 'search' }}
             />
-        </Search>
+       </Search>
     );
 }

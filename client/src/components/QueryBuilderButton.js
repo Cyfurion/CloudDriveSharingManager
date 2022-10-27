@@ -1,17 +1,8 @@
-import { Button } from "@mui/material";
 
 export default function QueryBuilderButton () {
     return (
-        <Button sx={{
-            color: 'black', 
-            backgroundColor: 'yellow', 
-            minWidth: 'max-content', 
-            whitespace: 'nowrap',
-            borderRadius: 2,
-            boxShadow: 4,
-            fontSize: 18
-        }}>
+        <button class="bg-yellow-300 p-2 rounded-lg shadow-lg font-bold font-mono hover:bg-yellow-200">
             Query Builder
-        </Button>
+        </button>
     );
 }

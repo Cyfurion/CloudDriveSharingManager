@@ -1,9 +1,9 @@
-import { Button } from "@mui/material"
-
+import { IconButton } from "@mui/material";
+import LogoutIcon from '@mui/icons-material/Logout';
 export default function LogOutButton () {
     return (
-        <Button>
-            LogOut
-        </Button>
+        <IconButton size="medium">
+            <LogoutIcon fontSize="inherit" />
+        </IconButton>
     );
 }

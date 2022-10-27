@@ -10,16 +10,12 @@ export default function TopBar() {
 
     if (auth.isAuthorized) {
         return (
-            <Toolbar sx={{ backgroundColor: 'beige' }}>
-                <UserNavBar />
-            </Toolbar>
+           <UserNavBar />
         );
     }
     return (
-        <Box>
-            <Toolbar maxHeight="65px" sx={{ backgroundColor: 'beige' }}>
-                <AppLogo />
-            </Toolbar>
-        </Box>
+        <div class="flex flex-row justify-between p-3">
+            <AppLogo />
+        </div>
     );
 }
