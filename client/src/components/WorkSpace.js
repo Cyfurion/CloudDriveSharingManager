@@ -1,8 +1,7 @@
 import AdapterContext from '../cloudservices';
-
 import React, { useContext, useState } from 'react';
-import { Divider, ListItem } from '@mui/material';
-import { Box } from '@mui/system';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import FolderIcon from '@mui/icons-material/Folder';
 
 export default function WorkSpace() {
     const { adapter } = useContext(AdapterContext);
@@ -36,7 +35,7 @@ export default function WorkSpace() {
                 <tbody >
                     {files.map((file) => (
                         <tr class="filecard border-b-2 hover:bg-gray-100">
-                            <td > {file.name} </td>
+                            <td > <InsertDriveFileIcon /> {file.name} </td>
                             <td > {file.owners[0].emailAddress} </td>
                             <td >  {file.createdTime} </td>
                         </tr>

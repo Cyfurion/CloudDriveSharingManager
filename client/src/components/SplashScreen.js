@@ -17,7 +17,7 @@ export default function SplashScreen() {
                     <div className=" bg-black h-1">  </div>
                     <div className="grid grid-flow-col justify-start">
                         <SideBar />
-                        <div class=" w-[102rem] h-[54rem] flex flex-col overflow-scroll">
+                        <div class=" w-[102rem] h-[54rem] flex flex-col overflow-y-scroll">
                             <WorkSpace />
                         </div>
                     </div>
