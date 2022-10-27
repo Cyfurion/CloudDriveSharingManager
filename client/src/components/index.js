@@ -10,6 +10,7 @@ import LogOutButton from "./LogOutButton";
 import UserNavBar from "./UserNavBar";
 import WorkSpace from "./WorkSpace";
 import SideBar from "./SideBar";
+import AnalysisModal from "./AnalysisModal";
 
 export {
     GoogleLoginButton,
@@ -23,5 +24,6 @@ export {
     LogOutButton,
     UserNavBar,
     WorkSpace,
-    SideBar
+    SideBar,
+    AnalysisModal
 }

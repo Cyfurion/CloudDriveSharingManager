@@ -1,4 +1,4 @@
-import {LoginPage,WorkSpace, TopBar, SideBar} from './';
+import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal} from './';
 import AuthContext from '../auth';
 import { useContext } from 'react';
 
@@ -20,6 +20,9 @@ export default function SplashScreen() {
                         <div class=" w-[102rem] h-[54rem] flex flex-col overflow-y-scroll">
                             <WorkSpace />
                         </div>
+                    </div>
+                    <div>
+                        <AnalysisModal/>
                     </div>
                 </div>;
     }

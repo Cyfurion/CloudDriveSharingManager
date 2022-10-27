@@ -10,7 +10,7 @@ import HomeIcon from '@mui/icons-material/Home';
 export default function SideBar() {
     return (
             <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
-                <button class="sidebarbtn" >
+                <button type="button" class="sidebarbtn" >
                     <TroubleshootIcon fontSize="small" sx={{color: 'black'}}/>
                     Analysis
                 </button>
