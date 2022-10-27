@@ -7,45 +7,49 @@ import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
 
-export default function SideBar() {
+export default function SideBar( props ) {
+    const handleAnalysisButton = () =>{
+        props.handleAnalysisModal();
+    }
+
     return (
             <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
-                <button type="button" class="sidebarbtn" >
+                <button onClick={handleAnalysisButton}type="button" className="sidebarbtn" >
                     <TroubleshootIcon fontSize="small" sx={{color: 'black'}}/>
                     Analysis
                 </button>
 
-                <button class="sidebarbtn flex" >
+                <button className="sidebarbtn flex" >
                     <LockIcon fontSize="small" sx={{color: 'black'}}/>
                     Permissions
                 </button>
 
-                <button class="sidebarbtn" >
+                <button className="sidebarbtn" >
                     <RefreshIcon fontSize="small" sx={{color: 'black'}}/> 
                     Refresh
                 </button>
 
-                <button class="sidebarbtn" >
+                <button className="sidebarbtn" >
                     <HistoryIcon fontSize="small" sx={{color: 'black'}}/>
                     History
                 </button>
 
-                <button class="sidebarbtn" >
+                <button className="sidebarbtn" >
                     <FlipCameraIosIcon fontSize="small" sx={{color: 'black'}}/>
                     Switch Snapshot
                 </button>
 
-                <button class="sidebarbtn" >
+                <button className="sidebarbtn" >
                     <ScreenLockLandscapeIcon fontSize="small" sx={{color: 'black'}}/>
                     Access Control Requirement
                 </button>
 
-                <button class="sidebarbtn" >
+                <button className="sidebarbtn" >
                     <LockResetIcon fontSize="small" sx={{color: 'black'}}/>
                     Validate ACR
                 </button>
 
-                <button class="sidebarbtn" >
+                <button className="sidebarbtn" >
                     <HomeIcon fontSize="small" sx={{color: 'black'}}/>
                     Home
                 </button>
