@@ -49,11 +49,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
             }
-            for (let parent of file.parents) {
-                if (!parentToChildMap.has(parent)) {
-                    parentToChildMap.set(parent, [currentFile]);
+            for (let j=0; j<files[i].parents.length; j++) {
+                if (!parentToChildMap.has(files[i].parents[j])) {
+                    parentToChildMap.set(files[i].parents[j], [currentFile]);
                 } else {
-                    parentToChildMap.get(parent).push(currentFile);
+                    parentToChildMap.get(files[i].parents[j]).push(currentFile);
                 }   
             }   
         }
