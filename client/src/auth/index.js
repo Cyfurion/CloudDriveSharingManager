@@ -75,7 +75,7 @@ function AuthContextProvider(props) {
                 });
             }
             default:
-                return auth;
+                throw new Error("Invalid AuthActionType: " + type);
         }
     }
 
