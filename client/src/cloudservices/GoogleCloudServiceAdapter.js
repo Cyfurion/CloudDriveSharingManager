@@ -24,7 +24,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 request.execute(function(res) { resolve(res); });
             });
         }
-
         let files = [];
         let token = "";
         do {
@@ -50,11 +49,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
             }
-            for (let j=0; j<files[i].parents.length; j++) {
-                if (!parentToChildMap.has(files[i].parents[j])) {
-                    parentToChildMap.set(files[i].parents[j], [currentFile]);
+            for (let parent of file.parents) {
+                if (!parentToChildMap.has(parent)) {
+                    parentToChildMap.set(parent, [currentFile]);
                 } else {
-                    parentToChildMap.get(files[i].parents[j]).push(currentFile);
+                    parentToChildMap.get(parent).push(currentFile);
                 }   
             }   
         }

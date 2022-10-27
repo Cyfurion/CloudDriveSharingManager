@@ -1,9 +1,7 @@
 import AdapterContext from '../cloudservices';
-
 import React, { useContext, useState } from 'react';
-import FileCard from './FileCard';
-import { Box } from '@mui/system';
-import { Divider, ListItem } from '@mui/material';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import FolderIcon from '@mui/icons-material/Folder';
 
 export default function WorkSpace() {
     const { adapter } = useContext(AdapterContext);
@@ -11,34 +9,36 @@ export default function WorkSpace() {
     const [files, setFiles] = useState(null);
 
     if (files == null) {
-        if (adapter.googleAdapter) {
-            adapter.googleAdapter.retrieve().then((value) => {
-                setFiles(value);
-            });
-        } else if (adapter.dropboxAdapter) {
-            adapter.dropboxAdapter.retrieve().then((value) => {
+        if (adapter.adapter) {
+            adapter.adapter.retrieve().then((value) => {
                 setFiles(value);
             });
         }
     }
 
     if (files === null) {
-        return <Box sx={{ border: 5, borderColor: 'black', backgroundColor: 'beige'  }}>{"LOADING"}</Box>;
+        return <div className="font-bold ">{"LOADING"} </div>;
     } else {
         return (
-            <Box sx={{overflowY:'auto', maxHeight: 688, border: 5, borderColor: 'black', backgroundColor: 'beige'}}>
-                <Box >
-                <ListItem>
-                    <Box sx={{ paddingLeft: 4, width: '33%' }}>Name</Box>
-                    <Box sx={{ paddingLeft: 1, width: '33%' }}>Owner Email</Box>
-                    <Box sx={{ paddingLeft: 1, width: '33%' }}>Date Created</Box>
-                </ListItem>
-                <Divider />
-                {files.map((file) => (
-                    <FileCard name={file.name} ownerEmail={file.owners[0].emailAddress} dateCreated={file.createdTime} />
-                ))}
-            </Box>
-            </Box>
+            <table >
+                <thead class="border-b-2 border-gray-200">
+                    <tr class="filecard ">
+                        <th > Name </th>
+                        <th > Owner </th>
+                        <th > Date Created </th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {files.map((file) => (
+                        <tr class="filecard border-b-2 hover:bg-gray-100">
+                            <td > <InsertDriveFileIcon /> {file.name} </td>
+                            <td > {file.owners[0].emailAddress} </td>
+                            <td >  {file.createdTime} </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
         );
     }
 }

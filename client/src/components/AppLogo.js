@@ -1,5 +1,4 @@
 import React from "react"
-import { Typography } from "@mui/material"
 import AuthContext from "../auth"
 import { useContext } from "react"
 
@@ -12,14 +11,13 @@ export default function AppLogo() {
     }
 
     return(
-        <Typography noWrap
-        sx={{
-            color: 'black',
-            fontFamily: 'monospace',
-            fontWeight: 40,
-            fontSize: 35
-        }}>
+        <div>
+            <h1 className=" text-4xl font-mono font-bold">
             {title}
-        </Typography>
+            </h1>
+        </div>
+        
+
+
     )
 }

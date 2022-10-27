@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +14,16 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.sidebarbtn{
+  @apply  shadow-lg w-60 text-white bg-blue-700 hover:bg-blue-800 font-medium font-mono rounded-lg px-5 py-2.5 justify-center inline-flex items-center mr-2 gap-x-2;
+}
+
+.filecard{
+  @apply font-mono p-3 text-sm h-8 font-semibold tracking-wide text-left;
+}
+
+.analysisbtn{
+  @apply  font-mono bg-gray-200 flex flex-col items-center rounded-xl p-5 shadow-xl cursor-pointer;
 }
