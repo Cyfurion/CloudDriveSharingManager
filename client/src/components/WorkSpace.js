@@ -21,8 +21,8 @@ export default function WorkSpace() {
     } else {
         return (
             <table >
-                <thead class="border-b-2 border-gray-200">
-                    <tr class="filecard ">
+                <thead className="border-b-2 border-gray-200">
+                    <tr className="filecard ">
                         <th > Name </th>
                         <th > Owner </th>
                         <th > Date Created </th>
@@ -30,7 +30,7 @@ export default function WorkSpace() {
                 </thead>
                 <tbody >
                     {files.map((file) => (
-                        <tr class="filecard border-b-2 hover:bg-gray-100">
+                        <tr className="filecard border-b-2 hover:bg-gray-100">
                             <td > <InsertDriveFileIcon /> {file.name} </td>
                             <td > {file.owners[0].emailAddress} </td>
                             <td >  {file.createdTime} </td>
