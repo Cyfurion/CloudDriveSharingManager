@@ -30,10 +30,10 @@ export default function WorkSpace() {
                 </thead>
                 <tbody >
                     {files.map((file) => (
-                        <tr className="filecard border-b-2 hover:bg-gray-100">
-                            <td > <InsertDriveFileIcon /> {file.name} </td>
-                            <td > {file.owners[0].emailAddress} </td>
-                            <td >  {file.createdTime} </td>
+                        <tr className="filecard border-b-2 hover:bg-gray-100 ">
+                            <td className='max-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' > <InsertDriveFileIcon /> {file.name} </td>
+                            <td className='w-[25vw] whitespace-nowrap '> {file.owners[0].emailAddress} </td>
+                            <td className='w-[20vw] whitespace-nowrap '>  {file.createdTime} </td>
                         </tr>
                     ))}
                 </tbody>
