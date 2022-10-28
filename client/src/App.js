@@ -5,18 +5,19 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { AdapterContextProvider } from './cloudservices';
 import { AuthContextProvider } from './auth';
-import {
-    SplashScreen
-} from './components';
+import { StoreContextProvider } from './store';
+import { SplashScreen } from './components';
 
 function App() {
     return (
         <BrowserRouter>
             <AdapterContextProvider>
                 <AuthContextProvider>
-                    <Routes>
-                        <Route path='/' element={<SplashScreen />}/>
-                    </Routes>
+                    <StoreContextProvider>
+                        <Routes>
+                            <Route path='/' element={<SplashScreen />}/>
+                        </Routes>
+                    </StoreContextProvider>
                 </AuthContextProvider>
             </AdapterContextProvider>
         </BrowserRouter>

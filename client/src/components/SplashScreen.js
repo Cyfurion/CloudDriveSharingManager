@@ -22,7 +22,7 @@ export default function SplashScreen() {
                     <div className=" bg-black h-1">  </div>
                     <div className="grid grid-flow-col justify-start">
                         <SideBar handleAnalysisModal={handleAnalysisModal}/>
-                        <div className=" w-[102rem] h-[54rem] flex flex-col overflow-y-scroll">
+                        <div className=" w-[85vw] h-[80vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
                             <WorkSpace />
                         </div>
                     </div>
