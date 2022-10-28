@@ -10,4 +10,8 @@ export class CloudServiceAdapter {
     retrieve() {
         throw new Error("retrieve() must be implemented.");
     }
+
+    makeSnapshot() {
+        throw new Error("makeSnapshot() must be implemented.");
+    }
 }
