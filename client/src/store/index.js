@@ -20,7 +20,7 @@ function StoreContextProvider(props) {
         currentSnapshot: null
     });
 
-    const adapter = useContext(AdapterContext);
+    const { adapter } = useContext(AdapterContext);
 
     const storeReducer = (action) => {
         const { type, payload } = action;

@@ -31,7 +31,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
-        await this.makeSnapshot(files);
         return files;
     }
 
@@ -40,7 +39,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param files 
      * @returns snapshot tree
      */
-    makeSnapshot(files) {
+    async makeSnapshot() {
+        let files = await this.retrieve();
         let parentToChildMap = new Map();
         // making map of key = parent and value = list of children
         for (let i = 0; i < files.length; i++) {
@@ -61,7 +61,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let root = new Folder(rootFile, []);
         root.id = "";
         snapshotHelper(parentToChildMap, root);
-        console.log(root);
         return new FileSnapshot(
             [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
             root, 
