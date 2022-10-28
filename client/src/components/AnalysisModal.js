@@ -6,14 +6,14 @@ import { useState } from 'react';
 
 
 export default function AnalysisModal( props ) {
+
     const handleClose = () => {
         props.handleAnalysisModal();
     }
 
     return(
-        <div  id="defaultModal" tabindex="-1" aria-hidden="true" className="hidden h-modal fixed top-0 right-0 left-0 z-50 w-full overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
-            <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
-                
+        <div id="defaultModal" tabindex="-1" aria-hidden="true" class="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
+        <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
                 <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
                     
 
@@ -47,7 +47,7 @@ export default function AnalysisModal( props ) {
                 </div>
                 </div>
             </div>
-        </div>
+            </div>
 
     );
 }

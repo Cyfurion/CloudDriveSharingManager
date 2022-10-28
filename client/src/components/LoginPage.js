@@ -3,9 +3,9 @@ import { GoogleLoginButton } from './';
 import { DropboxLoginButton } from './';
 export default function LoginPage() {
     return (
-        <div class="flex flex-col items-center space-y-5 pt-10 ">
-            <div class="">
-                <h1 class="text-5xl font-bold font-mono">
+        <div className="flex flex-col items-center space-y-5 pt-10 ">
+            <div className="">
+                <h1 className="text-5xl font-bold font-mono">
                     Service Login                </h1>
             </div>
 

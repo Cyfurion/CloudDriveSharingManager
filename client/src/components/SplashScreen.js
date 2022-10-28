@@ -8,7 +8,6 @@ export default function SplashScreen() {
 
     const handleAnalysisModal = () =>{
         setShowAnalysisModal(!showAnalysisModal);
-        console.log("test");
     };
 
     let screen = <div>
@@ -26,14 +25,12 @@ export default function SplashScreen() {
                         <div className=" w-[102rem] h-[54rem] flex flex-col overflow-y-scroll">
                             <WorkSpace />
                         </div>
-                        <div>
-                            <AnalysisModal handleAnalysisModal={handleAnalysisModal} />
-                        </div>
                     </div>
                 </div>;
     }
     return ( 
-        <div className=" min-w-fit min-h-screen bg-yellow-50 "> 
+        <div className=" min-w-fit min-h-screen bg-yellow-50 ">
+            {showAnalysisModal && <AnalysisModal handleAnalysisModal={handleAnalysisModal}/>}
             {screen}
         </div>
     );
