@@ -60,10 +60,12 @@ function StoreContextProvider(props) {
     }
 
     store.popDirectory = function (folder) {
+       if(store.directory.length !== 1){
         storeReducer({
             type: StoreActionType.POP_DIRECTORY,
             payload: folder
         });
+       }
     }
 
     store.setFolder = function (folder) {

@@ -17,10 +17,10 @@ export default function WorkSpace( props ) {
                 </thead>
                 <tbody >
                     {props.data.map((file) => (
-                        <tr id={file.id} onClick={ typeof file.files === 'undefined' ? null  : (e) => props.handleClickFolder(e, file)} className="filecard border-b-2 hover:bg-gray-100 ">
-                            <td className='max-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' >{ typeof file.files === 'undefined' ? <InsertDriveFileIcon /> : <FolderIcon />  }{file.name} </td>
-                            <td className='w-[25vw] whitespace-nowrap '> {file.owner} </td>
-                            <td className='w-[20vw] whitespace-nowrap '>  {file.createdTime} </td>
+                        <tr id={file.id} onClick={ file.files === undefined ? null  : (e) => props.handleClickFolder(e, file)} className="filecard border-b-2 hover:bg-gray-100 ">
+                            <td className='max-w-[40vw] min-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' >{ typeof file.files === 'undefined' ? <InsertDriveFileIcon /> : <FolderIcon />  }{file.name} </td>
+                            <td className='min-w-[25vw] max-w-[25vw] whitespace-nowrap '> {file.owner} </td>
+                            <td className='min-w-[20vw] max-w-[20vw] whitespace-nowrap '>  {file.createdTime} </td>
                         </tr>
                     ))}
                 </tbody>
