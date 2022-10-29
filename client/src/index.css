@@ -21,7 +21,7 @@ code {
 }
 
 .filecard{
-  @apply font-mono p-3 text-sm h-8 font-semibold tracking-wide text-left;
+  @apply p-3 text-sm h-8 font-semibold tracking-wide text-left ;
 }
 
 .analysisbtn{
