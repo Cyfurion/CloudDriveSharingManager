@@ -1,5 +1,5 @@
 import { SearchBar, QueryBuilderButton, LogOutButton, AppLogo } from "./";
-export default function UserNavBar() {
+export default function UserNavBar( props ) {
     return (
         <div className="flex flex-nowrap justify-between p-3">
             <div>
@@ -7,7 +7,7 @@ export default function UserNavBar() {
             </div>
             <div className="flex">
                 <SearchBar />
-                <QueryBuilderButton />
+                <QueryBuilderButton handleQueryBuilderButton={props.handleQueryBuilderButton}/>
             </div>
             <div>
                 <LogOutButton />

@@ -11,6 +11,7 @@ import UserNavBar from "./UserNavBar";
 import WorkSpace from "./WorkSpace";
 import SideBar from "./SideBar";
 import AnalysisModal from "./AnalysisModal";
+import QueryBuilderModal from "./QueryBuilderModal"
 
 export {
     GoogleLoginButton,
@@ -25,5 +26,6 @@ export {
     UserNavBar,
     WorkSpace,
     SideBar,
-    AnalysisModal
+    AnalysisModal,
+    QueryBuilderModal
 }

@@ -32,7 +32,7 @@ function StoreContextProvider(props) {
                 });
             case StoreActionType.SET_SNAPSHOT:
                 return setStore({
-                    currentFolder: null,
+                    currentFolder: payload.rootFiles,
                     currentSnapshot: payload
                 });
             default:
