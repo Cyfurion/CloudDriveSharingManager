@@ -10,9 +10,10 @@ export default function WorkSpace() {
     
     const [files, setFiles] = useState(null);
 
-    const handleClickFolder= ( folder ) => {
+    const handleClickFolder= ( e, folder ) => {
+        e.stopPropagation();
         store.setFolder(folder);
-        setFiles(store.currentFolder.files);
+        setFiles(null);
     }
 
     if (files === null) {
@@ -36,8 +37,8 @@ export default function WorkSpace() {
                 </thead>
                 <tbody >
                     {files.map((file) => (
-                        <tr id={file.id} className="filecard border-b-2 hover:bg-gray-100 ">
-                            <td onClick={ typeof file.files === 'undefined' ? null  : (e) => handleClickFolder(file)} className='max-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' >{ typeof file.files === 'undefined' ? <InsertDriveFileIcon /> : <FolderIcon />  }{file.name} </td>
+                        <tr id={file.id} onClick={ typeof file.files === 'undefined' ? null  : (e) => handleClickFolder(e,file)} className="filecard border-b-2 hover:bg-gray-100 ">
+                            <td className='max-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' >{ typeof file.files === 'undefined' ? <InsertDriveFileIcon /> : <FolderIcon />  }{file.name} </td>
                             <td className='w-[25vw] whitespace-nowrap '> {file.owner} </td>
                             <td className='w-[20vw] whitespace-nowrap '>  {file.createdTime} </td>
                         </tr>

@@ -45,6 +45,7 @@ function StoreContextProvider(props) {
             type: StoreActionType.SET_FOLDER,
             payload: folder
         });
+        console.log(store.currentFolder);
     }
     store.setSnapshot = function (snapshot) {
         storeReducer({

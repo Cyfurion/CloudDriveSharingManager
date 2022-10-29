@@ -17,6 +17,11 @@ export default function SplashScreen() {
         setShowQBB(!showQBB);
     }
 
+    const handleHomeButton = () =>{
+        store.setFolder(store.currentSnapshot.rootFiles);
+        console.log("test");
+    }
+
     let screen = <div>
                     <TopBar />
                     <div className=" bg-black h-1">  </div>
@@ -28,7 +33,7 @@ export default function SplashScreen() {
                     <TopBar handleQueryBuilderButton={handleQueryBuilderButton} />
                     <div className=" bg-black h-1">  </div>
                     <div className="grid grid-flow-col justify-start">
-                        <SideBar handleAnalysisModal={handleAnalysisModal}/>
+                        <SideBar handleAnalysisModal={handleAnalysisModal} handleHomeButton={handleHomeButton}/>
                         <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
                             <WorkSpace />
                         </div>

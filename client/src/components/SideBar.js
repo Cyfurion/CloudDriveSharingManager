@@ -12,6 +12,10 @@ export default function SideBar( props ) {
         props.handleAnalysisModal();
     }
 
+    const handleHomeButton = () =>{
+        props.handleHomeButton();
+    }
+
     return (
             <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
                 <button onClick={handleAnalysisButton}type="button" className="sidebarbtn" >
@@ -49,7 +53,7 @@ export default function SideBar( props ) {
                     Validate ACR
                 </button>
 
-                <button className="sidebarbtn" >
+                <button onClick={handleHomeButton} className="sidebarbtn" >
                     <HomeIcon fontSize="small" sx={{color: 'black'}}/>
                     Home
                 </button>
