@@ -1,29 +1,9 @@
-import StoreContext from '../store';
-
-import React, { useContext, useState } from 'react';
-
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 
-export default function WorkSpace() {
-    const { store } = useContext(StoreContext);
-    
-    const [files, setFiles] = useState(null);
+export default function WorkSpace( props ) {
 
-    const handleClickFolder= ( e, folder ) => {
-        e.stopPropagation();
-        store.setFolder(folder);
-        setFiles(null);
-    }
-
-    if (files === null) {
-        if (store.currentSnapshot === null) {
-            store.takeSnapshot();
-        } else {
-            setFiles(store.currentFolder.files);
-        }
-    }
-    if (files === null) {
+    if (props.data === null) {
         return <div className="font-bold ">{"LOADING"} </div>;
     } else {
         return (
@@ -36,8 +16,8 @@ export default function WorkSpace() {
                     </tr>
                 </thead>
                 <tbody >
-                    {files.map((file) => (
-                        <tr id={file.id} onClick={ typeof file.files === 'undefined' ? null  : (e) => handleClickFolder(e,file)} className="filecard border-b-2 hover:bg-gray-100 ">
+                    {props.data.map((file) => (
+                        <tr id={file.id} onClick={ typeof file.files === 'undefined' ? null  : (e) => props.handleClickFolder(e, file)} className="filecard border-b-2 hover:bg-gray-100 ">
                             <td className='max-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' >{ typeof file.files === 'undefined' ? <InsertDriveFileIcon /> : <FolderIcon />  }{file.name} </td>
                             <td className='w-[25vw] whitespace-nowrap '> {file.owner} </td>
                             <td className='w-[20vw] whitespace-nowrap '>  {file.createdTime} </td>

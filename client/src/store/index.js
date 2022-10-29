@@ -10,13 +10,15 @@ const StoreContext = createContext();
 
 // This is every type of update to the store state that can be processed.
 export const StoreActionType = {
+    PUSH_DIRECTORY: "PUSH_DIRECTORY",
+    POP_DIRECTORY: "POP_DIRECTORY",
     SET_FOLDER: "SET_FOLDER",
     SET_SNAPSHOT: "SET_SNAPSHOT"
 }
 
 function StoreContextProvider(props) {
     const [store, setStore] = useState({
-        currentFolder: null,
+        directory: [],
         currentSnapshot: null
     });
 
@@ -25,14 +27,24 @@ function StoreContextProvider(props) {
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
+            case StoreActionType.PUSH_DIRECTORY:
+                return setStore({
+                    directory: [...store.directory, payload],
+                    currentSnapshot: store.currentSnapshot
+                });
+            case StoreActionType.POP_DIRECTORY:
+                return setStore({
+                    directory: store.directory.slice(0, store.directory.length - 1),
+                    currentSnapshot: store.currentSnapshot
+                })
             case StoreActionType.SET_FOLDER:
                 return setStore({
-                    currentFolder: payload,
+                    directory: [payload],
                     currentSnapshot: store.currentSnapshot
                 });
             case StoreActionType.SET_SNAPSHOT:
                 return setStore({
-                    currentFolder: payload.rootFiles,
+                    directory: [payload.rootFiles],
                     currentSnapshot: payload
                 });
             default:
@@ -40,12 +52,25 @@ function StoreContextProvider(props) {
         }
     }
 
+    store.pushDirectory = function (folder) {
+        storeReducer({
+            type: StoreActionType.PUSH_DIRECTORY,
+            payload: folder
+        });
+    }
+
+    store.popDirectory = function (folder) {
+        storeReducer({
+            type: StoreActionType.POP_DIRECTORY,
+            payload: folder
+        });
+    }
+
     store.setFolder = function (folder) {
         storeReducer({
             type: StoreActionType.SET_FOLDER,
             payload: folder
         });
-        console.log(store.currentFolder);
     }
     store.setSnapshot = function (snapshot) {
         storeReducer({

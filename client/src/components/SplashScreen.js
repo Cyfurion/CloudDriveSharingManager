@@ -8,6 +8,13 @@ export default function SplashScreen() {
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
     const { store } = useContext(StoreContext);
+    const [files, setFiles] = useState(null);
+
+    const handleClickFolder= ( e, folder ) => {
+        e.stopPropagation();
+        store.pushDirectory(folder);
+        setFiles(null);
+    }
 
     const handleAnalysisModal = () =>{
         setShowAnalysisModal(!showAnalysisModal);
@@ -19,7 +26,20 @@ export default function SplashScreen() {
 
     const handleHomeButton = () =>{
         store.setFolder(store.currentSnapshot.rootFiles);
-        console.log("test");
+        setFiles(null);
+    }
+
+    const handleHistoryButton = (folder ) => {
+        store.popDirectory(folder);
+        setFiles(null);
+    }
+
+    if (files === null) {
+        if (store.currentSnapshot === null) {
+            store.takeSnapshot();
+        } else {
+            setFiles(store.directory[store.directory.length - 1].files);
+        }
     }
 
     let screen = <div>
@@ -33,9 +53,9 @@ export default function SplashScreen() {
                     <TopBar handleQueryBuilderButton={handleQueryBuilderButton} />
                     <div className=" bg-black h-1">  </div>
                     <div className="grid grid-flow-col justify-start">
-                        <SideBar handleAnalysisModal={handleAnalysisModal} handleHomeButton={handleHomeButton}/>
+                        <SideBar handleAnalysisModal={handleAnalysisModal} handleHomeButton={handleHomeButton} handleHistoryButton={handleHistoryButton}/>
                         <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
-                            <WorkSpace />
+                            <WorkSpace data={files} handleClickFolder={handleClickFolder}/>
                         </div>
                     </div>
                 </div>;

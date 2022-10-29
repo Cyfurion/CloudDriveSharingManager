@@ -16,6 +16,10 @@ export default function SideBar( props ) {
         props.handleHomeButton();
     }
 
+    const handleHistoryButton = () =>{
+        props.handleHistoryButton();
+    }
+
     return (
             <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
                 <button onClick={handleAnalysisButton}type="button" className="sidebarbtn" >
@@ -33,7 +37,7 @@ export default function SideBar( props ) {
                     Refresh
                 </button>
 
-                <button className="sidebarbtn" >
+                <button onClick={handleHistoryButton} className="sidebarbtn" >
                     <HistoryIcon fontSize="small" sx={{color: 'black'}}/>
                     History
                 </button>
