@@ -97,10 +97,15 @@ function createFileObject(file){
     let id = file.id;
     let name = file.name;
     let permissions = [];
+    let permissionIds = [];
     if(file.permissions != undefined){
         for(let i = 0; i < file.permissions.length; i++){
             let permission = file.permissions[i];
-            permissions.push(new Permission(permission.id, permission.type, permission.emailAddress, permission.role));
+            console.log("new permission");
+            console.log(new Permission(permission.type, permission.emailAddress, permission.role));
+            console.log(permission.id);
+            permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
+            permissionIds.push(permission.id);
         }
     }
     let drive = "";
@@ -109,6 +114,5 @@ function createFileObject(file){
     }
     let owner = file.owners[0].emailAddress;
     let createdTime = file.createdTime;
-    return new File(id, name, permissions, drive, owner, "", createdTime);
+    return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime);
 }
-

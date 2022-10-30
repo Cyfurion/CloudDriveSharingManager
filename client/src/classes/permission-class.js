@@ -1,9 +1,9 @@
 class Permission {
-    constructor(id, type, entity, role) {
-        this.id = id; 
+    constructor(type, entity, role, isInherited) {
         this.type = type; // user, group, domain
         this.entity = entity;// associated domain or emails
         this.role = role; // read, write, comment
+        this.isInherited = isInherited;
     }
 }
 

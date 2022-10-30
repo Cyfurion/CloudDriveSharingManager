@@ -25,12 +25,13 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
             });
         }
         console.log(await makeSnapshot(this.endpoint));
+        //await makeSnapshot(this.endpoint);
         return files;
     }
 }
 
 async function makeSnapshot(endpoint){
-    let rootFile = new File("root", "root", [], "dropbox"
+    let rootFile = new File("root", "root", [], [], "dropbox"
         , "TODO SOME EMAIL", "/root", "N/A");
     let root = new Folder(rootFile, []);
     await makeSnapshotHelper(root, '', endpoint);
@@ -64,11 +65,27 @@ async function createFileObject(file, parent, endpoint){
     }
     let name = file.name;
     let permissions = [];
+    let permissionIds = [];
     let owner = parent.owner;
     let permissionsMap = new Map();
-    if(file[".tag"] === "folder" && parent.permissions !== [] && file.shared_folder_id !== parent.permissions.id){
-        let dropboxPermissions = (await endpoint
-        .sharingListFolderMembers({"shared_folder_id": file.shared_folder_id}));//use this to find group and user permissions
+    //creating permissions map
+    for(let i = 0; i < permissions.length; i++){
+        permissionsMap.set(permissionIds[i], permissions[i]);
+    }
+    let sharedFolderId = "";
+    if(file[".tag"] !== "folder"){
+        sharedFolderId = parent.id;
+    }else{
+        sharedFolderId = file.shared_folder_id;
+    }
+    console.log("sharing");
+    console.log(sharedFolderId);
+    let dropboxPermissions = undefined;
+    if(sharedFolderId !== "root"){
+        dropboxPermissions = (await endpoint
+            .sharingListFolderMembers({"shared_folder_id": sharedFolderId}));//use this to find group and user permissions
+    }
+    if(dropboxPermissions){
         for(let user of dropboxPermissions.result.users){
             let type = 'user';//TODO WHEN IS IT A GROUP/DOMAIN
             let entity = user.user.email;
@@ -81,21 +98,20 @@ async function createFileObject(file, parent, endpoint){
             }else{
                 role = 'read';
             }
-            let p = new Permission(file.shared_folder_id, type, entity, role);
+            let isInherited = user.is_inherited;
+            if(file[".tag"] !== "folder"){
+                isInherited = true;
+            }
+            let p = new Permission(type, entity, role, isInherited);
             permissions.push(p);
-            permissionsMap.set(p.entity, p);
-        }
-    }
-    for(let permission of parent.permissions){
-        if(!permissionsMap.has(permission.entity)){
-            permissions.push(permission);
+            permissionIds.push(file.shared_folder_id);
         }
     }
     let createdTime = 'N/A';
     if(file.client_modified){
         createdTime = file.client_modified;
     }
-    return new File(id, name, permissions, 'dropbox', owner, file.path_display, createdTime);
+    return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime);
 }
 
 //TODO: permissions, owner
