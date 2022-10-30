@@ -9,7 +9,6 @@ export default function SplashScreen() {
     const [showQBB, setShowQBB] = useState(false);
     const { store } = useContext(StoreContext);
     const [files, setFiles] = useState(null);
-    const [loading, setLoading] = useState(true);
 
     const handleClickFolder= ( e, folder ) => {
         e.stopPropagation();
