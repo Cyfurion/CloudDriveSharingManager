@@ -1,8 +1,9 @@
 class File {
-    constructor(id, name, permissions, drive, owner, path, createdTime) {//creator, path, createdTime) {
+    constructor(id, name, permissions, permissionIds, drive, owner, path, createdTime) {//creator, path, createdTime) {
         this.id = id;
         this.name = name;
         this.permissions = permissions;
+        this.permissionIds = permissionIds;
         this.drive = drive;
         this.owner = owner;
         //this.creator = creator; TODO what is this
@@ -13,7 +14,7 @@ class File {
 
 class Folder extends File {
     constructor(file, files) {
-        super(file.id, file.name, file.permissions, file.drive, file.owner, file.path, file.createdTime);
+        super(file.id, file.name, file.permissions, file.permissionIds, file.drive, file.owner, file.path, file.createdTime);
         this.files = files;
     }
 }

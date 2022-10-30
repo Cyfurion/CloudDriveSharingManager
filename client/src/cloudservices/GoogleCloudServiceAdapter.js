@@ -31,7 +31,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
-        await this.makeSnapshot(files);
         return files;
     }
 
@@ -40,7 +39,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param files 
      * @returns snapshot tree
      */
-    makeSnapshot(files) {
+    async makeSnapshot() {
+        let files = await this.retrieve();
         let parentToChildMap = new Map();
         // making map of key = parent and value = list of children
         for (let i = 0; i < files.length; i++) {
@@ -49,11 +49,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
             }
-            for (let parent of file.parents) {
-                if (!parentToChildMap.has(parent)) {
-                    parentToChildMap.set(parent, [currentFile]);
+            for (let j=0; j<files[i].parents.length; j++) {
+                if (!parentToChildMap.has(files[i].parents[j])) {
+                    parentToChildMap.set(files[i].parents[j], [currentFile]);
                 } else {
-                    parentToChildMap.get(parent).push(currentFile);
+                    parentToChildMap.get(files[i].parents[j]).push(currentFile);
                 }   
             }   
         }
@@ -98,10 +98,15 @@ function createFileObject(file){
     let id = file.id;
     let name = file.name;
     let permissions = [];
+    let permissionIds = [];
     if(file.permissions != undefined){
         for(let i = 0; i < file.permissions.length; i++){
             let permission = file.permissions[i];
-            permissions.push(new Permission(permission.id, permission.type, permission.emailAddress, permission.role));
+            console.log("new permission");
+            console.log(new Permission(permission.type, permission.emailAddress, permission.role));
+            console.log(permission.id);
+            permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
+            permissionIds.push(permission.id);
         }
     }
     let drive = "";
@@ -110,6 +115,5 @@ function createFileObject(file){
     }
     let owner = file.owners[0].emailAddress;
     let createdTime = file.createdTime;
-    return new File(id, name, permissions, drive, owner, "", createdTime);
+    return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime);
 }
-
