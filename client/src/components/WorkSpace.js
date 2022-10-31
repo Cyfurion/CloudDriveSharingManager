@@ -2,7 +2,6 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 
 export default function WorkSpace( props ) {
-
     if (props.data === null) {
         return <div className="font-bold ">{"LOADING"} </div>;
     } else {
