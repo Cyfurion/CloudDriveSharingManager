@@ -10,10 +10,15 @@ const app = express()
 
 // Middleware
 app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    credentials: true
+}))
 app.use(express.json())
 
 // Routers
+const router = require('./routes/router')
+app.use('/api', router);
 
 // Init DB
 const db = require('./db')

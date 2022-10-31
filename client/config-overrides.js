@@ -18,5 +18,10 @@ module.exports = function override(config) {
             Buffer: ['buffer', 'Buffer']
         })
     ])
+    config.module.rules.push({
+        resolve: {
+            fullySpecified: false
+        }
+    })
     return config;
 }
