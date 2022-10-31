@@ -8,10 +8,10 @@ export default function WorkSpace( props ) {
         return (
             <table >
                 <thead className="border-b-2 border-gray-200">
-                    <tr className="filecard ">
-                        <th class="pl-6"> Name </th>
-                        <th > Owner </th>
-                        <th > Date Created </th>
+                    <tr id="heading" className="filecard ">
+                        <th id="heading-name" class="pl-6"> Name </th>
+                        <th id="heading-owner"> Owner </th>
+                        <th id="heading-dateCreated"> Date Created </th>
                     </tr>
                 </thead>
                 <tbody >

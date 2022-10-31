@@ -13,6 +13,7 @@ import SideBar from "./SideBar";
 import AnalysisModal from "./AnalysisModal";
 import QueryBuilderModal from "./QueryBuilderModal";
 import PermissionModal from "./PermissionModal";
+import LoadingScreen from "./LoadingScreen"
 
 export {
     GoogleLoginButton,
@@ -29,5 +30,6 @@ export {
     SideBar,
     AnalysisModal,
     QueryBuilderModal,
-    PermissionModal
+    PermissionModal,
+    LoadingScreen
 }
