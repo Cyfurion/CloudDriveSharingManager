@@ -45,7 +45,7 @@ function StoreContextProvider(props) {
                 });
             case StoreActionType.SET_SNAPSHOT:
                 return setStore({
-                    directory: [payload.rootFiles],
+                    directory: [payload.root],
                     currentSnapshot: payload
                 });
             default:
@@ -83,6 +83,7 @@ function StoreContextProvider(props) {
             type: StoreActionType.SET_SNAPSHOT,
             payload: snapshot
         });
+        console.log(snapshot);
     }
     store.takeSnapshot = async function () {
         if (adapter.adapter) {

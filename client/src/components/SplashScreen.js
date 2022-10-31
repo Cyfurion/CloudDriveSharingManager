@@ -25,7 +25,7 @@ export default function SplashScreen() {
     }
 
     const handleHomeButton = () =>{
-        store.setFolder(store.currentSnapshot.rootFiles);
+        store.setFolder(store.currentSnapshot.root);
         setFiles(null);
     }
 

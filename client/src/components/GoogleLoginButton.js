@@ -23,6 +23,7 @@ export default function GoogleLoginButton() {
             onSuccess={onSuccess}
             onFailure={onFailure}
             scope='https://www.googleapis.com/auth/drive'
+            discoveryDocs='https://content.googleapis.com/discovery/v1/apis/drive/v3/rest'
         />
     );
 }
