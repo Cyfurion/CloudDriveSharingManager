@@ -98,9 +98,10 @@ function AuthContextProvider(props) {
         // Initialize Google endpoint.
         function initClient() {
             gapi.client.init({
-                'apiKey': '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',
+                'apiKey': 'AIzaSyCiaIlujfz15TDuN9jams2LbZ5qlvxsx_Q',
                 'clientId': '51282406360-evee6rmf1ttv4ni30be7l0dhme9p61ou.apps.googleusercontent.com',
-                'scope': 'https://www.googleapis.com/auth/drive'
+                'scope': 'https://www.googleapis.com/auth/drive',
+                'discoveryDocs': ['https://content.googleapis.com/discovery/v1/apis/drive/v3/rest']
             });
         }
         gapi.load('client:auth2', initClient);

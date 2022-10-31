@@ -29,10 +29,10 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     }
 
     async makeSnapshot() {
-        let rootFile = new File("root", "root", [], [], "dropbox", "TODO SOME EMAIL", "/root", "N/A");
+        let rootFile = new File("", "root", [], "", "dropbox", "SYSTEM", "/", "");
         let root = new Folder(rootFile, []);
         await this.makeSnapshotHelper(root, '');
-        return new FileSnapshot(["TODO SOME EMAIL", "Dropbox"], root, (new Date()).toString());
+        return new FileSnapshot([(await this.endpoint.usersGetCurrentAccount()).result.email, "Dropbox"], root, (new Date()).toString());
     }
 
     async makeSnapshotHelper(folder, path) {
@@ -70,7 +70,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
             sharedFolderId = file.shared_folder_id;
         }
         let dropboxPermissions = undefined;
-        if (sharedFolderId !== "root") {
+        if (sharedFolderId !== "") {
             //use this to find group and user permissions
             dropboxPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
         }

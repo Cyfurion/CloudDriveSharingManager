@@ -11,24 +11,14 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
 
     // Returns an array of every file accessible to the user.
     async retrieve() {
-        function requestExecute(pageToken, endpoint) {
-            return new Promise((resolve, reject) => {
-                let request = endpoint.client.request({
-                    'method': 'GET',
-                    'path': '/drive/v3/files',
-                    'params': {
-                        'fields': 'files(id,name,createdTime,owners,permissions,parents,owners,driveId),nextPageToken',
-                        'pageSize': 1000,
-                        'pageToken': pageToken
-                    }
-                });
-                request.execute(function(res) { resolve(res); });
-            });
-        }
         let files = [];
         let token = "";
         do {
-            let response = await requestExecute(token, this.endpoint);
+            let response = (await this.endpoint.client.drive.files.list({
+                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
+                'pageSize': 1000,
+                'pageToken': token,
+            })).result;
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
@@ -58,15 +48,32 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 }   
             }   
         }
-        let rootFile = new File("root", "root", [], "root", "system", "/root", "N/A");
+        let rootFile = new File("", "root", [], "", "", "SYSTEM", "/", "");
         let root = new Folder(rootFile, []);
-        root.id = "";
-        snapshotHelper(parentToChildMap, root);
+        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", ""), []);
+        root.files.push(myDrive);
+        snapshotHelper(parentToChildMap, myDrive);
+        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", ""), []);
+        root.files.push(sharedWithMe);
+        snapshotHelper(parentToChildMap, sharedWithMe);
         return new FileSnapshot(
             [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
             root, 
             (new Date()).toString()
         );
+    }
+
+    async getRootID() {
+        let response = (await this.endpoint.client.drive.files.list({
+            'fields': 'files(parents),nextPageToken',
+            'pageSize': 1,
+            'q': '\'root\' in parents'
+        })).result;
+        if (response.files.length) {
+            return response.files[0].parents[0];
+        } else {
+            return "";
+        }
     }
 }
 

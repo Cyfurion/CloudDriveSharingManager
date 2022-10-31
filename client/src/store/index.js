@@ -1,6 +1,7 @@
 /**
  * This file handles current snapshot and directory information.
  */
+import api from '../api';
 import AdapterContext from '../cloudservices';
 
 import React, { createContext, useContext, useState } from 'react';
@@ -44,7 +45,7 @@ function StoreContextProvider(props) {
                 });
             case StoreActionType.SET_SNAPSHOT:
                 return setStore({
-                    directory: [payload.rootFiles],
+                    directory: [payload.root],
                     currentSnapshot: payload
                 });
             default:
@@ -60,12 +61,12 @@ function StoreContextProvider(props) {
     }
 
     store.popDirectory = function (folder) {
-       if(store.directory.length !== 1){
-        storeReducer({
-            type: StoreActionType.POP_DIRECTORY,
-            payload: folder
-        });
-       }
+        if (store.directory.length !== 1) {
+            storeReducer({
+                type: StoreActionType.POP_DIRECTORY,
+                payload: folder
+            });
+        }
     }
 
     store.setFolder = function (folder) {
@@ -74,11 +75,15 @@ function StoreContextProvider(props) {
             payload: folder
         });
     }
+    store.getCurrentFolder = function () {
+        return store.directory[store.directory.length - 1];
+    }
     store.setSnapshot = function (snapshot) {
         storeReducer({
             type: StoreActionType.SET_SNAPSHOT,
             payload: snapshot
         });
+        console.log(snapshot);
     }
     store.takeSnapshot = async function () {
         if (adapter.adapter) {

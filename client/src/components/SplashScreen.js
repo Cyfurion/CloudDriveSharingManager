@@ -29,7 +29,7 @@ export default function SplashScreen() {
     }
 
     const handleHomeButton = () =>{
-        store.setFolder(store.currentSnapshot.rootFiles);
+        store.setFolder(store.currentSnapshot.root);
         setFiles(null);
     }
 
@@ -52,7 +52,7 @@ export default function SplashScreen() {
         if (store.currentSnapshot === null) {
             store.takeSnapshot();
         } else {
-            setFiles(store.directory[store.directory.length - 1].files);
+            setFiles(store.getCurrentFolder().files);
         }
     }
 
