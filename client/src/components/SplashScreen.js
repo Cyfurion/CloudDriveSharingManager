@@ -2,6 +2,7 @@ import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, 
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
@@ -34,6 +35,10 @@ export default function SplashScreen() {
     }
 
     const handleHistoryButton = (folder ) => {
+        return;
+    }
+
+    const handleBackButton = (folder ) => {
         store.popDirectory(folder);
         setFiles(null);
     }
@@ -85,6 +90,7 @@ export default function SplashScreen() {
                                      handleHomeButton={handleHomeButton} 
                                      handleHistoryButton={handleHistoryButton}/>
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
+                                <h1 className="font-bold"><button onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.directory.map((folder)=> folder.name + "/" )} </h1>
                                 <WorkSpace data={files} handleClickFolder={handleClickFolder}/>
                             </div>
                         </div>
