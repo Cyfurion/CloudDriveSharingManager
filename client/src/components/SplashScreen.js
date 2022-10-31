@@ -85,6 +85,7 @@ export default function SplashScreen() {
                                      handleHomeButton={handleHomeButton} 
                                      handleHistoryButton={handleHistoryButton}/>
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
+                                <h1 className="font-bold"> directory: {store.directory.map((folder)=> folder.name + "/" )} </h1>
                                 <WorkSpace data={files} handleClickFolder={handleClickFolder}/>
                             </div>
                         </div>
