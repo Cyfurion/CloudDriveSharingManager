@@ -1,7 +1,8 @@
 import { CloudServiceAdapter } from './CloudServiceAdapter';
+
 import { File, Folder } from '../classes/file-class';
-import { Permission } from '../classes/permission-class';
 import FileSnapshot from '../classes/filesnapshot-class';
+import Permission from '../classes/permission-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
@@ -49,7 +50,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
             }
-            for (let j=0; j<files[i].parents.length; j++) {
+            for (let j = 0; j < files[i].parents.length; j++) {
                 if (!parentToChildMap.has(files[i].parents[j])) {
                     parentToChildMap.set(files[i].parents[j], [currentFile]);
                 } else {
@@ -74,7 +75,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
  * @param parentToChildMap Map to get subfiles
  * @param folder Folder that CDSM is currently populating
  */
-function snapshotHelper(parentToChildMap, folder) {//add paths to files
+function snapshotHelper(parentToChildMap, folder) { //add paths to files
     let childrenList = parentToChildMap.get(folder.id);
     for (let i = 0; i < childrenList.length; i++) {
         childrenList[i].path = folder.path + "/" + childrenList[i].name;
@@ -93,22 +94,23 @@ function snapshotHelper(parentToChildMap, folder) {//add paths to files
  * @param file the Google Drive API file structure to convert
  * @returns CDSM File object
  */
-function createFileObject(file){
+function createFileObject(file) {
     let id = file.id;
     let name = file.name;
     let permissions = [];
-    if(file.permissions != undefined){
-        for(let i = 0; i < file.permissions.length; i++){
+    let permissionIds = [];
+    if (file.permissions !== undefined) {
+        for (let i = 0; i < file.permissions.length; i++) {
             let permission = file.permissions[i];
-            permissions.push(new Permission(permission.id, permission.type, permission.emailAddress, permission.role));
+            permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
+            permissionIds.push(permission.id);
         }
     }
     let drive = "";
-    if(file.driveId !== undefined){
+    if (file.driveId !== undefined) {
         drive = file.driveId;
     }
     let owner = file.owners[0].emailAddress;
     let createdTime = file.createdTime;
-    return new File(id, name, permissions, drive, owner, "", createdTime);
+    return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime);
 }
-
