@@ -9,7 +9,9 @@ export default function TopBar( props ) {
 
     if (auth.isAuthorized) {
         return (
-           <UserNavBar handleQueryBuilderButton={props.handleQueryBuilderButton}/>
+           <UserNavBar  operator={props.operator}
+                        handleQuery={props.handleQuery}
+                        handleQueryBuilderButton={props.handleQueryBuilderButton}/>
         );
     }
     return (

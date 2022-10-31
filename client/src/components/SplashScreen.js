@@ -1,4 +1,4 @@
-import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal} from './';
+import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
@@ -7,9 +7,9 @@ export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
+    const [showPermissions, setShowPermissions] = useState(false);
     const { store } = useContext(StoreContext);
     const [files, setFiles] = useState(null);
-    const [loading, setLoading] = useState(true);
 
     const handleClickFolder= ( e, folder ) => {
         e.stopPropagation();
@@ -17,6 +17,9 @@ export default function SplashScreen() {
         setFiles(null);
     }
 
+    const handlePermissionModal = () => {
+        setShowPermissions(!showPermissions)
+    }
     const handleAnalysisModal = () =>{
         setShowAnalysisModal(!showAnalysisModal);
     };
@@ -33,6 +36,16 @@ export default function SplashScreen() {
     const handleHistoryButton = (folder ) => {
         store.popDirectory(folder);
         setFiles(null);
+    }
+
+    const handleQuery = ( query ) =>{
+        //need implementation
+    }
+
+    const fillSearch = ( querybuilder) =>{
+        setShowQBB(!showQBB);
+        document.querySelector('#default-search').value = querybuilder;
+        handleQuery( querybuilder);
     }
 
     if (files === null) {
@@ -62,10 +75,13 @@ export default function SplashScreen() {
                     </div>
                         :
                     <div className="flex-nowrap">
-                        <TopBar handleQueryBuilderButton={handleQueryBuilderButton} />
+                        <TopBar fillSearch={fillSearch}
+                                handleQuery={handleQuery}
+                                handleQueryBuilderButton={handleQueryBuilderButton} />
                         <div className=" bg-black h-1">  </div>
                         <div className="grid grid-flow-col justify-start">
-                            <SideBar handleAnalysisModal={handleAnalysisModal} 
+                            <SideBar handlePermissionModal={handlePermissionModal}
+                                     handleAnalysisModal={handleAnalysisModal} 
                                      handleHomeButton={handleHomeButton} 
                                      handleHistoryButton={handleHistoryButton}/>
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
@@ -78,8 +94,9 @@ export default function SplashScreen() {
     }
     return ( 
         <div className=" min-w-fit min-h-screen bg-yellow-50 ">
-            {showQBB &&  <QueryBuilderModal handleQueryBuilderButton={handleQueryBuilderButton} />}
+            {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal handleAnalysisModal={handleAnalysisModal}/>}
+            {showPermissions && <PermissionModal handlePermissionModal={handlePermissionModal} />}
             {screen}
         </div>
     );
