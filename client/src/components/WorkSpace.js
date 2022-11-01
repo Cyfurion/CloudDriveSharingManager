@@ -37,8 +37,8 @@ export default function WorkSpace( props ) {
                             </th>
                             <td className='max-w-[40vw] min-w-[40vw] text-ellipsis overflow-hidden whitespace-nowrap' >{ file.owner === 'SYSTEM' ? <FolderSpecialIcon/> : (file.files === undefined ? <InsertDriveFileIcon /> : <FolderIcon />)  }
                             <span  className={"" + (file.files !== undefined ? "underline" : "")} onClick={ file.files === undefined ? null  : (e) => props.handleClickFolder(e, file)} >{file.name}</span> </td>
-                            <td className='min-w-[25vw] max-w-[25vw] whitespace-nowrap '> {file.owner} </td>
-                            <td className='min-w-[20vw] max-w-[20vw] whitespace-nowrap '>  {file.createdTime} </td>
+                            <td className='min-w-[25vw] max-w-[25vw] text-ellipsis overflow-hidden whitespace-nowrap '> {file.owner} </td>
+                            <td className='min-w-[20vw] max-w-[20vw] text-ellipsis overflow-hidden whitespace-nowrap '>  {file.createdTime} </td>
                         </tr>
                     ))}
                 </tbody>
