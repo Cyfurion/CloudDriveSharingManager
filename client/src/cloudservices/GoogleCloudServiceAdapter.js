@@ -3,6 +3,7 @@ import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
+import Query from '../snapshotoperations/Query';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
@@ -45,6 +46,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             root, 
             (new Date()).toString()
         );
+        return snap;
     }
 
     getProfile() {
@@ -114,7 +116,8 @@ function createFileObject(file) {
     if (file.permissions !== undefined) {
         for (let i = 0; i < file.permissions.length; i++) {
             let permission = file.permissions[i];
-            permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
+            permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
+                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write'));//TODO fix for dropbox
             permissionIds.push(permission.id);
         }
     }
