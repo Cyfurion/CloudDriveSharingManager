@@ -88,8 +88,7 @@ function StoreContextProvider(props) {
         if (adapter.adapter) {
             let snapshot = await adapter.adapter.takeSnapshot();
             store.setSnapshot(snapshot);
-            findDeviantSharing(snapshot.root.files[0].files[7], 0.6);
-            // api.addSnapshot(snapshot);
+            api.addSnapshot(snapshot);
         }
     }
 
