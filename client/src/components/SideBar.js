@@ -8,6 +8,11 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
 
 export default function SideBar( props ) {
+
+    const handlePermissionButton = () => {
+        props.handlePermissionModal();
+    }
+
     const handleAnalysisButton = () =>{
         props.handleAnalysisModal();
     }
@@ -27,7 +32,7 @@ export default function SideBar( props ) {
                     Analysis
                 </button>
 
-                <button className="sidebarbtn flex" >
+                <button onClick={handlePermissionButton}className="sidebarbtn flex" >
                     <LockIcon fontSize="small" sx={{color: 'black'}}/>
                     Permissions
                 </button>

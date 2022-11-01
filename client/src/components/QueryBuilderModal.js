@@ -1,16 +1,32 @@
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
-import SnippetFolderIcon from '@mui/icons-material/SnippetFolder';
-import CameraEnhanceIcon from '@mui/icons-material/CameraEnhance';
-import StoreContext from '../store';
-import { useContext } from 'react';
-
+import { useState } from "react";
 
 export default function QueryBuilderModal( props ) {
-    const { store } = useContext(StoreContext);
+    const [currentQuery, setCurrentQuery] = useState("");
+
     const handleClose = () => {
-        console.log(store);
         props.handleQueryBuilderButton();
+    }
+    const handleClear = () => {
+        setCurrentQuery("");
+    }
+
+    const handleSubmit = () => {
+        props.fillSearch(currentQuery);
+    }
+
+    const handleAddButton = (e, id) => {
+        e.preventDefault();
+        let query = document.querySelector(id).value;
+        if(query.length !== 0){
+            let queryBuilder = id.substring(1, id.length) + ":\""+query + "\"";
+            if(currentQuery.length === 0){
+                setCurrentQuery(queryBuilder);
+            }
+            else{
+                setCurrentQuery(currentQuery + " " + queryBuilder);
+            }
+            document.querySelector(id).value = "";      
+        }
     }
 
     return(
@@ -28,20 +44,77 @@ export default function QueryBuilderModal( props ) {
                 </div>
                 <div className="space-y-6 p-6">
                     <p className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400"> </p>
-                    <div className="flex flex-col">
-                        <div className="">owner</div>
-                        <div className="">has the words</div>
-                        <div className="">drive</div>
-                        <div className="">creator</div>
-                        <div className="">from</div>
-                        <div className="">to</div>
-                        <div className="">readable</div>
-                        <div className="">writable</div>
-                        <div className="">name</div>
-                        <div className="">In Folder</div>
-                        <div className="">folder</div>
-                        <div className="">path</div>
-                        <div className="">sharing</div>
+                    <div className="flex gap-x-8 items-center justify-center">
+                        <div className="border-2 border-black rounded-md p-2"> {currentQuery} </div>
+                        <button onClick={handleSubmit} className="qbbtn"> Submit</button>
+                        <button onClick={handleClear}className="bg-red-300 rounded-lg border-2 border-black font-bold px-2"> Clear</button>
+                    </div>
+                    <div className="flex flex-col items-center gap-y-3">
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="owner" className="font-bold"> Owner: </label>
+                            <input className="qbtextfield" type='text' id="owner"/>
+                            <button onClick={(e)=> handleAddButton(e, '#owner')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="contains" className="font-bold"> Has the words: </label>
+                            <input className="qbtextfield" type='text' id="contains"/>
+                            <button onClick={(e)=> handleAddButton(e, '#contains')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="drive" className="font-bold"> Drive: </label>
+                            <input className="qbtextfield" type='text' id="drive"/>
+                            <button onClick={(e)=> handleAddButton(e, '#drive')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="creator" className="font-bold"> Creator: </label>
+                            <input className="qbtextfield" type='text' id="creator"/>
+                            <button onClick={(e)=> handleAddButton(e, '#creator')}className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="from" className="font-bold"> From: </label>
+                            <input className="qbtextfield" type='text' id="from"/>
+                            <button onClick={(e)=> handleAddButton(e, '#from')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="to" className="font-bold"> To: </label>
+                            <input className="qbtextfield" type='text' id="to"/>
+                            <button onClick={(e)=> handleAddButton(e, '#to')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="readable" className="font-bold"> Readable: </label>
+                            <input className="qbtextfield" type='text' id="readable"/>
+                            <button onClick={(e)=> handleAddButton(e, '#readable')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="writable" className="font-bold"> Writable: </label>
+                            <input className="qbtextfield" type='text' id="writable"/>
+                            <button onClick={(e)=> handleAddButton(e, '#writable')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="name" className="font-bold"> Name: </label>
+                            <input className="qbtextfield" type='text' id="name"/>
+                            <button onClick={(e)=> handleAddButton(e, '#name')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="infolder" className="font-bold"> In Folder: </label>
+                            <input className="qbtextfield" type='text' id="infolder"/>
+                            <button onClick={(e)=> handleAddButton(e, '#infolder')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="folder" className="font-bold"> Folder: </label>
+                            <input className="qbtextfield" type='text' id="folder"/>
+                            <button onClick={(e)=> handleAddButton(e, '#folder')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="path" className="font-bold"> Path: </label>
+                            <input className="qbtextfield" type='text' id="path"/>
+                            <button onClick={(e)=> handleAddButton(e, '#path')} className="qbbtn"> Add </button>
+                        </div>
+                        <div className="flex flex-row items-center gap-x-8">
+                            <label for="sharing" className="font-bold"> Sharing: </label>
+                            <input className="qbtextfield" type='text' id="sharing"/>
+                            <button onClick={(e)=> handleAddButton(e, '#sharing')} className="qbbtn"> Add </button>
+                        </div>
                     </div>
                 </div>
                 </div>

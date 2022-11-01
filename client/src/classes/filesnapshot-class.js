@@ -1,7 +1,7 @@
 class FileSnapshot {
-    constructor(profile, rootFiles, timestamp) {
+    constructor(profile, root, timestamp) {
         this.profile = profile;
-        this.rootFiles = rootFiles;
+        this.root = root;
         this.timestamp = timestamp;
     }
 

@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
     {
-        id: { type: [String], required: true },
+        id: { type: [String], required: true, unique: true },
         acrs: { type: [String], required: false },
-        fileSnapshotsIds: { type: [String], required: true },
+        fileSnapshotIds: { type: [mongoose.Types.ObjectId], required: true },
         groupSnapshots: { type: [String], required: false }
     }
 );
