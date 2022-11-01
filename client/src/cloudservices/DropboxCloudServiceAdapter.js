@@ -34,7 +34,6 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         await this.makeSnapshotHelper(root, '');
         return new FileSnapshot([(await this.endpoint.usersGetCurrentAccount()).result.email, "Dropbox"], root, (new Date()).toString());
     }
-
     async makeSnapshotHelper(folder, path) {
         let response = await this.endpoint.filesListFolder({ path: path });
         for (let element of response.result.entries) {

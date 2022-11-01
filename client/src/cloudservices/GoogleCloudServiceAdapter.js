@@ -22,6 +22,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
+
         return files;
     }
 
@@ -61,6 +62,13 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             root, 
             (new Date()).toString()
         );
+
+        //TESTING
+        let query = new Query("path:wow (folder: \"Cool Project\" or name: \"Cool Project\") or -name:avocado", snap);
+        console.log(query);
+        //TESTING END
+
+        return snap;
     }
 
     async getRootID() {
