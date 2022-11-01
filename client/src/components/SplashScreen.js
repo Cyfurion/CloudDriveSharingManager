@@ -3,6 +3,7 @@ import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Query from '../snapshotoperations/Query';
 
 export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
@@ -92,8 +93,8 @@ export default function SplashScreen() {
     }
 
     const handleQuery = ( query ) =>{
-        //need implementation
-        console.log(query);
+        let q = new Query(query, store.currentSnapshot);
+        setFiles(q.evaluate());
     }
 
     const fillSearch = ( querybuilder) =>{
