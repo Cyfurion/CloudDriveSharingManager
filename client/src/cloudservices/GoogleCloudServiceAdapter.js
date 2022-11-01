@@ -10,29 +10,12 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         //TODO not implemented
     }
 
-    // Returns an array of every file accessible to the user.
-    async retrieve() {
-        let files = [];
-        let token = "";
-        do {
-            let response = (await this.endpoint.client.drive.files.list({
-                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
-                'pageSize': 1000,
-                'pageToken': token,
-            })).result;
-            files = files.concat(response.files);
-            token = response.nextPageToken;
-        } while (token);
-
-        return files;
-    }
-
     /**
      * Takes in a list of Google API files and creates a snapshot tree from it.
      * @param files 
      * @returns snapshot tree
      */
-    async makeSnapshot() {
+    async takeSnapshot() {
         let files = await this.retrieve();
         let parentToChildMap = new Map();
         // making map of key = parent and value = list of children
@@ -58,25 +41,46 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", ""), []);
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
-        let snap = new FileSnapshot(
-            [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
+        return new FileSnapshot(
+            this.getProfile(),
             root, 
             (new Date()).toString()
         );
         return snap;
     }
 
+    getProfile() {
+        return [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"];
+    }
+
     async getRootID() {
         let response = (await this.endpoint.client.drive.files.list({
             'fields': 'files(parents),nextPageToken',
             'pageSize': 1,
-            'q': '\'root\' in parents'
+            'q': "'root' in parents"
         })).result;
         if (response.files.length) {
             return response.files[0].parents[0];
         } else {
             return "";
         }
+    }
+
+    // Returns an array of every un-trashed file accessible to the user.
+    async retrieve() {
+        let files = [];
+        let token = "";
+        do {
+            let response = (await this.endpoint.client.drive.files.list({
+                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
+                'pageSize': 1000,
+                'pageToken': token,
+                'q': 'trashed = false'
+            })).result;
+            files = files.concat(response.files);
+            token = response.nextPageToken;
+        } while (token);
+        return files;
     }
 }
 

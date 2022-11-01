@@ -9,38 +9,24 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         // TODO not implemented
     }
 
-    // Returns an array of every file accessible to the user.
-    async retrieve() {
-        // let files = [];
-        // let response = await this.endpoint.filesListFolder({ 
-        //     path: '',
-        //     recursive: true
-        // });
-        // // TODO: TEMPORARY
-        // for (let element of response.result.entries) {
-        //     files.push({ 
-        //         name: element.name,
-        //         owners: [{ emailAddress: "Unknown: Dropbox File" }],
-        //         createdTime: element.client_modified
-        //     });
-        // }
-        // return files;
-        return;
-    }
-
-    async makeSnapshot() {
+    async takeSnapshot() {
         let rootFile = new File("", "root", [], "", "dropbox", "SYSTEM", "/", "");
         let root = new Folder(rootFile, []);
-        await this.makeSnapshotHelper(root, '');
-        return new FileSnapshot([(await this.endpoint.usersGetCurrentAccount()).result.email, "Dropbox"], root, (new Date()).toString());
+        await this.takeSnapshotHelper(root, '');
+        return new FileSnapshot(await this.getProfile(), root, (new Date()).toString());
     }
-    async makeSnapshotHelper(folder, path) {
+
+    async getProfile() {
+        return [(await this.endpoint.usersGetCurrentAccount()).result.email, "Dropbox"];
+    }
+
+    async takeSnapshotHelper(folder, path) {
         let response = await this.endpoint.filesListFolder({ path: path });
         for (let element of response.result.entries) {
             let newFile = await this.createFileObject(element, folder);
             if (element[".tag"] === "folder") {
                 let newFolder = new Folder(newFile, []);
-                await this.makeSnapshotHelper(newFolder, path + "/" + element.name);
+                await this.takeSnapshotHelper(newFolder, path + "/" + element.name);
                 folder.files.push(newFolder);
             } else {
                 folder.files.push(newFile);
