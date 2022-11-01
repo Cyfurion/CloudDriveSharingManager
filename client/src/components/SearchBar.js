@@ -1,19 +1,65 @@
-export default function SearchBar( props ) {
+import { useState } from "react";
 
-    const handleSearchBar = (e) =>{
+
+export default function SearchBar( props ) {
+    const [clearButton , setClearButton] = useState(false);
+
+    const handleSubmit = (e) =>{
+        if (e.key === 'Enter') {
+           console.log( document.querySelector('#default-searchbar').value );
+        }
+    }
+
+    const handleSearchIcon = (e) => {
         e.preventDefault();
-        props.handleQuery(e.target[0].value);
+        console.log( document.querySelector('#default-searchbar').value );
+    }
+
+    const handleClearSearch = (e) => {
+        e.preventDefault();
+        document.querySelector('#default-searchbar').value = "";
+        setClearButton(false);
+    }
+
+    const handleQueryBuilder = (e) =>{
+        e.preventDefault();
+        props.handleQueryBuilderButton();
+    }
+
+    const handleShowClear = () =>{
+        if(document.querySelector('#default-searchbar').value.length === 0)
+            setClearButton(false);
+        else
+            setClearButton(true);
     }
 
     return (
-    <form onSubmit={(e) => handleSearchBar(e)}>   
-        <label htmlFor="default-search" class="mb-2 text-sm font-medium text-gray-90=0 sr-only dark:text-gray-300">Search</label>
-        <div class="relative">
-            <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <input type="search" id="default-search" class="block p-3 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search in Drive" />
+    <div className="flex w-6/12 bg-gray-100 rounded-md border p-1 border-black ">
+        <div className="flex p-1 rounded-full hover:bg-gray-300">
+            <button onClick={handleSearchIcon} >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </button>
         </div>
-    </form>
+
+        <input onChange={handleShowClear} onKeyDown={handleSubmit} name='q' id="default-searchbar" className="w-full mx outline-0 bg-inherit " type='text' placeholder="Search in Drive"/>
+
+        <div style={{visibility : clearButton ? 'visible' : 'hidden'}}className="flex p-1 rounded-full hover:bg-gray-300">
+            <button onClick={handleClearSearch}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div className="flex p-1 rounded-full hover:bg-gray-300">
+            <button onClick={handleQueryBuilder}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                </svg>
+            </button>
+        </div>
+    </div>
     );
 }

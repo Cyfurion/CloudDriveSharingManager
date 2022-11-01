@@ -11,6 +11,41 @@ export default function SplashScreen() {
     const [showPermissions, setShowPermissions] = useState(false);
     const { store } = useContext(StoreContext);
     const [files, setFiles] = useState(null);
+    const [selectedIDs, setSelectedIDs] = useState([]);
+    const [checkboxVisible, setCheckboxVisible] = useState(false);
+
+    const handleFileCheckBox = (e) =>{
+        const checked = e.target.checked;
+        if (checked) {
+            setSelectedIDs([...selectedIDs, e.target.value]);
+        } else {
+            const allCheck = document.querySelector('.allfile-checkbox');
+            if( allCheck){
+                document.querySelector('.allfile-checkbox').checked = false;
+            }
+            setSelectedIDs(selectedIDs.filter((id) => id !== e.target.value));
+        }
+    }
+
+    const handleAllFileCheckbox = (e) => {
+        const checked = e.target.checked;
+        let list = document.querySelectorAll('.file-checkbox');
+        let s = [];
+        if( checked ){
+            setSelectedIDs([]);
+            for(let i = 0; i < list.length;i++){
+                list[i].checked = true;
+                s.push(list[i].value);
+            }
+            setSelectedIDs(s);
+        }
+        else{
+            for(let i = 0; i < list.length;i++){
+                list[i].checked = false;
+            }
+            setSelectedIDs([]);
+        }
+    }
 
     const handleClickFolder= ( e, folder ) => {
         e.stopPropagation();
@@ -22,7 +57,8 @@ export default function SplashScreen() {
         setShowPermissions(!showPermissions)
     }
     const handleAnalysisModal = () =>{
-        setShowAnalysisModal(!showAnalysisModal);
+        setCheckboxVisible(!checkboxVisible);
+        //setShowAnalysisModal(!showAnalysisModal);
     };
 
     const handleQueryBuilderButton = () =>{
@@ -83,7 +119,11 @@ export default function SplashScreen() {
                                      handleHistoryButton={handleHistoryButton}/>
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
                                 <h1 className="font-bold"><button onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>
-                                <WorkSpace data={files} handleClickFolder={handleClickFolder}/>
+                                <WorkSpace  visible={checkboxVisible}
+                                            handleAllFileCheckbox={handleAllFileCheckbox}
+                                            handleFileCheckBox={handleFileCheckBox} 
+                                            data={files} 
+                                            handleClickFolder={handleClickFolder}/>
                             </div>
                         </div>
                     </div>;
@@ -92,6 +132,7 @@ export default function SplashScreen() {
     }
     return ( 
         <div className=" min-w-fit min-h-screen bg-yellow-50 ">
+            {console.log(selectedIDs.length)}
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal handleAnalysisModal={handleAnalysisModal}/>}
             {showPermissions && <PermissionModal handlePermissionModal={handlePermissionModal} />}

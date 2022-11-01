@@ -1,38 +1,36 @@
-import { useState } from "react";
 
 export default function QueryBuilderModal( props ) {
-    const [currentQuery, setCurrentQuery] = useState("");
 
     const handleClose = () => {
         props.handleQueryBuilderButton();
     }
     const handleClear = () => {
-        setCurrentQuery("");
+        document.querySelector('#qbsearchbar').value = "";
     }
 
     const handleSubmit = () => {
-        props.fillSearch(currentQuery);
+        props.fillSearch(document.querySelector('#qbsearchbar').value);
     }
 
     const handleAddButton = (e, id) => {
-        e.preventDefault();
+        e.stopPropagation();
         let query = document.querySelector(id).value;
         if(query.length !== 0){
             let queryBuilder = id.substring(1, id.length) + ":\""+query + "\"";
-            if(currentQuery.length === 0){
-                setCurrentQuery(queryBuilder);
-            }
-            else{
-                setCurrentQuery(currentQuery + " " + queryBuilder);
-            }
-            document.querySelector(id).value = "";      
+            let currentQuery = document.querySelector('#qbsearchbar').value;
+            if(currentQuery.length === 0)
+                document.querySelector('#qbsearchbar').value = queryBuilder;
+            else
+                document.querySelector('#qbsearchbar').value = currentQuery + " " + queryBuilder;
+            
+            document.querySelector(id).value = "";
         }
     }
 
     return(
         <div id="defaultModal" tabindex="-1" aria-hidden="true" class="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
         <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
-                <div className=" relative rounded-3xl bg-yellow-100 shadow dark:bg-gray-700 border-2 border-black">
+                <div className="relative rounded-3xl bg-yellow-100 shadow dark:bg-gray-700 border-2 border-black">
                     
 
                 <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
@@ -43,16 +41,18 @@ export default function QueryBuilderModal( props ) {
                     </button>
                 </div>
                 <div className="space-y-6 p-6">
-                    <p className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400"> </p>
-                    <div className="flex gap-x-8 items-center justify-center">
-                        <div className="border-2 border-black rounded-md p-2"> {currentQuery} </div>
+                    <div className="flex justify-center">
+                        <input className="p-1 w-full border-2 rounded-lg border-black" type='text' id="qbsearchbar"placeholder='Build your query'/>
+                    </div>
+                    <div className="flex justify-center gap-x-2">
                         <button onClick={handleSubmit} className="qbbtn"> Submit</button>
                         <button onClick={handleClear}className="bg-red-300 rounded-lg border-2 border-black font-bold px-2"> Clear</button>
                     </div>
+
                     <div className="flex flex-col items-center gap-y-3">
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="owner" className="font-bold"> Owner: </label>
-                            <input className="qbtextfield" type='text' id="owner"/>
+                            <input placeholder="user" className="qbtextfield" type='text' id="owner"/>
                             <button onClick={(e)=> handleAddButton(e, '#owner')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
@@ -62,57 +62,57 @@ export default function QueryBuilderModal( props ) {
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="drive" className="font-bold"> Drive: </label>
-                            <input className="qbtextfield" type='text' id="drive"/>
+                            <input placeholder="drive" className="qbtextfield" type='text' id="drive"/>
                             <button onClick={(e)=> handleAddButton(e, '#drive')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="creator" className="font-bold"> Creator: </label>
-                            <input className="qbtextfield" type='text' id="creator"/>
+                            <input placeholder="user" className="qbtextfield" type='text' id="creator"/>
                             <button onClick={(e)=> handleAddButton(e, '#creator')}className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="from" className="font-bold"> From: </label>
-                            <input className="qbtextfield" type='text' id="from"/>
+                            <input placeholder="user" className="qbtextfield" type='text' id="from"/>
                             <button onClick={(e)=> handleAddButton(e, '#from')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="to" className="font-bold"> To: </label>
-                            <input className="qbtextfield" type='text' id="to"/>
+                            <input placeholder="user" className="qbtextfield" type='text' id="to"/>
                             <button onClick={(e)=> handleAddButton(e, '#to')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="readable" className="font-bold"> Readable: </label>
-                            <input className="qbtextfield" type='text' id="readable"/>
+                            <input placeholder="user" className="qbtextfield" type='text' id="readable"/>
                             <button onClick={(e)=> handleAddButton(e, '#readable')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="writable" className="font-bold"> Writable: </label>
-                            <input className="qbtextfield" type='text' id="writable"/>
+                            <input placeholder="user" className="qbtextfield" type='text' id="writable"/>
                             <button onClick={(e)=> handleAddButton(e, '#writable')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="name" className="font-bold"> Name: </label>
-                            <input className="qbtextfield" type='text' id="name"/>
+                            <input placeholder="regex" className="qbtextfield" type='text' id="name"/>
                             <button onClick={(e)=> handleAddButton(e, '#name')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="infolder" className="font-bold"> In Folder: </label>
-                            <input className="qbtextfield" type='text' id="infolder"/>
+                            <input placeholder="regex" className="qbtextfield" type='text' id="infolder"/>
                             <button onClick={(e)=> handleAddButton(e, '#infolder')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="folder" className="font-bold"> Folder: </label>
-                            <input className="qbtextfield" type='text' id="folder"/>
+                            <input placeholder="regex" className="qbtextfield" type='text' id="folder"/>
                             <button onClick={(e)=> handleAddButton(e, '#folder')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="path" className="font-bold"> Path: </label>
-                            <input className="qbtextfield" type='text' id="path"/>
+                            <input placeholder="path" className="qbtextfield" type='text' id="path"/>
                             <button onClick={(e)=> handleAddButton(e, '#path')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label for="sharing" className="font-bold"> Sharing: </label>
-                            <input className="qbtextfield" type='text' id="sharing"/>
+                            <input placeholder="none, anyone, user, domain" className="qbtextfield" type='text' id="sharing"/>
                             <button onClick={(e)=> handleAddButton(e, '#sharing')} className="qbbtn"> Add </button>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-import { SearchBar,QueryBuilderButton, LogOutButton, AppLogo } from "./";
+import { SearchBar, LogOutButton, AppLogo } from "./";
 
 export default function UserNavBar( props ) {
     return (
@@ -6,11 +6,7 @@ export default function UserNavBar( props ) {
             <div>
                 <AppLogo />
             </div>
-            <div className="flex gap-x-3">
-                <SearchBar operator={props.operator} handleQuery={props.handleQuery}/>
-                <QueryBuilderButton fillSearch={props.fillSearch}
-                                    handleQueryBuilderButton={props.handleQueryBuilderButton}/>
-            </div>
+                <SearchBar handleQueryBuilderButton={props.handleQueryBuilderButton} />
             <div>
                 <LogOutButton />
             </div>
