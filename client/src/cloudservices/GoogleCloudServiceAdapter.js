@@ -46,7 +46,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             root, 
             (new Date()).toString()
         );
-        return snap;
     }
 
     getProfile() {
