@@ -121,7 +121,7 @@ export default function SplashScreen() {
 
     const showEditPermissionModal = () =>{
         if(selectedIDs.length === 0){
-            alert("SELECT A FILE OR FOLDER FIRST DIPSHIT");
+            alert("SELECT A FILE OR FOLDER FIRST");
             return;
         }
         setPermissiosModal(true);
