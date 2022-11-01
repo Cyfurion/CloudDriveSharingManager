@@ -2,6 +2,7 @@
  * This file handles current snapshot and directory information.
  */
 import api from '../api';
+import { findDeviantSharing } from '../snapshotoperations/SharingAnalysis'
 import AdapterContext from '../cloudservices';
 
 import React, { createContext, useContext, useState } from 'react';
@@ -87,7 +88,8 @@ function StoreContextProvider(props) {
         if (adapter.adapter) {
             let snapshot = await adapter.adapter.takeSnapshot();
             store.setSnapshot(snapshot);
-            api.addSnapshot(snapshot);
+            findDeviantSharing(snapshot.root.files[0].files[7], 0.6);
+            // api.addSnapshot(snapshot);
         }
     }
 

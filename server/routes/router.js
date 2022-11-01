@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+const SnapshotController = require('../controllers/snapshot-controller');
 const UserController = require('../controllers/user-controller');
 
+router.get('/db/:id', SnapshotController.getSnapshot);
 router.get('/db/:profile', UserController.getUser);
-router.post('/db', UserController.addSnapshot);
+router.post('/db', SnapshotController.addSnapshot);
 
 module.exports = router;

@@ -55,7 +55,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let response = (await this.endpoint.client.drive.files.list({
             'fields': 'files(parents),nextPageToken',
             'pageSize': 1,
-            'q': '\'root\' in parents'
+            'q': "'root' in parents"
         })).result;
         if (response.files.length) {
             return response.files[0].parents[0];
@@ -64,7 +64,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
     }
 
-    // Returns an array of every file accessible to the user.
+    // Returns an array of every un-trashed file accessible to the user.
     async retrieve() {
         let files = [];
         let token = "";
@@ -73,6 +73,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
                 'pageSize': 1000,
                 'pageToken': token,
+                'q': 'trashed = false'
             })).result;
             files = files.concat(response.files);
             token = response.nextPageToken;
