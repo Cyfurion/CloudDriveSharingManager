@@ -1,10 +1,6 @@
-const deviantThreshhold = .6;
+import { DeviantAnalysisResult } from "../classes/AnalysisResult";
 
 function compareSnapshots(snapshot1, snapshot2){
-
-}
-
-function findRedundantSharing(snapshot){
 
 }
 
@@ -13,30 +9,35 @@ function findRedundantSharing(snapshot){
  * @param folder folder whose files to perform analysis on
  * @returns results of deviant analysis.
  */
-function findDeviantSharing(folder){
+function findDeviantSharing(folder, threshold) {
     let permissionsMap = new Map();
-    for(let file of folder.files){
-        let permissionSet = file.permissions;
-        if(permissionsMap.has(permissionSet)){
-            permissionsMap.set(permissionSet, permissionsMap.get(permissionSet) + 1);
+    for (let file of folder.files) {
+        let permissionSet = JSON.stringify(file.permissions);
+        if (permissionsMap.has(permissionSet)) {
+            permissionsMap.set(permissionSet, [...permissionsMap.get(permissionSet), file]);
         } else {
-            permissionsMap.set(permissionSet, 1);
+            permissionsMap.set(permissionSet, [file]);
         }
     }
-    let majority = [...permissionsMap.entries()].reduce((a, e ) => e[1] > a[1] ? e : a);//count of majority
-
-    let deviantPermissions = [];
-    if(majority / folder.files.length >= threshold){
-        for(permissionSet of permissionsMap.entries()){
-            if(permissionsMap.get(permissionSet) != majority){
-                deviantPermissions.push(permissionSet);
+    let majority = [...permissionsMap.entries()].reduce((a, e) => e[1].length > a[1].length ? e : a);
+    let deviantFiles = [];
+    if (majority[1].length / folder.files.length >= threshold) {
+        for (let permissionSet of permissionsMap.entries()) {
+            if (permissionSet[0] !== majority[0]) {
+                deviantFiles = deviantFiles.concat(permissionSet[1]);
             }
         }
     }
-    return new DeviantAnalysisResult(folder, majority, deviantPermissions);
-    // TODO majority is either frequency or permission set itself
+    majority[0] = JSON.parse(majority[0]);
+    return new DeviantAnalysisResult(folder, majority, deviantFiles);
 }
 
 function findFileFolderSharingDifferences(){//TODO: parameters
 
+}
+
+export { 
+    compareSnapshots,
+    findDeviantSharing,
+    findFileFolderSharingDifferences
 }

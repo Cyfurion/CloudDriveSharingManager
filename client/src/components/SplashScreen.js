@@ -171,7 +171,7 @@ export default function SplashScreen() {
                     <div className="flex-nowrap">
                         <TopBar handleQuery={handleQuery}
                                 handleQueryBuilderButton={handleQueryBuilderButton} />
-                        <div className=" bg-black h-1">  </div>
+                        <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
                             <SideBar    
                                      showEditPermissionModal={showEditPermissionModal}

@@ -7,11 +7,11 @@ export class CloudServiceAdapter {
         throw new Error("deploy() must be implemented.");
     }
 
-    retrieve() {
-        throw new Error("retrieve() must be implemented.");
+    takeSnapshot() {
+        throw new Error("takeSnapshot() must be implemented.");
     }
 
-    makeSnapshot() {
-        throw new Error("makeSnapshot() must be implemented.");
+    getProfile() {
+        throw new Error("getProfile() must be implemented.");
     }
 }

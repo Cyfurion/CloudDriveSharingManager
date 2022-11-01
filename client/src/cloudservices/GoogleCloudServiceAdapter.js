@@ -3,26 +3,11 @@ import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
+import Query from '../snapshotoperations/Query';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
         //TODO not implemented
-    }
-
-    // Returns an array of every file accessible to the user.
-    async retrieve() {
-        let files = [];
-        let token = "";
-        do {
-            let response = (await this.endpoint.client.drive.files.list({
-                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
-                'pageSize': 1000,
-                'pageToken': token,
-            })).result;
-            files = files.concat(response.files);
-            token = response.nextPageToken;
-        } while (token);
-        return files;
     }
 
     /**
@@ -30,7 +15,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param files 
      * @returns snapshot tree
      */
-    async makeSnapshot() {
+    async takeSnapshot() {
         let files = await this.retrieve();
         let parentToChildMap = new Map();
         // making map of key = parent and value = list of children
@@ -57,23 +42,44 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
         return new FileSnapshot(
-            [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
+            this.getProfile(),
             root, 
             (new Date()).toString()
         );
+    }
+
+    getProfile() {
+        return [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"];
     }
 
     async getRootID() {
         let response = (await this.endpoint.client.drive.files.list({
             'fields': 'files(parents),nextPageToken',
             'pageSize': 1,
-            'q': '\'root\' in parents'
+            'q': "'root' in parents"
         })).result;
         if (response.files.length) {
             return response.files[0].parents[0];
         } else {
             return "";
         }
+    }
+
+    // Returns an array of every un-trashed file accessible to the user.
+    async retrieve() {
+        let files = [];
+        let token = "";
+        do {
+            let response = (await this.endpoint.client.drive.files.list({
+                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
+                'pageSize': 1000,
+                'pageToken': token,
+                'q': 'trashed = false'
+            })).result;
+            files = files.concat(response.files);
+            token = response.nextPageToken;
+        } while (token);
+        return files;
     }
 }
 
@@ -109,7 +115,8 @@ function createFileObject(file) {
     if (file.permissions !== undefined) {
         for (let i = 0; i < file.permissions.length; i++) {
             let permission = file.permissions[i];
-            permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
+            permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
+                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write'));//TODO fix for dropbox
             permissionIds.push(permission.id);
         }
     }
