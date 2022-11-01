@@ -1,8 +1,11 @@
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
+import { useContext } from 'react';
+import StoreContext from '../store';
 
 export default function WorkSpace( props ) {
+    const { store } = useContext(StoreContext);
 
     if (props.data === null) {
         return <div className="font-bold ">{"LOADING"} </div>;
@@ -16,7 +19,7 @@ export default function WorkSpace( props ) {
                                 className="allfile-checkbox" 
                                 onChange={props.handleAllFileCheckbox}
                                 type='checkbox'
-                                style={{visibility : props.visible ? 'visible' : 'hidden'}}
+                                style={{visibility : store.directory.length === 1 ? 'hidden' : props.visible ? 'visible' : 'hidden'}}
                                 /> 
                         </th>
                         <th id="heading-name" className="pl-6"> Name </th>
@@ -29,7 +32,7 @@ export default function WorkSpace( props ) {
                         <tr key={file.id}  className="filecard border-b-2 hover:bg-gray-100">
                             <th> 
                                 <input 
-                                style={{visibility : props.visible ? 'visible' : 'hidden'}}
+                                style={{visibility : store.directory.length === 1 ? 'hidden' : props.visible ? 'visible' : 'hidden'}}
                                 className="file-checkbox"
                                 value={file.id}
                                 onChange={props.handleFileCheckBox}

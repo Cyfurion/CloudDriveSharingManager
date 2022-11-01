@@ -6,7 +6,8 @@ export default function UserNavBar( props ) {
             <div>
                 <AppLogo />
             </div>
-                <SearchBar handleQueryBuilderButton={props.handleQueryBuilderButton} />
+            <SearchBar  handleQuery={props.handleQuery}
+                        handleQueryBuilderButton={props.handleQueryBuilderButton} />
             <div>
                 <LogOutButton />
             </div>

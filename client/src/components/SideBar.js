@@ -6,14 +6,17 @@ import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
+import { useState } from 'react';
 
 export default function SideBar( props ) {
+    const [permissionView, setPermissionView] = useState(false);
 
     const handlePermissionButton = () => {
+        setPermissionView(true);
         props.handlePermissionModal();
     }
 
-    const handleAnalysisButton = () =>{
+    const handleAnalysisButton = () => {
         props.handleAnalysisModal();
     }
 
@@ -23,6 +26,24 @@ export default function SideBar( props ) {
 
     const handleHistoryButton = () =>{
         props.handleHistoryButton();
+    }
+
+    const cancelPermissionMode = () =>{
+        setPermissionView(false);
+        props.handleHideCheckBox();
+    }
+
+    const editPermissionButton = () => {
+        props.showEditPermissionModal();
+    }
+
+    if (permissionView){
+        return (
+            <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
+                <button onClick={editPermissionButton} type="button" className="sidebar-greenbtn"> Edit Permissions </button>
+                <button onClick={cancelPermissionMode} type="button" className="sidebar-redbtn "> Exit </button>
+           </div>
+        )
     }
 
     return (

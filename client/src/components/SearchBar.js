@@ -5,14 +5,18 @@ export default function SearchBar( props ) {
     const [clearButton , setClearButton] = useState(false);
 
     const handleSubmit = (e) =>{
-        if (e.key === 'Enter') {
-           console.log( document.querySelector('#default-searchbar').value );
+        if( document.querySelector('#default-searchbar').value.length !== 0){
+            if (e.key === 'Enter') {
+                props.handleQuery(document.querySelector('#default-searchbar').value);
+            }
         }
     }
 
     const handleSearchIcon = (e) => {
         e.preventDefault();
-        console.log( document.querySelector('#default-searchbar').value );
+        if( document.querySelector('#default-searchbar').value.length !== 0 ){
+            props.handleQuery(document.querySelector('#default-searchbar').value);
+        }
     }
 
     const handleClearSearch = (e) => {
