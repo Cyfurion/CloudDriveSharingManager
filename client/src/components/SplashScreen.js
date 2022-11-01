@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing} from '../snapshotoperations/SharingAnalysis';
+
 import Query from '../snapshotoperations/Query';
 
 export default function SplashScreen() {

@@ -3,7 +3,6 @@ import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
-import Query from '../snapshotoperations/Query';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
