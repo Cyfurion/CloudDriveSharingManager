@@ -149,8 +149,8 @@ export default function SplashScreen() {
     }
 
     const closeDeviancyAnalysisModal = () =>{
-        setAnalysisResult(false);
         setShowAnalysisResult(false);
+        setAnalysisResult(null);
     }
 
     const fileFolderDiff = () =>{

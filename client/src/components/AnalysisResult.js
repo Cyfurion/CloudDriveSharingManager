@@ -4,8 +4,6 @@ export default function AnalysisResult(props) {
     const handleClose = () => {
         props.closeDeviancyAnalysisModal();
     }
-
-    console.log(props.result);
     return (
         <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
@@ -23,7 +21,7 @@ export default function AnalysisResult(props) {
                     </div>
 
                     <div className="flex flex-col p-4 ">
-                        <div className="">
+                        <div className="border-b border-black">
                             Majority Permissions:
                             {props.result.majority[0].map((permission) => (
                                 <div className="flex justify-between flex-row">
@@ -36,12 +34,12 @@ export default function AnalysisResult(props) {
                         <div className="flex accordion flex-col max-h-64 overflow-y-scroll">
                             {props.result.deviants.map((file) => (
                                 <div className="accordion-item " id="accordionExample">
-                                    <h1 class="accordion-header" id="headingOne">
+                                    <h1 key={file.id}class="accordion-header" id="headingOne">
                                         <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"></button>
                                         File Name: {file.name}
                                     </h1>
-                                    <div div id="collapseOne" class="accordion-collapse  show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body py-4 px-5">
+                                    <div div id="collapseOne" className="accordion-collapse  show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                        <div className="accordion-body py-4 px-5">
                                             {file.permissions.map((permission) => (
                                                 <div>
                                                     <h1> Role: {permission.role}</h1>

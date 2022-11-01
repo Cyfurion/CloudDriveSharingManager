@@ -8,7 +8,6 @@ export default function WorkSpace( props ) {
     const { store } = useContext(StoreContext);
         return (
             <table >
-                {console.log(props.data)}
                 <thead className="border-b-2 border-gray-200">
                     <tr id="heading" className="filecard ">
                         <th> 
