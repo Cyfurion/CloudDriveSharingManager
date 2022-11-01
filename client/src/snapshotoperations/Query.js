@@ -15,16 +15,13 @@ export default class Query{
         this.operators = this.parse(queryString);
     }
 
+    evaluate(){
+        return this.operators.evaluate(this.snapshot);
+    }
+
     parse(queryString){
-        /*
-        if next is (, push to stack
-        if next is keyword with colon, do something
-        if next is unregistered set as name
-        if next is ), pop until (
-        */
         let i = 0;
         let operatorStack = ['('];
-        let operatorTree = undefined;
         queryTraversal: while(i < queryString.length){
             if(String(queryString.charAt(i)).trim() === ''){//if whitespace, skip
                 i++;
@@ -38,7 +35,7 @@ export default class Query{
             }else if(queryString.charAt(i) === ')'){
                 i++;
                 try{
-                    this.popUntilParenthesis(operatorStack, operatorTree);
+                    this.popUntilParenthesis(operatorStack);
                     continue;
                 }catch(Error){
                     throw new InvalidQueryError("Incorrectly formatted query.");
@@ -72,7 +69,7 @@ export default class Query{
             operatorStack.push(new Operator('name', parsedWord.word)); 
         }
         this.popUntilParenthesis(operatorStack);
-        if(operatorStack.length != 1){
+        if(operatorStack.length !== 1){
             throw new InvalidQueryError("Incorrectly formatted query.");
         }
         return operatorStack[0];
@@ -100,7 +97,7 @@ export default class Query{
                     currentOperator.left = currentTree;
                     currentTree = currentOperator;
                     currentOperator = operatorsLeft.pop();
-                    if(currentOperator == '('){
+                    if(currentOperator === '('){
                         throw new InvalidQueryError();
                     }
                     currentTree.right = currentOperator;
@@ -129,7 +126,7 @@ export default class Query{
             }
             i++;//accounting for closing ""
         }else{
-            while(queryString.charAt(i).trim() !== '' || queryString.charAt(i) === ')'){
+            while(queryString.charAt(i).trim() !== '' && queryString.charAt(i) !== ')'){
                 word += queryString.charAt(i);
                 i++;
             }
@@ -178,7 +175,6 @@ class Operator{
                 case '-to':
                     return this.to(snapshot, this.value);
                 case 'readable':
-                    //find files readable by user
                     return this.hasAccess(snapshot, 'read', this.value);
                 case '-readable':
                     return this.noAccess(snapshot, 'read', this.value);
@@ -195,6 +191,7 @@ class Operator{
                 case 'name':
                     //find files whose name matches 
                     return this.basicFieldChecker(snapshot, this.matchesQualifier, 'name');
+
                 case '-name':
                     return this.basicFieldChecker(snapshot, this.notMatchesQualifier, 'name');
                 case 'infolder':
@@ -231,9 +228,10 @@ class Operator{
         }else{
             switch(this.operator.toLowerCase()){
                 case 'and':
-                    return this.and(this.evaluate(this.left, this.right));
+                    let x = this.and(this.left.evaluate(snapshot), this.right.evaluate(snapshot));
+                    return x;
                 case 'or':
-                    return this.or(this.evaluate(this.left, this.right));
+                    return this.or(this.left.evaluate(snapshot), this.right.evaluate(snapshot));
                 default:
                     throw new InvalidQueryError("Unreconized operator.");
             }
@@ -275,11 +273,13 @@ class Operator{
     }
 
     matchesQualifier(file, field, value){
-        return file[field].toLowerCase().match(value);
+        let regex = new RegExp(value);
+        return file[field].toLowerCase().match(regex);
     }
 
     notMatchesQualifier(file, field, value){
-        return !file[field].match(value);
+        let regex = new RegExp(value);
+        return !file[field].match(regex);
     }
 
     folderAndEqualsQualifier(file, field, value){
@@ -293,7 +293,7 @@ class Operator{
     basicFieldChecker(file, booleanQualifier, field){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.basicFieldChecker(rootFile, booleanQualifier, field));
             }
         }else{
@@ -312,7 +312,7 @@ class Operator{
     inFolder(file, folderRegex){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.inFolder(rootFile, folderRegex));
             }
         }else{
@@ -321,8 +321,10 @@ class Operator{
                     files = files.concat(this.listFromFileTree(subFile));
                 }
             }else{
-                for(let subFile of file.files){
-                    files = files.concat(this.inFolder(subFile));
+                if(file instanceof Folder){
+                    for(let subFile of file.files){
+                        files = files.concat(this.inFolder(subFile));
+                    }
                 }
             }
         }
@@ -332,8 +334,10 @@ class Operator{
     listFromFileTree(file){
         let files = [];
         files.push(file);
-        for(let subFiles of file.files){
-            files = files.concat(this.listFromFileTree(subFiles));
+        if(file instanceof Folder){
+            for(let subFiles of file.files){
+                files = files.concat(this.listFromFileTree(subFiles));
+            }
         }
         return files;
     }
@@ -341,7 +345,7 @@ class Operator{
     notInFolder(file, folderRegex){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.notInFolder(rootFile, folderRegex));
             }
         }else{
@@ -358,19 +362,26 @@ class Operator{
     hasAccess(file, accessType, user){//TODO user is currently strictly by email
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.hasAccess(rootFile, accessType, user));
             }
         }else{
+            if(file.permissions.length === 0 && accessType == 'read'){//TODO fix to make read permissions if permissions array empty
+                files.push(file);
+            }
             for(let permission of file.permissions){
-                if(permission.entity.toLowerCase() === user.toLowerCase() && ((accessType === 'write' && permission.role === accessType) 
-                    || accessType === 'read')){//read is lowest access level, so added by default
-                    files.push(file);
-                    break;
+                if(permission.entity.toLowerCase() === user.toLowerCase() || 'anyone' === user.toLowerCase()){
+                    if((accessType === 'write' && (permission.role === 'write' || permission.role === 'owner'))  
+                    || accessType === 'read' ){
+                        files.push(file);
+                        break;
+                    }
                 }
             }
-            for(let subFile of file.files){
-                files = files.concat(this.hasAccess(subFile, accessType, user));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.hasAccess(subFile, accessType, user));
+                }
             }
         }
         return files;
@@ -379,7 +390,7 @@ class Operator{
     noAccess(file, accessType, user){//TODO user is currently strictly by email
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.noAccess(rootFile, accessType, user));
             }
         }else{
@@ -394,8 +405,10 @@ class Operator{
             if(canPush){
                 files.push(file);
             }
-            for(let subFile of file.files){
-                files = files.concat(this.noAccess(subFile, accessType, user));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.noAccess(subFile, accessType, user));
+                }
             }
         }
         return files;
@@ -404,7 +417,7 @@ class Operator{
     to(file, user){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.to(rootFile, user));
             }
         }else{
@@ -414,8 +427,10 @@ class Operator{
                     break;
                 }
             }
-            for(let subFile of file.files){
-                files = files.concat(this.to(subFile, user));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.to(subFile, user));
+                }
             }
         }
         return files;
@@ -424,7 +439,7 @@ class Operator{
     notTo(file, user){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.notTo(rootFile, user));
             }
         }else{
@@ -438,8 +453,10 @@ class Operator{
             if(canPush){
                 files.push(file);
             }
-            for(let subFile of file.files){
-                files = files.concat(this.notTo(subFile, user));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.notTo(subFile, user));
+                }
             }
         }
         return files;
@@ -448,15 +465,17 @@ class Operator{
     noneSharing(file){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.noneSharing(rootFile));
             }
         }else{
             if(file.permissions === []){
                 files.push(file);
             }
-            for(let subFile of file.files){
-                files = files.concat(this.noneSharing(subFile));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.noneSharing(subFile));
+                }
             }
         }
         return files;
@@ -465,15 +484,17 @@ class Operator{
     notNoneSharing(file){
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.notNoneSharing(rootFile));
             }
         }else{
             if(file.permissions !== []){
                 files.push(file);
             }
-            for(let subFile of file.files){
-                files = files.concat(this.notNoneSharing(subFile));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.notNoneSharing(subFile));
+                }
             }
         }
         return files;
@@ -482,7 +503,7 @@ class Operator{
     userSharing(file, user){//TODO special case: searching for user who is logged in
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.userSharing(rootFile, user));
             }
         }else{
@@ -492,8 +513,10 @@ class Operator{
                     break;
                 }
             }
-            for(let subFile of file.files){
-                files = files.concat(this.userSharing(subFile, user));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.userSharing(subFile, user));
+                }
             }
         }
         return files;
@@ -502,7 +525,7 @@ class Operator{
     notUserSharing(file, user){//TODO special case: searching for user who is logged in
         let files = [];
         if(file instanceof FileSnapshot){
-            for(let rootFile of file.rootFiles.files){
+            for(let rootFile of file.root.files){
                 files = files.concat(this.notUserSharing(rootFile, user));
             }
         }else{
@@ -516,8 +539,10 @@ class Operator{
             if(canPush){
                 files.push(file);
             }
-            for(let subFile of file.files){
-                files = files.concat(this.notUserSharing(subFile, user));
+            if(file instanceof Folder){
+                for(let subFile of file.files){
+                    files = files.concat(this.notUserSharing(subFile, user));
+                }
             }
         }
         return files;

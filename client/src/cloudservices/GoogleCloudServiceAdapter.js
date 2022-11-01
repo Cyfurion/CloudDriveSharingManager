@@ -3,6 +3,7 @@ import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
+import Query from '../snapshotoperations/Query';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
@@ -57,17 +58,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", ""), []);
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
-        return new FileSnapshot(
+        let snap = new FileSnapshot(
             [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
             root, 
             (new Date()).toString()
         );
-
-        //TESTING
-        let query = new Query("path:wow (folder: \"Cool Project\" or name: \"Cool Project\") or -name:avocado", snap);
-        console.log(query);
-        //TESTING END
-
         return snap;
     }
 
@@ -117,7 +112,8 @@ function createFileObject(file) {
     if (file.permissions !== undefined) {
         for (let i = 0; i < file.permissions.length; i++) {
             let permission = file.permissions[i];
-            permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
+            permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
+                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write'));//TODO fix for dropbox
             permissionIds.push(permission.id);
         }
     }
