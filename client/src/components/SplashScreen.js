@@ -1,9 +1,9 @@
-import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen} from './';
+import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import {findDeviantSharing, findFileFolderSharingDifferences,compareSnapshots} from '../snapshotoperations/SharingAnalysis';
+import {findDeviantSharing} from '../snapshotoperations/SharingAnalysis';
 import Query from '../snapshotoperations/Query';
 
 export default function SplashScreen() {
@@ -15,6 +15,9 @@ export default function SplashScreen() {
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
+    const [showAnalysisResult, setShowAnalysisResult] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState(null);
+
 
     const handleFileCheckBox = (e) =>{
         const checked = e.target.checked;
@@ -140,7 +143,14 @@ export default function SplashScreen() {
     }
 
     const deviancyAnalysis = () =>{
-        console.log(findDeviantSharing(store.getCurrentFolder(), .6));
+        setShowAnalysisModal(false);
+        setShowAnalysisResult(true);
+        setAnalysisResult(findDeviantSharing(store.getCurrentFolder(), .65));
+    }
+
+    const closeDeviancyAnalysisModal = () =>{
+        setAnalysisResult(false);
+        setShowAnalysisResult(false);
     }
 
     const fileFolderDiff = () =>{
@@ -203,6 +213,7 @@ export default function SplashScreen() {
                                                  deviancyAnalysis={deviancyAnalysis}
                                                  handleAnalysisModal={handleAnalysisModal}/>}
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
+            {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {screen}
         </div>
     );
