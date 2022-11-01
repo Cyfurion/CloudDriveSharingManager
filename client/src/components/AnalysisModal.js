@@ -1,9 +1,11 @@
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import SnippetFolderIcon from '@mui/icons-material/SnippetFolder';
 import CameraEnhanceIcon from '@mui/icons-material/CameraEnhance';
-
+import StoreContext from '../store';
+import { useContext } from 'react';
 
 export default function AnalysisModal( props ) {
+    const {store }= useContext(StoreContext);
 
     const handleClose = () => {
         props.handleAnalysisModal();
@@ -36,8 +38,8 @@ export default function AnalysisModal( props ) {
                     </button>
                 </div>
                 <div className="space-y-6 p-6">
-                    <p className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400">Select the type of analysis you would like to perform.</p>
-                    <div className="flex gap-x-10">
+                    <p className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400">Select the type of analysis you would like to perform on the current folder: {store.getCurrentFolder().name}</p>
+                    <div className="flex flex-col items-center gap-5">
                         <button onClick={deviancyButton} className="analysisbtn">
                             <ReportProblemIcon fontSize="large"/>
                             <h1> Deviancy Analysis </h1>

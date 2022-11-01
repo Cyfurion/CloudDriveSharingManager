@@ -3,6 +3,8 @@ import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import {findDeviantSharing, findFileFolderSharingDifferences,compareSnapshots} from '../snapshotoperations/SharingAnalysis';
+import Query from '../snapshotoperations/Query';
 
 export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
@@ -92,8 +94,8 @@ export default function SplashScreen() {
     }
 
     const handleQuery = ( query ) =>{
-        //need implementation
-        console.log(query);
+        let q = new Query(query, store.currentSnapshot);
+        setFiles(q.evaluate());
     }
 
     const fillSearch = ( querybuilder) =>{
@@ -138,7 +140,7 @@ export default function SplashScreen() {
     }
 
     const deviancyAnalysis = () =>{
-        console.log("deviancy");
+        console.log(findDeviantSharing(store.getCurrentFolder(), .6));
     }
 
     const fileFolderDiff = () =>{

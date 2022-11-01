@@ -6,7 +6,9 @@ import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
+import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 export default function SideBar( props ) {
     const [permissionView, setPermissionView] = useState(false);
@@ -40,14 +42,14 @@ export default function SideBar( props ) {
     if (permissionView){
         return (
             <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
-                <button onClick={editPermissionButton} type="button" className="sidebar-greenbtn"> Edit Permissions </button>
-                <button onClick={cancelPermissionMode} type="button" className="sidebar-redbtn "> Exit </button>
+                <button onClick={editPermissionButton} type="button" className="sidebar-greenbtn"> <EditIcon fontSize="small" sx={{color: 'black'}}/> Edit Permissions </button>
+                <button onClick={cancelPermissionMode} type="button" className="sidebar-redbtn "> <CancelIcon fontSize="small" sx={{color: 'black'}} /> Exit </button>
            </div>
         )
     }
 
     return (
-            <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
+            <div className="flex flex-col justify-start p-5 gap-y-4">
                 <button onClick={handleAnalysisButton}type="button" className="sidebarbtn" >
                     <TroubleshootIcon fontSize="small" sx={{color: 'black'}}/>
                     Analysis
