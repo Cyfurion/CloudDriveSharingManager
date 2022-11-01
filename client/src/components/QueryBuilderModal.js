@@ -56,11 +56,6 @@ export default function QueryBuilderModal( props ) {
                             <button onClick={(e)=> handleAddButton(e, '#owner')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
-                            <label htmlFor="contains" className="font-bold"> Has the words: </label>
-                            <input className="qbtextfield" type='text' id="contains"/>
-                            <button onClick={(e)=> handleAddButton(e, '#contains')} className="qbbtn"> Add </button>
-                        </div>
-                        <div className="flex flex-row items-center gap-x-8">
                             <label htmlFor="drive" className="font-bold"> Drive: </label>
                             <input placeholder="drive" className="qbtextfield" type='text' id="drive"/>
                             <button onClick={(e)=> handleAddButton(e, '#drive')} className="qbbtn"> Add </button>
@@ -96,9 +91,9 @@ export default function QueryBuilderModal( props ) {
                             <button onClick={(e)=> handleAddButton(e, '#name')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
-                            <label htmlFor="infolder" className="font-bold"> In Folder: </label>
-                            <input placeholder="regex" className="qbtextfield" type='text' id="infolder"/>
-                            <button onClick={(e)=> handleAddButton(e, '#infolder')} className="qbbtn"> Add </button>
+                            <label htmlFor="inFolder" className="font-bold"> In Folder: </label>
+                            <input placeholder="regex" className="qbtextfield" type='text' id="inFolder"/>
+                            <button onClick={(e)=> handleAddButton(e, '#inFolder')} className="qbbtn"> Add </button>
                         </div>
                         <div className="flex flex-row items-center gap-x-8">
                             <label htmlFor="folder" className="font-bold"> Folder: </label>

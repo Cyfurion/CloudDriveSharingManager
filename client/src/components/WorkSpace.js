@@ -6,10 +6,6 @@ import StoreContext from '../store';
 
 export default function WorkSpace( props ) {
     const { store } = useContext(StoreContext);
-
-    if (props.data === null) {
-        return <div className="font-bold ">{"LOADING"} </div>;
-    } else {
         return (
             <table >
                 <thead className="border-b-2 border-gray-200">
@@ -47,5 +43,4 @@ export default function WorkSpace( props ) {
                 </tbody>
             </table>
         );
-    }
 }
