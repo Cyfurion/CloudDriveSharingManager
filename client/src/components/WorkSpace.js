@@ -9,7 +9,7 @@ export default function WorkSpace( props ) {
             <table >
                 <thead className="border-b-2 border-gray-200">
                     <tr id="heading" className="filecard ">
-                        <th id="heading-name" class="pl-6"> Name </th>
+                        <th id="heading-name" className="pl-6"> Name </th>
                         <th id="heading-owner"> Owner </th>
                         <th id="heading-dateCreated"> Date Created </th>
                     </tr>

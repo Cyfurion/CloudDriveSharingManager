@@ -75,7 +75,7 @@ export default function SplashScreen() {
                         <TopBar fillSearch={fillSearch}
                                 handleQuery={handleQuery}
                                 handleQueryBuilderButton={handleQueryBuilderButton} />
-                        <div className=" bg-black h-1">  </div>
+                        <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
                             <SideBar handlePermissionModal={handlePermissionModal}
                                      handleAnalysisModal={handleAnalysisModal} 

@@ -59,7 +59,6 @@ function StoreContextProvider(props) {
             payload: folder
         });
     }
-
     store.popDirectory = function (folder) {
         if (store.directory.length !== 1) {
             storeReducer({
@@ -83,12 +82,12 @@ function StoreContextProvider(props) {
             type: StoreActionType.SET_SNAPSHOT,
             payload: snapshot
         });
-        console.log(snapshot);
     }
     store.takeSnapshot = async function () {
         if (adapter.adapter) {
-            let snapshot = await adapter.adapter.makeSnapshot();
+            let snapshot = await adapter.adapter.takeSnapshot();
             store.setSnapshot(snapshot);
+            api.addSnapshot(snapshot);
         }
     }
 

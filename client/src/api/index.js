@@ -5,10 +5,12 @@ const api = axios.create({
     baseURL: 'http://localhost:4000/api'
 });
 
-const getUser = (id) => api.get(`/user/${id}`);
-const getSnapshot = (id) => api.get(`snapshot/${id}`);
+const addSnapshot = (payload) => api.post(`/db`, payload);
+const getUser = (profile) => api.get(`/db/${profile}`);
+const getSnapshot = (id) => api.get(`/db/${id}`);
 
 const apis = {
+    addSnapshot,
     getUser,
     getSnapshot
 }

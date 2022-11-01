@@ -9,28 +9,12 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         //TODO not implemented
     }
 
-    // Returns an array of every file accessible to the user.
-    async retrieve() {
-        let files = [];
-        let token = "";
-        do {
-            let response = (await this.endpoint.client.drive.files.list({
-                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
-                'pageSize': 1000,
-                'pageToken': token,
-            })).result;
-            files = files.concat(response.files);
-            token = response.nextPageToken;
-        } while (token);
-        return files;
-    }
-
     /**
      * Takes in a list of Google API files and creates a snapshot tree from it.
      * @param files 
      * @returns snapshot tree
      */
-    async makeSnapshot() {
+    async takeSnapshot() {
         let files = await this.retrieve();
         let parentToChildMap = new Map();
         // making map of key = parent and value = list of children
@@ -57,10 +41,14 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
         return new FileSnapshot(
-            [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
+            this.getProfile(),
             root, 
             (new Date()).toString()
         );
+    }
+
+    getProfile() {
+        return [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"];
     }
 
     async getRootID() {
@@ -74,6 +62,22 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         } else {
             return "";
         }
+    }
+
+    // Returns an array of every file accessible to the user.
+    async retrieve() {
+        let files = [];
+        let token = "";
+        do {
+            let response = (await this.endpoint.client.drive.files.list({
+                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
+                'pageSize': 1000,
+                'pageToken': token,
+            })).result;
+            files = files.concat(response.files);
+            token = response.nextPageToken;
+        } while (token);
+        return files;
     }
 }
 
