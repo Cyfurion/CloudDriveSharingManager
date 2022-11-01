@@ -78,8 +78,6 @@ async function createFileObject(file, parent, endpoint){
     }else{
         sharedFolderId = file.shared_folder_id;
     }
-    console.log("sharing");
-    console.log(sharedFolderId);
     let dropboxPermissions = undefined;
     if(sharedFolderId !== "root"){
         dropboxPermissions = (await endpoint

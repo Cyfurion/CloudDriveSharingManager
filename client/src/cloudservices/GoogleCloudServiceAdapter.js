@@ -1,6 +1,7 @@
 import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import { Permission } from '../classes/permission-class';
+import Query from '../snapshotoperations/Query';
 import FileSnapshot from '../classes/filesnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
@@ -31,6 +32,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
+
         return files;
     }
 
@@ -61,11 +63,18 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let root = new Folder(rootFile, []);
         root.id = "";
         snapshotHelper(parentToChildMap, root);
-        return new FileSnapshot(
+        let snap = new FileSnapshot(
             [this.endpoint.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail(), "Google Drive"], 
             root, 
             (new Date()).toString()
         );
+
+        //TESTING
+        let query = new Query("path:wow (folder: \"Cool Project\" or name: \"Cool Project\") or -name:avocado", snap);
+        console.log(query);
+        //TESTING END
+
+        return snap;
     }
 }
 
@@ -101,9 +110,6 @@ function createFileObject(file){
     if(file.permissions != undefined){
         for(let i = 0; i < file.permissions.length; i++){
             let permission = file.permissions[i];
-            console.log("new permission");
-            console.log(new Permission(permission.type, permission.emailAddress, permission.role));
-            console.log(permission.id);
             permissions.push(new Permission(permission.type, permission.emailAddress, permission.role));
             permissionIds.push(permission.id);
         }
