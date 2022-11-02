@@ -5,7 +5,7 @@ const UserSchema = new Schema(
     {
         profile: { type: [String], required: true, unique: true },
         acrs: { type: [String], required: false },
-        fileSnapshotIds: { type: [mongoose.Types.ObjectId], required: true },
+        fileSnapshotIDs: { type: Map, required: true },
         groupSnapshots: { type: [String], required: false }
     }
 );
