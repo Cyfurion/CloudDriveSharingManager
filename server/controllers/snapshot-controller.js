@@ -12,16 +12,13 @@ addSnapshot = async (req, res) => {
         contents: JSON.stringify(payload)
     });
 
-    if (user) {
-        user.fileSnapshotIds.push(snapshotID);
-    } else {
+    if (!user) {
         user = new User({
             profile: payload.profile,
-            fileSnapshotIds: [snapshotID]
+            fileSnapshotIDs: { }
         });
-        
     }
-
+    user.fileSnapshotIDs.set(snapshotID, payload.timestamp);
     await user.save();
     await newSnapshot.save();
     return res.status(201).json({ success: true }).send();
