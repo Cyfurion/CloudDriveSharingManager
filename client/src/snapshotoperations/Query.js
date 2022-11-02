@@ -187,7 +187,6 @@ class Operator {
                     return this.noAccess(snapshot, 'write', this.value);
                 case 'sharable':
                     // find files sharable by user
-                    // TODO what does this mean
                     throw new Error("sharable keyword is not yet implemented");
                 case 'name':
                     // find files whose name matches 
@@ -272,7 +271,6 @@ class Operator {
     }
 
     driveQualifier(file, field, value) {
-        // TODO: Not correct.
         return (value === "MyDrive" && file[field] === "") || value === file[field]
     }
     notDriveQualifier(file, field, value) {
@@ -370,14 +368,14 @@ class Operator {
         return files;
     }
 
-    hasAccess(file, accessType, user) { // TODO user is currently strictly by email
+    hasAccess(file, accessType, user) { 
         let files = [];
         if (file instanceof FileSnapshot) {
             for (let rootFile of file.root.files) {
                 files = files.concat(this.hasAccess(rootFile, accessType, user));
             }
         } else {
-            if (file.permissions.length === 0 && accessType === 'read') { // TODO fix to make read permissions if permissions array empty
+            if (file.permissions.length === 0 && accessType === 'read') { 
                 files.push(file);
             }
             for (let permission of file.permissions) {
@@ -397,7 +395,7 @@ class Operator {
         }
         return files;
     }
-    noAccess(file, accessType, user) { // TODO user is currently strictly by email
+    noAccess(file, accessType, user) {
         let files = [];
         if (file instanceof FileSnapshot) {
             for (let rootFile of file.root.files) {
@@ -407,7 +405,7 @@ class Operator {
             let canPush = true;
             for (let permission of file.permissions) {
                 if (permission.entity.toLowerCase() === user.toLowerCase() 
-                    && ((accessType === 'write' && permission.role === accessType) || accessType === 'read')) { // read is lowest access level, so added by default
+                    && ((accessType === 'write' && permission.role === accessType) || accessType === 'read')) { 
                     canPush = false;
                     break;
                 }
@@ -500,7 +498,7 @@ class Operator {
                 files = files.concat(this.notNoneSharing(rootFile));
             }
         } else {
-            if (file.permissions.length !== 1) { // TODO: Maybe
+            if (file.permissions.length !== 1) { 
                 files.push(file);
             }
             if (file instanceof Folder) {
@@ -512,7 +510,7 @@ class Operator {
         return files;
     }
 
-    userSharing(file, user) { // TODO special case: searching for user who is logged in
+    userSharing(file, user) { 
         let files = [];
         if (file instanceof FileSnapshot) {
             for (let rootFile of file.root.files) {
@@ -534,7 +532,7 @@ class Operator {
         return files;
     }
 
-    notUserSharing(file, user) { // TODO special case: searching for user who is logged in
+    notUserSharing(file, user) {
         let files = [];
         if (file instanceof FileSnapshot) {
             for (let rootFile of file.root.files) {
