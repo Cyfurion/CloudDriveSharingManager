@@ -20,7 +20,7 @@ export default function SplashScreen() {
     const [showAnalysisResult, setShowAnalysisResult] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [showFFDiffModal, setShowFFDiffModal] = useState(false);
-    const [ffDiffResut, setFFDiffResult] = useState(null);
+    const [ffDiffResult, setFFDiffResult] = useState(null);
 
 
     const handleFileCheckBox = (e) =>{
@@ -225,7 +225,7 @@ export default function SplashScreen() {
                                                  handleAnalysisModal={handleAnalysisModal}/>}
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
             {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
-            {showFFDiffModal && <FileFolderDiffResult result={ffDiffResut} closeFFDiffModal={closeFFDiffModal}/>}
+            {showFFDiffModal && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
             {screen}
         </div>
     );

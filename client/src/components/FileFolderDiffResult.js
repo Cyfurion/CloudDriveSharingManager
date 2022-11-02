@@ -4,8 +4,6 @@ export default function FileFolderDiffResult(props) {
     const handleClose = () => {
         props.closeFFDiffModal();
     }
-
-    console.log(props.result);
     return (
         <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
