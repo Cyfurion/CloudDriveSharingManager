@@ -1,9 +1,10 @@
-import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult} from './';
+import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import {findDeviantSharing} from '../snapshotoperations/SharingAnalysis';
+import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
+
 
 import Query from '../snapshotoperations/Query';
 
@@ -18,6 +19,8 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [showAnalysisResult, setShowAnalysisResult] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
+    const [showFFDiffModal, setShowFFDiffModal] = useState(false);
+    const [ffDiffResut, setFFDiffResult] = useState(null);
 
 
     const handleFileCheckBox = (e) =>{
@@ -153,9 +156,16 @@ export default function SplashScreen() {
         setShowAnalysisResult(false);
         setAnalysisResult(null);
     }
+    
+    const closeFFDiffModal = () =>{
+        setShowFFDiffModal(false);
+        setFFDiffResult(null);
+    }
 
     const fileFolderDiff = () =>{
-        console.log("file folder");
+        setShowAnalysisModal(false);
+        setShowFFDiffModal(true);
+        setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
     }
 
     const snapshotChanges = () =>{
@@ -215,6 +225,7 @@ export default function SplashScreen() {
                                                  handleAnalysisModal={handleAnalysisModal}/>}
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
             {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
+            {showFFDiffModal && <FileFolderDiffResult result={ffDiffResut} closeFFDiffModal={closeFFDiffModal}/>}
             {screen}
         </div>
     );

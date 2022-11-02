@@ -14,6 +14,7 @@ import QueryBuilderModal from "./QueryBuilderModal";
 import PermissionModal from "./PermissionModal";
 import LoadingScreen from "./LoadingScreen";
 import AnalysisResult from "./AnalysisResult";
+import FileFolderDiffResult from "./FileFolderDiffResult";
 
 export {
     GoogleLoginButton,
@@ -31,5 +32,6 @@ export {
     QueryBuilderModal,
     PermissionModal,
     LoadingScreen,
-    AnalysisResult
+    AnalysisResult,
+    FileFolderDiffResult
 }
