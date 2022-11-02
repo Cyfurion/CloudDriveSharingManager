@@ -49,8 +49,8 @@ function findFileFolderSharingDifferences(folder){
                 permissionsMap.set(permission, -1);
             }
         }
-        let folderDifferences = [...permissionsMap.entries()].filter(e => e[1] === 1);
-        let fileDifferences = [...permissionsMap.entries()].filter(e => e[1] === -1);
+        let folderDifferences = [...permissionsMap.entries()].filter(e => e[1] === 1).map(x => JSON.parse(x[0]));
+        let fileDifferences = [...permissionsMap.entries()].filter(e => e[1] === -1).map(x => JSON.parse(x[0]));
         if(folderDifferences.length !== 0 || fileDifferences.length !== 0){
             differences.push(new FileFolderDifferences(file, fileDifferences, folderDifferences));
         }
