@@ -168,7 +168,7 @@ class Operator {
                     // find files created by specified user
                     return this.basicFieldChecker(snapshot, this.notEqualsQualifier, 'owner');
                 case 'from':
-                    // find files shared by specified user
+                    //find files shared by specified user
                     throw new Error("from keyword is not yet implemented");
                 case 'to':
                     // find files shared directly to user (not through groups or inheritted)
