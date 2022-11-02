@@ -1,4 +1,4 @@
-import { DeviantAnalysisResult } from "../classes/AnalysisResult";
+import { DeviantAnalysisResult, FileFolderDifferences, FileFolderDifferenceAnalysisResult } from "../classes/AnalysisResult";
 
 function compareSnapshots(snapshot1, snapshot2){
 
@@ -32,8 +32,30 @@ function findDeviantSharing(folder, threshold) {
     return new DeviantAnalysisResult(folder, majority, deviantFiles);
 }
 
-function findFileFolderSharingDifferences(){//TODO: parameters
-
+function findFileFolderSharingDifferences(folder){
+    let folderPermissionsMap = new Map();
+    let differences = [];
+    for(let permission of folder.permissions){
+        permission = JSON.stringify(permission);
+        folderPermissionsMap.set(permission, 1);
+    }
+    for(let file of folder.files) {
+        let permissionsMap = new Map(folderPermissionsMap);
+        for(let permission of file.permissions){
+            permission = JSON.stringify(permission);
+            if(permissionsMap.has(permission)){
+                permissionsMap.set(permission, 0);
+            }else{
+                permissionsMap.set(permission, -1);
+            }
+        }
+        let folderDifferences = [...permissionsMap.entries()].filter(e => e[1] === 1);
+        let fileDifferences = [...permissionsMap.entries()].filter(e => e[1] === -1);
+        if(folderDifferences.length !== 0 || fileDifferences.length !== 0){
+            differences.push(new FileFolderDifferences(file, fileDifferences, folderDifferences));
+        }
+    }
+    return new FileFolderDifferenceAnalysisResult(folder, differences);
 }
 
 export { 

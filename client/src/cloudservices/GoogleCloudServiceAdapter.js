@@ -3,6 +3,8 @@ import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
+import Query from '../snapshotoperations/Query'
+import { findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
@@ -89,13 +91,15 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
  */
 function snapshotHelper(parentToChildMap, folder) { //add paths to files
     let childrenList = parentToChildMap.get(folder.id);
-    for (let i = 0; i < childrenList.length; i++) {
-        childrenList[i].path = folder.path + "/" + childrenList[i].name;
-        if (parentToChildMap.has(childrenList[i].id)) {
-            // childrenList[i] is folder
-            let newFolder = new Folder(childrenList[i], []);
-            childrenList[i] = newFolder;
-            snapshotHelper(parentToChildMap, newFolder);
+    if(childrenList){
+        for (let i = 0; i < childrenList.length; i++) {
+            childrenList[i].path = folder.path + "/" + childrenList[i].name;
+            if (parentToChildMap.has(childrenList[i].id)) {
+                // childrenList[i] is folder
+                let newFolder = new Folder(childrenList[i], []);
+                childrenList[i] = newFolder;
+                snapshotHelper(parentToChildMap, newFolder);
+            }
         }
     }
     folder.files = childrenList;
