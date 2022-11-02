@@ -22,6 +22,10 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
 
     async takeSnapshotHelper(folder, path) {
         let response = await this.endpoint.filesListFolder({ path: path });
+        let isRoot = (folder.id === '');
+        if(isRoot){
+            folder.owner = (await this.getProfile())[0];
+        }
         for (let element of response.result.entries) {
             let newFile = await this.createFileObject(element, folder);
             if (element[".tag"] === "folder") {
@@ -32,27 +36,27 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
                 folder.files.push(newFile);
             }
         }
+        if(isRoot){
+            folder.owner = 'SYSTEM';
+        }
     }
     
     async createFileObject(file, parent) {
-        let id = "dropBoxNoId"; //change folderpermissionsid to this
-        if (file.shared_folder_id) {
-            id = file.shared_folder_id;
-        }
+        let id = file.id;
         let name = file.name;
         let permissions = [];
         let permissionIds = [];
         let owner = parent.owner;
         let permissionsMap = new Map();
+        let sharedFolderId = "";
+        if (file.shared_folder_id) {
+            sharedFolderId = file.shared_folder_id;
+        }else if(file.parent_shared_folder_id){
+            sharedFolderId = file.parent_shared_folder_id;
+        }
         //creating permissions map
         for (let i = 0; i < permissions.length; i++) {
             permissionsMap.set(permissionIds[i], permissions[i]);
-        }
-        let sharedFolderId = "";
-        if (file[".tag"] !== "folder") {
-            sharedFolderId = parent.id;
-        } else {
-            sharedFolderId = file.shared_folder_id;
         }
         let dropboxPermissions = undefined;
         if (sharedFolderId !== "") {
