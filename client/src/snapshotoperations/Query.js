@@ -500,7 +500,7 @@ class Operator {
                 files = files.concat(this.notNoneSharing(rootFile));
             }
         } else {
-            if (file.permissions !== []) {
+            if (file.permissions.length !== 1) { // TODO: Maybe
                 files.push(file);
             }
             if (file instanceof Folder) {
