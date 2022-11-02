@@ -8,7 +8,6 @@ import { findFileFolderSharingDifferences } from '../snapshotoperations/SharingA
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
-        //TODO not implemented
     }
 
     /**
@@ -119,7 +118,7 @@ function createFileObject(file) {
         for (let i = 0; i < file.permissions.length; i++) {
             let permission = file.permissions[i];
             permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
-                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write'));//TODO fix for dropbox
+                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write'));
             permissionIds.push(permission.id);
         }
     }

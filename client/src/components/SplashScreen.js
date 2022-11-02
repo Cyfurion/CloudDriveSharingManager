@@ -113,7 +113,6 @@ export default function SplashScreen() {
 
     const editPermission = () => {
         console.log("edit permission");
-        //last steps after done editing permissions
         setPermissiosModal(false);
         let list = document.querySelectorAll('.file-checkbox');
         for(let i = 0; i < list.length;i++){

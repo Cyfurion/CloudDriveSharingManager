@@ -6,7 +6,6 @@ import Permission from '../classes/permission-class';
 
 export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
-        // TODO not implemented
     }
 
     async takeSnapshot() {
@@ -65,7 +64,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         }
         if (dropboxPermissions) {
             for (let user of dropboxPermissions.result.users) {
-                let type = 'user'; //TODO WHEN IS IT A GROUP/DOMAIN
+                let type = 'user'; 
                 let entity = user.user.email;
                 let role = '';
                 if (user.access_type[".tag"] === owner) {
@@ -93,4 +92,3 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     }
 }
 
-//TODO: permissions, owner

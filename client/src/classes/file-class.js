@@ -6,7 +6,6 @@ class File {
         this.permissionIds = permissionIds;
         this.drive = drive;
         this.owner = owner;
-        //this.creator = creator; TODO what is this
         this.path = path;
         this.createdTime = createdTime;
     }
