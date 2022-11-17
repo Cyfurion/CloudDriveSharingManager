@@ -17,9 +17,7 @@ export default function SplashScreen() {
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
-    const [showAnalysisResult, setShowAnalysisResult] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
-    const [showFFDiffModal, setShowFFDiffModal] = useState(false);
     const [ffDiffResult, setFFDiffResult] = useState(null);
 
 
@@ -145,24 +143,32 @@ export default function SplashScreen() {
 
     const deviancyAnalysis = () => {
         setShowAnalysisModal(false);
-        setShowAnalysisResult(true);
-        setAnalysisResult(findDeviantSharing(store.getCurrentFolder(), .65));
+
+        if(store.directory.length > 1){
+            let result = findDeviantSharing(store.getCurrentFolder(), .65);
+            setAnalysisResult(result);
+        }
+        else{
+            alert("cannot do analysis on current directory");
+        }
     }
 
     const closeDeviancyAnalysisModal = () => {
-        setShowAnalysisResult(false);
         setAnalysisResult(null);
     }
 
     const closeFFDiffModal = () => {
-        setShowFFDiffModal(false);
         setFFDiffResult(null);
     }
 
     const fileFolderDiff = () => {
         setShowAnalysisModal(false);
-        setShowFFDiffModal(true);
-        setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
+        if( store.directory.length >= 3){
+            setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
+        }
+        else{
+            alert("cannot do analysis on current diretory");
+        }
     }
 
     const snapshotChanges = () => {
@@ -214,12 +220,12 @@ export default function SplashScreen() {
 
     }
     return (
-        <div className=" min-w-fit min-h-screen bg-yellow-50 ">
+        <div className=" min-w-fit min-h-screen ">
             {showQBB && <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges} fileFolderDiff={fileFolderDiff} deviancyAnalysis={deviancyAnalysis} handleAnalysisModal={handleAnalysisModal} />}
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
-            {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} />}
-            {showFFDiffModal && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal} />}
+            {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} />}
+            {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal} />}
             {screen}
         </div>
     );
