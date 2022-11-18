@@ -25,13 +25,13 @@ addSnapshot = async (req, res) => {
 }
 
 getSnapshot = async (req, res) => {
-    let snapshot = await Snapshot.findById(req.body.id);
+    let snapshot = await Snapshot.findById(req.params.id);
     if (snapshot) {
-        return res.status(200).json(snapshot).send();
+        return res.status(200).json(snapshot);
     } else {
         return res.status(404).json({ 
             success: false,
-            message: "getSnapshot() failed, " + req.body.id + " was not found."
+            message: "getSnapshot() failed, " + req.params.id + " was not found."
         }).send();
     }
 }
