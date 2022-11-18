@@ -1,10 +1,10 @@
-import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult} from './';
+import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
-
+import apis from '../api';
 
 import Query from '../snapshotoperations/Query';
 
@@ -12,7 +12,7 @@ export default function SplashScreen() {
     const { auth }  = useContext(AuthContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
-    const[ showPermissionsModal, setPermissiosModal] = useState(false);
+    const[ showPermissionsModal, setPermissionsModal] = useState(false);
     const { store } = useContext(StoreContext);
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
@@ -21,6 +21,7 @@ export default function SplashScreen() {
     const [analysisResult, setAnalysisResult] = useState(null);
     const [showFFDiffModal, setShowFFDiffModal] = useState(false);
     const [ffDiffResult, setFFDiffResult] = useState(null);
+    const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
 
 
     const handleFileCheckBox = (e) =>{
@@ -113,7 +114,8 @@ export default function SplashScreen() {
 
     const editPermission = () => {
         console.log("edit permission");
-        setPermissiosModal(false);
+        //last steps after done editing permissions
+        setPermissionsModal(false);
         let list = document.querySelectorAll('.file-checkbox');
         for(let i = 0; i < list.length;i++){
             list[i].checked = false;
@@ -127,14 +129,26 @@ export default function SplashScreen() {
             alert("SELECT A FILE OR FOLDER FIRST");
             return;
         }
-        setPermissiosModal(true);
+        setPermissionsModal(true);
         console.log( "edit permissions for ids: " + selectedIDs );
     }
 
     const hideEditPermissionModal = () => {
-        setPermissiosModal(false);
+        setPermissionsModal(false);
     }
 
+    const showSwitchSnapshotModal = async () => {
+        setShowSwitchSnapshotModal(true);
+
+        // const map = (await apis.getUser(store.snapshot.profile)).snapshotIDs;
+        // console.log(map);
+        // const snapshot = new FileSnapshot(map.profile, map.root, map.timestamp);
+        // console.log(snapshot);
+        setShowSwitchSnapshotModal(true);
+    }
+    const closeSwitchSnapshotModal = () => {
+        setShowSwitchSnapshotModal(false);
+    }
     const handleHideCheckBox = () => {
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
@@ -196,6 +210,7 @@ export default function SplashScreen() {
                         <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
                             <SideBar    
+                                     showSwitchSnapshotModal={showSwitchSnapshotModal}
                                      showEditPermissionModal={showEditPermissionModal}
                                      handleHideCheckBox={handleHideCheckBox}
                                      handlePermissionModal={handlePermissionModal}
@@ -225,6 +240,7 @@ export default function SplashScreen() {
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
             {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {showFFDiffModal && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
+            {showSnapshotModal && <SwitchSnapshotModal closeSwitchSnapshotModal={closeSwitchSnapshotModal} />}
             {screen}
         </div>
     );
