@@ -139,12 +139,9 @@ export default function SplashScreen() {
 
     const showSwitchSnapshotModal = async () => {
         setShowSwitchSnapshotModal(true);
+        const map = (await apis.getUser(store.currentSnapshot.profile)).data.fileSnapshotIDs;
+        console.log(map);
 
-        // const map = (await apis.getUser(store.snapshot.profile)).snapshotIDs;
-        // console.log(map);
-        // const snapshot = new FileSnapshot(map.profile, map.root, map.timestamp);
-        // console.log(snapshot);
-        setShowSwitchSnapshotModal(true);
     }
     const closeSwitchSnapshotModal = () => {
         setShowSwitchSnapshotModal(false);
