@@ -9,12 +9,12 @@ const PORT = process.env.PORT || 4000;
 const app = express()
 
 // Middleware
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ limit: '50mb', extended: true }))
 app.use(cors({
     origin: ["http://localhost:3000"],
     credentials: true
 }))
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 
 // Routers
 const router = require('./routes/router')
