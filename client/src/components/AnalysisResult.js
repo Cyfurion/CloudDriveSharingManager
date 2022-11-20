@@ -1,13 +1,15 @@
+import DeviantFileCard from "./DeviantFileCard";
 
 export default function AnalysisResult(props) {
 
     const handleClose = () => {
         props.closeDeviancyAnalysisModal();
     }
+
     return (
         <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
-                <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
+                <div className=" relative rounded-3xl bg-white font-mono shadow dark:bg-gray-700 border-2 border-black">
 
 
                     <div className="flex items-start justify-between border-b rounded-t p-4 dark:border-gray-600">
@@ -19,34 +21,21 @@ export default function AnalysisResult(props) {
                     </div>
 
                     <div className="flex flex-col p-4 ">
-                        <div className="border-b border-black">
+                        <h1> Parent: {props.result.parent.name} </h1>
+                        <h1> Threshold: {props.result.threshold*100}% </h1>
+                        <div className="flex flex-col gap-y-1 p-1 border-b border-black">
                             Majority Permissions:
-                            {props.result.majority[0].map((permission) => (
-                                <div className="flex justify-between flex-row">
+                            { props.result.majority[0].length === 0 ? " No Permissions" : props.result.majority[0].map((permission,index) => (
+                                <div className="flex justify-between px-5 font-bold bg-gray-300 rounded-xl">
+                                    <h1 className="truncate"> {index+1}. Entity: {permission.entity}</h1>
                                     <h1> Role: {permission.role}</h1>
-                                    <h1> Entity: {permission.entity}</h1>
                                 </div>
                             ))}
                         </div>
                         <h1> Deviant Files: </h1>
-                        <div className="flex accordion flex-col max-h-64 overflow-y-scroll">
-                            {props.result.deviants.map((file) => (
-                                <div className="accordion-item " id="accordionExample">
-                                    <h1 key={file.id} className="accordion-header" id="headingOne">
-                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"></button>
-                                        File Name: {file.name}
-                                    </h1>
-                                    <div id="collapseOne" className="accordion-collapse  show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                        <div className="accordion-body py-4 px-5">
-                                            {file.permissions.map((permission) => (
-                                                <div>
-                                                    <h1> Role: {permission.role}</h1>
-                                                    <h1> Entity: {permission.entity}</h1>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="flex flex-col max-h-64 overflow-y-auto">
+                            {props.result.deviants.map((file, index) => (
+                                <DeviantFileCard data={file} index={index} />
                             ))}
                         </div>
                     </div>
