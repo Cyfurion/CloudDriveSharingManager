@@ -15,7 +15,7 @@ import PermissionModal from "./PermissionModal";
 import LoadingScreen from "./LoadingScreen";
 import AnalysisResult from "./AnalysisResult";
 import FileFolderDiffResult from "./FileFolderDiffResult";
-import FileCard from "./FileCard";
+import SwitchSnapshotModal from "./SwitchSnapshotModal";
 
 export {
     GoogleLoginButton,
@@ -35,5 +35,6 @@ export {
     LoadingScreen,
     AnalysisResult,
     FileFolderDiffResult,
-    FileCard
+    FileCard,
+    SwitchSnapshotModal
 }

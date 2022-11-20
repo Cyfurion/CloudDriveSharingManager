@@ -6,6 +6,7 @@ import { findDeviantSharing } from '../snapshotoperations/SharingAnalysis'
 import AdapterContext from '../cloudservices';
 
 import React, { createContext, useContext, useState } from 'react';
+import FileSnapshot from '../classes/filesnapshot-class';
 
 // Create store context.
 const StoreContext = createContext();

@@ -6,7 +6,7 @@ const api = axios.create({
 });
 
 const addSnapshot = (payload) => api.post(`/db`, payload);
-const getUser = (profile) => api.get(`/db/${profile}`);
+const getUser = (profile) => api.get(`/users/${profile}`);
 const getSnapshot = (id) => api.get(`/db/${id}`);
 
 const apis = {

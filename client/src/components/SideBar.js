@@ -38,6 +38,9 @@ export default function SideBar( props ) {
     const editPermissionButton = () => {
         props.showEditPermissionModal();
     }
+    const handleSwitchSnapshotButton = () => {
+        props.showSwitchSnapshotModal();
+    }
 
     if (permissionView){
         return (
@@ -70,7 +73,7 @@ export default function SideBar( props ) {
                     History
                 </button>
 
-                <button className="sidebarbtn" >
+                <button onClick={handleSwitchSnapshotButton} className="sidebarbtn" >
                     <FlipCameraIosIcon fontSize="small" sx={{color: 'black'}}/>
                     Switch Snapshot
                 </button>

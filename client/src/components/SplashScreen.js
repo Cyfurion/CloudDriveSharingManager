@@ -1,10 +1,10 @@
-import { LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult } from './';
+import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { findDeviantSharing, findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
-
+import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
+import apis from '../api';
 
 import Query from '../snapshotoperations/Query';
 
@@ -13,12 +13,14 @@ export default function SplashScreen() {
     const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
-    const [showPermissionsModal, setPermissiosModal] = useState(false);
+    const[ showPermissionsModal, setPermissionsModal] = useState(false);
+    const { store } = useContext(StoreContext);
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
+    const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
 
 
     const handleFileCheckBox = (e) => {
@@ -110,7 +112,9 @@ export default function SplashScreen() {
     }
 
     const editPermission = () => {
-        setPermissiosModal(false);
+        console.log("edit permission");
+        //last steps after done editing permissions
+        setPermissionsModal(false);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
@@ -124,13 +128,23 @@ export default function SplashScreen() {
             alert("SELECT A FILE OR FOLDER FIRST");
             return;
         }
-        setPermissiosModal(true);
+        setPermissionsModal(true);
+        console.log( "edit permissions for ids: " + selectedIDs );
     }
 
     const hideEditPermissionModal = () => {
-        setPermissiosModal(false);
+        setPermissionsModal(false);
     }
 
+    const showSwitchSnapshotModal = async () => {
+        setShowSwitchSnapshotModal(true);
+        const map = (await apis.getUser(store.currentSnapshot.profile)).data.fileSnapshotIDs;
+        console.log(map);
+
+    }
+    const closeSwitchSnapshotModal = () => {
+        setShowSwitchSnapshotModal(false);
+    }
     const handleHideCheckBox = () => {
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
@@ -192,40 +206,45 @@ export default function SplashScreen() {
 
     if (auth.isAuthorized) {
         screen = store.currentSnapshot === null ?
-            <LoadingScreen />
-            :
-            <div className="flex-nowrap">
-                <TopBar handleQuery={handleQuery}
-                    handleQueryBuilderButton={handleQueryBuilderButton} />
-                <div className="bg-black h-1"></div>
-                <div className="grid grid-flow-col justify-start">
-                    <SideBar
-                        showEditPermissionModal={showEditPermissionModal}
-                        handleHideCheckBox={handleHideCheckBox}
-                        handlePermissionModal={handlePermissionModal}
-                        handleAnalysisModal={handleAnalysisModal}
-                        handleHomeButton={handleHomeButton}
-                        handleHistoryButton={handleHistoryButton} />
-                    <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
-                        <h1 className="font-bold"><button onClick={handleBackButton}><ArrowBackIosIcon fontSize="small" /> </button> directory: {store.getCurrentFolder().path}</h1>
-                        <WorkSpace visible={checkboxVisible}
-                            handleAllFileCheckbox={handleAllFileCheckbox}
-                            handleFileCheckBox={handleFileCheckBox}
-                            data={files}
-                            handleClickFolder={handleClickFolder} />
-                    </div>
-                </div>
-            </div>;
+                    <LoadingScreen />
+                        :
+                    <div className="flex-nowrap">
+                        <TopBar handleQuery={handleQuery}
+                                handleQueryBuilderButton={handleQueryBuilderButton} />
+                        <div className="bg-black h-1"></div>
+                        <div className="grid grid-flow-col justify-start">
+                            <SideBar    
+                                     showSwitchSnapshotModal={showSwitchSnapshotModal}
+                                     showEditPermissionModal={showEditPermissionModal}
+                                     handleHideCheckBox={handleHideCheckBox}
+                                     handlePermissionModal={handlePermissionModal}
+                                     handleAnalysisModal={handleAnalysisModal} 
+                                     handleHomeButton={handleHomeButton} 
+                                     handleHistoryButton={handleHistoryButton}/>
+                            <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
+                                <h1 className="font-bold"><button onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>
+                                <WorkSpace  visible={checkboxVisible}
+                                            handleAllFileCheckbox={handleAllFileCheckbox}
+                                            handleFileCheckBox={handleFileCheckBox} 
+                                            data={files} 
+                                            handleClickFolder={handleClickFolder}/>
+                            </div>
+                        </div>
+                    </div>;
 
-
+            
     }
-    return (
-        <div className=" min-w-fit min-h-screen ">
-            {showQBB && <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
-            {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges} fileFolderDiff={fileFolderDiff} deviancyAnalysis={deviancyAnalysis} handleAnalysisModal={handleAnalysisModal} />}
+    return ( 
+        <div className=" min-w-fit min-h-screen bg-yellow-50 ">
+            {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
+            {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
+                                                 fileFolderDiff={fileFolderDiff}
+                                                 deviancyAnalysis={deviancyAnalysis}
+                                                 handleAnalysisModal={handleAnalysisModal}/>}
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
-            {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} />}
-            {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal} />}
+            {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
+            {showFFDiffModal && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
+            {showSnapshotModal && <SwitchSnapshotModal closeSwitchSnapshotModal={closeSwitchSnapshotModal} />}
             {screen}
         </div>
     );
