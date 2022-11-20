@@ -1,10 +1,27 @@
 import StoreContext from '../store';
-import { useContext } from 'react';
+import { useContext} from 'react';
 
 export default function SwitchSnapshotModal(props) {
+    const { store } = useContext(StoreContext);    
+    console.log(props.result);
+    let map = null;
+    let snapshotList = [];
+    if (props.result) {
+        map = new Map(Object.entries(props.result.fileSnapshotIDs));
+        map = new Map([...map.entries()].sort().reverse());
+        map.forEach((value, key)=>(
+            snapshotList.push(
+                <p>COMPONENT CODE HERE {key} {value}</p>
+            )
+        ));
+    }
+
+
     const handleClose = () => {
+        console.log(props.result.fileSnapshotIDs);
         props.closeSwitchSnapshotModal();
     }
+    
     return (<div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
         <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
             <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
@@ -17,10 +34,7 @@ export default function SwitchSnapshotModal(props) {
                         <span className="sr-only">Close modal</span>
                     </button>
                 </div>
-
-                
-
-
+                {snapshotList}
             </div>
         </div>
     </div>

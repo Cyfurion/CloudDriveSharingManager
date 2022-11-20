@@ -22,7 +22,7 @@ export default function SplashScreen() {
     const [showFFDiffModal, setShowFFDiffModal] = useState(false);
     const [ffDiffResult, setFFDiffResult] = useState(null);
     const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
-
+    const [showSnapshots, setShowSnapshots] = useState(false);
 
     const handleFileCheckBox = (e) =>{
         const checked = e.target.checked;
@@ -139,8 +139,10 @@ export default function SplashScreen() {
 
     const showSwitchSnapshotModal = async () => {
         setShowSwitchSnapshotModal(true);
-        const map = (await apis.getUser(store.currentSnapshot.profile)).data.fileSnapshotIDs;
+        const map = (await apis.getUser(store.currentSnapshot.profile)).data;
         console.log(map);
+        setShowSnapshots(map);
+        
 
     }
     const closeSwitchSnapshotModal = () => {
@@ -237,7 +239,7 @@ export default function SplashScreen() {
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
             {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {showFFDiffModal && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
-            {showSnapshotModal && <SwitchSnapshotModal closeSwitchSnapshotModal={closeSwitchSnapshotModal} />}
+            {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} />}
             {screen}
         </div>
     );
