@@ -25,11 +25,12 @@ class FileFolderDifferences{
 }
 
 class DeviantAnalysisResult extends AnalysisResult{
-    constructor(parent, majority, deviants){
+    constructor(parent, majority, deviants, threshold){
         super("deviant-analysis");
         this.parent = parent;
         this.majority = majority;//permission set held by majority of files
         this.deviants = deviants;//list of files that dont follow this permision set
+        this.threshold = threshold;
     }
 }
 

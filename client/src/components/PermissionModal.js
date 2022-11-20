@@ -135,7 +135,7 @@ export default function PermissionModal(props) {
                                         <div className="flex flex-col p-2 gap-y-1"> Reader:
                                             {readerList.map((entry, index) => (
                                                 <div key={index} className="add-perm-card">
-                                                    <h1 title={entry.entity} className="truncate"> {entry} </h1>
+                                                    <h1 title={entry} className="truncate"> {entry} </h1>
                                                     <button className="rounded-xl hover:bg-gray-400" id={index} onClick={(e) => handleRemoveReader(e)} > {XIcon} </button>
                                                 </div>
                                             ))}
@@ -143,7 +143,7 @@ export default function PermissionModal(props) {
                                         <div className="flex flex-col p-2 gap-y-1 border-l" > Writer:
                                             {writerList.map((entry, index) => (
                                                 <div key={index} className="add-perm-card">
-                                                    <h1 title={entry.entity} className="truncate"> {entry} </h1>
+                                                    <h1 title={entry} className="truncate"> {entry} </h1>
                                                     <button className="rounded-xl hover:bg-gray-400" id={index} onClick={(e) => handleRemoveWriter(e)} > {XIcon} </button>
                                                 </div>
                                             ))}
@@ -157,7 +157,7 @@ export default function PermissionModal(props) {
                                     <div className="flex flex-col p-2 gap-y-1">
                                         {removeList.map((entry, index) => (
                                             <div key={index} className="remove-perm-card">
-                                                <h1 title={entry.entity} className="truncate"> {entry} </h1>
+                                                <h1 title={entry} className="truncate"> {entry} </h1>
                                                 <button className="rounded-xl hover:bg-gray-400" id={index} onClick={(e) => handleDeleteRemoveList(e)} > {XIcon} </button>
                                             </div>
                                         ))}

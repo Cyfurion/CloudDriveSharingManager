@@ -154,11 +154,12 @@ export default function SplashScreen() {
         setCheckboxVisible(false);
     }
 
-    const deviancyAnalysis = () => {
+    const deviancyAnalysis = (threshold) => {
         setShowAnalysisModal(false);
 
         if(store.directory.length > 1){
-            let result = findDeviantSharing(store.getCurrentFolder(), .65);
+            let result = findDeviantSharing(store.getCurrentFolder(), (threshold/100));
+            console.log(result);
             setAnalysisResult(result);
         }
         else{
