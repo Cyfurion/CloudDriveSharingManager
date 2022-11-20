@@ -14,7 +14,6 @@ export default function SplashScreen() {
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
     const[ showPermissionsModal, setPermissionsModal] = useState(false);
-    const { store } = useContext(StoreContext);
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
@@ -235,15 +234,15 @@ export default function SplashScreen() {
             
     }
     return ( 
-        <div className=" min-w-fit min-h-screen bg-yellow-50 ">
+        <div className=" min-w-fit min-h-screen ">
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
                                                  fileFolderDiff={fileFolderDiff}
                                                  deviancyAnalysis={deviancyAnalysis}
                                                  handleAnalysisModal={handleAnalysisModal}/>}
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
-            {showAnalysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
-            {showFFDiffModal && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
+            {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
+            {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
             {showSnapshotModal && <SwitchSnapshotModal closeSwitchSnapshotModal={closeSwitchSnapshotModal} />}
             {screen}
         </div>
