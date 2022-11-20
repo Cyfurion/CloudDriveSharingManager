@@ -32,11 +32,11 @@ export default function AnalysisResult(props) {
                         <div className="flex accordion flex-col max-h-64 overflow-y-scroll">
                             {props.result.deviants.map((file) => (
                                 <div className="accordion-item " id="accordionExample">
-                                    <h1 key={file.id}class="accordion-header" id="headingOne">
+                                    <h1 key={file.id} className="accordion-header" id="headingOne">
                                         <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"></button>
                                         File Name: {file.name}
                                     </h1>
-                                    <div div id="collapseOne" className="accordion-collapse  show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                    <div id="collapseOne" className="accordion-collapse  show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                         <div className="accordion-body py-4 px-5">
                                             {file.permissions.map((permission) => (
                                                 <div>

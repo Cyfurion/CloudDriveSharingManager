@@ -29,7 +29,7 @@ function findDeviantSharing(folder, threshold) {
         }
     }
     majority[0] = JSON.parse(majority[0]);
-    return new DeviantAnalysisResult(folder, majority, deviantFiles);
+    return new DeviantAnalysisResult(folder, majority, deviantFiles, threshold);
 }
 
 function findFileFolderSharingDifferences(folder){
