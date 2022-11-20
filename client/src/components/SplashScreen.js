@@ -9,7 +9,8 @@ import apis from '../api';
 import Query from '../snapshotoperations/Query';
 
 export default function SplashScreen() {
-    const { auth }  = useContext(AuthContext);
+    const { auth } = useContext(AuthContext);
+    const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
     const[ showPermissionsModal, setPermissionsModal] = useState(false);
@@ -17,20 +18,18 @@ export default function SplashScreen() {
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
-    const [showAnalysisResult, setShowAnalysisResult] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
-    const [showFFDiffModal, setShowFFDiffModal] = useState(false);
     const [ffDiffResult, setFFDiffResult] = useState(null);
     const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
 
 
-    const handleFileCheckBox = (e) =>{
+    const handleFileCheckBox = (e) => {
         const checked = e.target.checked;
         if (checked) {
             setSelectedIDs([...selectedIDs, e.target.value]);
         } else {
             const allCheck = document.querySelector('.allfile-checkbox');
-            if( allCheck){
+            if (allCheck) {
                 document.querySelector('.allfile-checkbox').checked = false;
             }
             setSelectedIDs(selectedIDs.filter((id) => id !== e.target.value));
@@ -41,27 +40,27 @@ export default function SplashScreen() {
         const checked = e.target.checked;
         let list = document.querySelectorAll('.file-checkbox');
         let s = [];
-        if( checked ){
+        if (checked) {
             setSelectedIDs([]);
-            for(let i = 0; i < list.length;i++){
+            for (let i = 0; i < list.length; i++) {
                 list[i].checked = true;
                 s.push(list[i].value);
             }
             setSelectedIDs(s);
         }
-        else{
-            for(let i = 0; i < list.length;i++){
+        else {
+            for (let i = 0; i < list.length; i++) {
                 list[i].checked = false;
             }
             setSelectedIDs([]);
         }
     }
 
-    const handleClickFolder= ( e, folder ) => {
+    const handleClickFolder = (e, folder) => {
         e.stopPropagation();
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
-        for(let i = 0; i < list.length;i++){
+        for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
@@ -73,27 +72,27 @@ export default function SplashScreen() {
         setCheckboxVisible(true);
     }
 
-    const handleAnalysisModal = () =>{
-        setShowAnalysisModal(!showAnalysisModal);
+    const handleAnalysisModal = () => {
+        setShowAnalysisModal((prevState) => !prevState);
     };
 
-    const handleQueryBuilderButton = () =>{
-        setShowQBB(!showQBB);
+    const handleQueryBuilderButton = () => {
+        setShowQBB( (prevState) => !prevState);
     }
 
-    const handleHomeButton = () =>{
+    const handleHomeButton = () => {
         store.setFolder(store.currentSnapshot.root);
         setFiles(null);
     }
 
-    const handleHistoryButton = (folder ) => {
+    const handleHistoryButton = (folder) => {
         return;
     }
 
-    const handleBackButton = (folder ) => {
+    const handleBackButton = (folder) => {
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
-        for(let i = 0; i < list.length;i++){
+        for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
@@ -101,15 +100,15 @@ export default function SplashScreen() {
         setFiles(null);
     }
 
-    const handleQuery = ( query ) =>{
+    const handleQuery = (query) => {
         let q = new Query(query, store.currentSnapshot);
         setFiles(q.evaluate());
     }
 
-    const fillSearch = ( querybuilder) =>{
-        setShowQBB(!showQBB);
+    const fillSearch = (querybuilder) => {
+        setShowQBB( (prevState) => !prevState);
         document.querySelector('#default-searchbar').value = querybuilder;
-        handleQuery( querybuilder);
+        handleQuery(querybuilder);
     }
 
     const editPermission = () => {
@@ -117,15 +116,15 @@ export default function SplashScreen() {
         //last steps after done editing permissions
         setPermissionsModal(false);
         let list = document.querySelectorAll('.file-checkbox');
-        for(let i = 0; i < list.length;i++){
+        for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
         setSelectedIDs([]);
     }
 
-    const showEditPermissionModal = () =>{
-        if(selectedIDs.length === 0){
+    const showEditPermissionModal = () => {
+        if (selectedIDs.length === 0) {
             alert("SELECT A FILE OR FOLDER FIRST");
             return;
         }
@@ -149,36 +148,44 @@ export default function SplashScreen() {
     const handleHideCheckBox = () => {
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
-        for(let i = 0; i < list.length;i++){
+        for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
         setCheckboxVisible(false);
     }
 
-    const deviancyAnalysis = () =>{
+    const deviancyAnalysis = () => {
         setShowAnalysisModal(false);
-        setShowAnalysisResult(true);
-        setAnalysisResult(findDeviantSharing(store.getCurrentFolder(), .65));
+
+        if(store.directory.length > 1){
+            let result = findDeviantSharing(store.getCurrentFolder(), .65);
+            setAnalysisResult(result);
+        }
+        else{
+            alert("cannot do analysis on current directory");
+        }
     }
 
-    const closeDeviancyAnalysisModal = () =>{
-        setShowAnalysisResult(false);
+    const closeDeviancyAnalysisModal = () => {
         setAnalysisResult(null);
     }
-    
-    const closeFFDiffModal = () =>{
-        setShowFFDiffModal(false);
+
+    const closeFFDiffModal = () => {
         setFFDiffResult(null);
     }
 
-    const fileFolderDiff = () =>{
+    const fileFolderDiff = () => {
         setShowAnalysisModal(false);
-        setShowFFDiffModal(true);
-        setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
+        if( store.directory.length >= 3){
+            setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
+        }
+        else{
+            alert("cannot do analysis on current diretory");
+        }
     }
 
-    const snapshotChanges = () =>{
+    const snapshotChanges = () => {
         console.log('snapshot changes');
     }
 
@@ -192,10 +199,10 @@ export default function SplashScreen() {
     }
 
     let screen = <div>
-                    <TopBar />
-                    <div className=" bg-black h-1">  </div>
-                    <LoginPage/>
-                </div>;
+        <TopBar />
+        <div className=" bg-black h-1">  </div>
+        <LoginPage />
+    </div>;
 
     if (auth.isAuthorized) {
         screen = store.currentSnapshot === null ?

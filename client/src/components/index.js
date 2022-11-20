@@ -35,5 +35,6 @@ export {
     LoadingScreen,
     AnalysisResult,
     FileFolderDiffResult,
+    FileCard,
     SwitchSnapshotModal
 }
