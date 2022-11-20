@@ -9,9 +9,6 @@ export default function FileCard(props) {
     const { store } = useContext(StoreContext);
     const [clicked, setClicked] = useState(false);
     let file = props.file;
-    if (file.permissions.length !== 0)
-        console.log(file.permissions);
-
     const handleClicked = (e) => {
         e.preventDefault();
         if (e.target.getAttribute('type') !== 'SYSTEM') {
