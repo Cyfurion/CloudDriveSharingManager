@@ -7,7 +7,7 @@ import { useContext, useState } from 'react';
 export default function AnalysisModal(props) {
     const { store } = useContext(StoreContext);
     const [thresholdSlider, setThresholdSlider] = useState(false);
-    const [threshold, setThreshold] = useState(50);
+    const [threshold, setThreshold] = useState(51);
     
 
     const handleClose = () => {
@@ -32,7 +32,7 @@ export default function AnalysisModal(props) {
 
     const cancelThresholdSlider = () => {
         setThresholdSlider((prevState) => !prevState);
-        setThreshold( (prevValue) => prevValue=50);
+        setThreshold( (prevValue) => prevValue=51);
     }
 
     const submitThreshold = () =>{
@@ -45,10 +45,10 @@ export default function AnalysisModal(props) {
         <div className="flex flex-col items-center py-16 gap-y-8 "> 
             <h1 className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400"> Set threshold for deviancy analysis </h1>
             <h2 className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400"> Threshold : {threshold}% </h2>
-            <div className="flex w-4/6 gap-x-6"> <h1 className="font-mono">50%</h1> <input className="w-full h-4 outline-none opacity-1" type="range" defaultValue={threshold} onChange={(e) => handleThresholdChange(e)} min={50} max={100}/><h1 className="font-mono">100%</h1></div>
+            <div className="flex w-4/6 gap-x-6"> <h1 className="font-mono">51%</h1> <input className="w-full h-4 outline-none opacity-1" type="range" defaultValue={threshold} onChange={(e) => handleThresholdChange(e)} min={51} max={100}/><h1 className="font-mono">100%</h1></div>
             <div className="flex gap-x-3"> 
-                <button onClick={submitThreshold} className="bg-blue-700 px-6 py-2 rounded-xl text-white font-mono"> Submit </button>
-                <button onClick={cancelThresholdSlider} className="bg-green-700 px-6 py-2 rounded-xl text-white font-mono"> Cancel </button>
+                <button onClick={submitThreshold} className="bg-green-700 px-6 py-2 rounded-xl text-white font-mono"> Submit </button>
+                <button onClick={cancelThresholdSlider} className="bg-red-700 px-6 py-2 rounded-xl text-white font-mono"> Cancel </button>
             </div>
         </div>
 
