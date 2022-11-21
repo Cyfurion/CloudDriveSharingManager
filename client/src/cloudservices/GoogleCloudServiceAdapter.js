@@ -5,11 +5,19 @@ import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 import Query from '../snapshotoperations/Query'
 import { findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
+import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     deploy() {
+        //TODO not implemented
     }
 
+    async takeGroupSnapshot(snapshotString, groupEmail, timestamp) {
+        let members = snapshotString.match('"mailto:[^"]*"');
+        members = members.map(member =>  member.substring('"mailto:'.length, member.length-1));
+        return new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp);
+    }
+    
     /**
      * Takes in a list of Google API files and creates a snapshot tree from it.
      * @param files 
@@ -33,19 +41,20 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 }   
             }   
         }
-        let rootFile = new File("", "root", [], "", "", "SYSTEM", "/", "");
+        let rootFile = new File("", "root", [], "", "", "SYSTEM", "/", "", "");
         let root = new Folder(rootFile, []);
-        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", ""), []);
+        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", "", "SYSTEM"), []);
         root.files.push(myDrive);
         snapshotHelper(parentToChildMap, myDrive);
-        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", ""), []);
+        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
-        return new FileSnapshot(
+        let snap = new FileSnapshot(
             this.getProfile(),
             root, 
             (new Date()).toString()
         );
+        return snap;
     }
 
     getProfile() {
@@ -71,7 +80,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let token = "";
         do {
             let response = (await this.endpoint.client.drive.files.list({
-                'fields': 'files(id,name,createdTime,permissions,parents,owners),nextPageToken',
+                'fields': 'files(id,name,createdTime,permissions,parents,owners,sharingUser),nextPageToken',
                 'pageSize': 1000,
                 'pageToken': token,
                 'q': 'trashed = false'
@@ -101,6 +110,13 @@ function snapshotHelper(parentToChildMap, folder) { //add paths to files
             }
         }
     }
+    for(let child of childrenList){
+        for(let i = 0; i< child.permissionIds.length; i++){
+            if(folder.permissionIds.includes(child.permissionIds[i])){
+                child.permissions[i].isInherited = true;
+            }
+        }
+    }
     folder.files = childrenList;
 }
 
@@ -118,7 +134,8 @@ function createFileObject(file) {
         for (let i = 0; i < file.permissions.length; i++) {
             let permission = file.permissions[i];
             permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
-                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write'));
+                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write', false
+                , permission.role === 'reader' ? false : true));
             permissionIds.push(permission.id);
         }
     }
@@ -128,5 +145,9 @@ function createFileObject(file) {
     }
     let owner = file.owners[0].emailAddress;
     let createdTime = file.createdTime;
-    return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime);
+    let sharedBy = owner;
+    if(file.sharingUser){
+        sharedBy = file.sharingUser.emailAddress;
+    }
+    return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime, sharedBy);
 }
