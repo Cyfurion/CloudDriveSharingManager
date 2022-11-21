@@ -1,9 +1,9 @@
 import { create } from "@mui/material/styles/createTransitions";
 import { useState, useContext } from "react";
 import AccessControlRequirement from "../classes/accesscontrolrequirement-class";
-import ACRCard from "./ACRCard";
 import StoreContext from "../store";
 import apis from "../api";
+import {ACRCreationField, ACRCard} from "./";
 
 export default function ACRModal(props) {
     const {store} = useContext(StoreContext);
@@ -14,15 +14,11 @@ export default function ACRModal(props) {
     const [Grp, setGrp] = useState(false);
     const [createACRScreen, setCreateACRScreen] = useState(false);
     const [acrList, setACRList] = useState(props.acr);
-    console.log(props.acr);
 
-
-    const handleAddAR = () => {
-        let entity = document.querySelector("#acr-ar-input-bar").value;
+    const handleAddAR = (entity) => {
         if (entity.length !== 0) {
             let list = [...AR];
             list = [...list, entity];
-            document.querySelector("#acr-ar-input-bar").value = "";
             setAR(list);
         }
     }
@@ -37,12 +33,10 @@ export default function ACRModal(props) {
         }
     }
 
-    const handleAddAW = () => {
-        let entity = document.querySelector("#acr-aw-input-bar").value;
+    const handleAddAW = (entity) => {
         if (entity.length !== 0) {
             let list = [...AW];
             list = [...list, entity];
-            document.querySelector("#acr-aw-input-bar").value = "";
             setAW(list);
         }
     }
@@ -57,12 +51,10 @@ export default function ACRModal(props) {
         }
     }
 
-    const handleAddDR = () => {
-        let entity = document.querySelector("#acr-dr-input-bar").value;
+    const handleAddDR = (entity) => {
         if (entity.length !== 0) {
             let list = [...DR];
             list = [...list, entity];
-            document.querySelector("#acr-dr-input-bar").value = "";
             setDR(list);
         }
     }
@@ -77,12 +69,10 @@ export default function ACRModal(props) {
         }
     }
 
-    const handleAddDW = () => {
-        let entity = document.querySelector("#acr-dw-input-bar").value;
+    const handleAddDW = (entity) => {
         if (entity.length !== 0) {
             let list = [...DW];
             list = [...list, entity];
-            document.querySelector("#acr-dw-input-bar").value = "";
             setDW(list);
         }
     }
@@ -142,13 +132,7 @@ export default function ACRModal(props) {
         await apis.addACR(acr);
 
         setACRList(list);
-        document.querySelector("#acr-search-query").value = "";
-        setAR([]);
-        setDR([]);
-        setAW([]);
-        setDW([]);
-        setGrp(false);
-        setCreateACRScreen(false);
+        handleCancelCreationScreen();
     }
 
     const handleDeleteACR = async (e) => {
@@ -161,6 +145,7 @@ export default function ACRModal(props) {
             setACRList(list);
         }
     }
+
 
     let XIcon = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -182,84 +167,17 @@ export default function ACRModal(props) {
     ))
 
     let ACRCreationScreen =
-        <div className="flex flex-col border-t p-4 gap-y-3">
-            <div className="flex w-full justify-center">
-                <h1 className="p-1"> Search Query: </h1>
-                <input placeholder="Search Query" className="qbtextfield w-4/6" type='text' id="acr-search-query" />
-            </div>
+        <div className="flex flex-col border-t p-4 gap-y-3 ">
 
-            <div className="flex flex-col items-center gap-y-1">
-                <div className="flex w-full justify-center">
-                    <h1 className="p-1"> Allowed Readers: </h1>
-                    <input placeholder="johndoe@gmail.com" id="acr-ar-input-bar" className="qbtextfield w-4/6" type='text' />
-                    <button onClick={handleAddAR} className="bg-green-600 text-white rounded-xl px-2 ml-3 hover:bg-green-700"> {plusIcon} </button>
-                </div>
-                {AR.map((entry, index) => (
-                    <div className="bg-green-600 rounded-xl flex justify-between w-1/3 px-3 font-bold p-1">
-                        <h1 className="truncate">
-                            {index + 1}. Entity: {entry}
-                        </h1>
-                        <button onClick={handleDeleteAR} id={index} className="rounded-xl hover:bg-gray-400" >
-                            {XIcon}
-                        </button>
-                    </div>
-                ))}
+            <div className="flex w-full justify-start items-baseline ">
+                <h1 className="p-1 ml-16 pl-2 justify-self-start "> Search Query: </h1>
+                <input placeholder="Search Query" className="qbtextfield w-4/6 " type='text' id="acr-search-query" />
             </div>
-
-            <div className="flex flex-col items-center gap-y-1">
-                <div className="flex w-full justify-center">
-                    <h1 className="p-1"> Allowed Writers: </h1>
-                    <input placeholder="johndoe@gmail.com" id="acr-aw-input-bar" className="qbtextfield w-4/6" type='text' />
-                    <button onClick={handleAddAW} className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-2 ml-3"> {plusIcon} </button>
-                </div>
-                {AW.map((entry, index) => (
-                    <div className="bg-green-600 rounded-xl flex justify-between w-1/3 px-3 font-bold p-1">
-                        <h1 className="truncate">
-                            {index + 1}. Entity: {entry}
-                        </h1>
-                        <button onClick={handleDeleteAW} id={index} className="rounded-xl hover:bg-gray-400" >
-                            {XIcon}
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-
-            <div className="flex flex-col items-center gap-y-1">
-                <div className="flex w-full justify-center">
-                    <h1 className="p-1"> Denied Reader: </h1>
-                    <input placeholder="johndoe@gmail.com" id="acr-dr-input-bar" className="qbtextfield w-4/6" type='text' />
-                    <button onClick={handleAddDR} className="bg-green-600  hover:bg-green-700 text-white rounded-xl px-2 ml-3"> {plusIcon} </button>
-                </div>
-                {DR.map((entry, index) => (
-                    <div className="bg-green-600 rounded-xl flex justify-between w-1/3 px-3 font-bold p-1">
-                        <h1 className="truncate">
-                            {index + 1}. Entity: {entry}
-                        </h1>
-                        <button onClick={handleDeleteDR} id={index} className="rounded-xl hover:bg-gray-400" >
-                            {XIcon}
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-            <div className="flex flex-col items-center gap-y-1">
-                <div className="flex w-full justify-center">
-                    <h1 className="p-1"> Denied Writers: </h1>
-                    <input placeholder="johndoe@gmail.com" id="acr-dw-input-bar" className="qbtextfield w-4/6" type='text' />
-                    <button onClick={handleAddDW} className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-2 ml-3"> {plusIcon} </button>
-                </div>
-                {DW.map((entry, index) => (
-                    <div className="bg-green-600 rounded-xl flex justify-between w-1/3 px-3 font-bold p-1">
-                        <h1 className="truncate">
-                            {index + 1}. Entity: {entry}
-                        </h1>
-                        <button onClick={handleDeleteDW} id={index} className="rounded-xl hover:bg-gray-400" >
-                            {XIcon}
-                        </button>
-                    </div>
-                ))}
-            </div>
+            
+            <ACRCreationField label={"Allowed Reader"} list={AR} inputID={"acr-ar-input-bar"} handleAdd={handleAddAR} handleDelete={handleDeleteAR}/>
+            <ACRCreationField label={"Allowed Writer"} list={AW} inputID={"acr-aw-input-bar"} handleAdd={handleAddAW} handleDelete={handleDeleteAW}/>
+            <ACRCreationField label={"Denied Readers"} list={DR} inputID={"acr-dr-input-bar"} handleAdd={handleAddDR} handleDelete={handleDeleteDR}/>
+            <ACRCreationField label={"Denied Writers"} list={DW} inputID={"acr-dw-input-bar"} handleAdd={handleAddDW} handleDelete={handleDeleteDW}/>
 
             <div className="flex w-full justify-center gap-x-2">
                 Take group membership into account?

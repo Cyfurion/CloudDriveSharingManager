@@ -10,7 +10,6 @@ addACR = async (req, res) => {
 }
 
 deleteACR = async (req, res) => {
-    console.log(req.body)
     const user = await User.findOne({ profile: req.body });
     user.acrs.splice(req.params.index, 1);
     await user.save();

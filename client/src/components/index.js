@@ -21,6 +21,7 @@ import DeviantFileCard from "./DeviantFileCard";
 import ACRModal from "./ACRModal";
 import ACRCard from "./ACRCard";
 import ValidateACRResult from "./ValidateACRResult";
+import ACRCreationField from "./ACRCreationField";
 
 export {
     GoogleLoginButton,
@@ -45,5 +46,6 @@ export {
     DeviantFileCard,
     ACRModal,
     ACRCard,
-    ValidateACRResult
+    ValidateACRResult,
+    ACRCreationField
 }
