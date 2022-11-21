@@ -4,8 +4,10 @@ const router = express.Router();
 const SnapshotController = require('../controllers/snapshot-controller');
 const UserController = require('../controllers/user-controller');
 
-router.get('/db/:id', SnapshotController.getSnapshot);
+router.patch('/acrs/:index', UserController.deleteACR);
+router.get('/snapshots/:id', SnapshotController.getSnapshot);
 router.get('/users/:profile', UserController.getUser);
-router.post('/db', SnapshotController.addSnapshot);
+router.post('/acrs', UserController.addACR);
+router.post('/snapshots', SnapshotController.addSnapshot);
 
 module.exports = router;
