@@ -32,7 +32,7 @@ export default class FileSnapshot {
                     }
                     if (acr.allowedWriters.length > 0) {
                         // Check allowed writers.
-                        if (permission.role === "writer"
+                        if (permission.role === "write"
                             && !acr.allowedReaders.includes(permission.entity) 
                             && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
                             acrViolations.aw.push(permission.entity);
@@ -49,7 +49,7 @@ export default class FileSnapshot {
                     }
                     if (acr.deniedWriters.length > 0) {
                         // Check denied writers.
-                        if (permission.role === "writer"
+                        if (permission.role === "write"
                             && (acr.deniedWriters.includes(permission.entity) 
                             || acr.deniedWriters.includes(permission.entity.split("@").pop()))) {
                             acrViolations.dw.push(permission.entity);
