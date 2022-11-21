@@ -3,28 +3,37 @@ import { useState } from "react";
 export default function SwitchSnapshotModal(props) {
     let snapshotList = [];
     const [currentSS, setCurrentSS] = useState(null);
+    const [currentTimestamp, setCurrentTimestamp] = useState(null);
+
 
 
     const handleClick = (e) => {
-        let selected = e.target.outerText;
-        setCurrentSS(selected);
+        let id = e.target.id;
+        let timestamp = e.target.innerHTML;
+        setCurrentSS( id);
+        setCurrentTimestamp(timestamp);
 
     }
     const handleClose = () => {
         props.closeSwitchSnapshotModal();
     }
-    const handleRecent = (e) => {
-        let selected = props.result.values().next().value;
-        setCurrentSS(selected);
+
+    const handleRecentButton = () =>{
+        let key = props.result.keys().next().value;
+        props.confirmSwitchSnapshot(key); 
     }
-    const handleConfirm = () => {
-        // props.confirmSwitchSnapshot(selectedSnapshot);
+
+    const handleConfirmButton = () =>{
+        let ssid = currentSS;
+        props.confirmSwitchSnapshot(ssid);
     }
 
     if (props.result) {
         props.result.forEach((value, key) => (
             snapshotList.push(
-                <p className= "font-mono border-b-2 hover:bg-gray-100" onClick={handleClick} id={key} key={value} >{value}</p>
+                <div onClick={handleClick} key={key} id={key} className="bg-gray-400 w-4/6 border border-black flex justify-center hover:bg-gray-500">
+                    {value}
+                </div>
             )
         ));
     }
@@ -32,8 +41,9 @@ export default function SwitchSnapshotModal(props) {
     if(props.result){
     return (  
         <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full h-50vh">
-            <div className="relative h-full w-full max-w-2xl p-4 md:h-auto " >
+            <div className="relative min-h-[50vh] min-w-[50vw] max-w-2xl p-4 md:h-auto font-mono " >
                 <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
+                    
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
                         <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Switch Snapshot</h3>
                         <button onClick={handleClose} type="button" className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="defaultModal">
@@ -43,12 +53,24 @@ export default function SwitchSnapshotModal(props) {
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <div className= "max-h-64 w:50%  overflow-y-scroll ">
+
+                    <div className="p-4 flex flex-col items-center max-h-[50vh] overflow-y-auto">
                         {snapshotList}
                     </div>
-                    <h3> Selected Snapshot: {currentSS} </h3>
-                    <button id={props.result.keys().next().value} onClick={handleRecent} > Return to Recent Snapshot</button>
-                    <button onClick={handleConfirm}> Confirm</button>
+                    
+                    <div className="flex p-4 justify-center">
+                        <h1> Selected Snapshot: {currentTimestamp} </h1>
+                    </div>
+
+                    <div className="flex p-4 justify-center gap-x-5">
+                        <button onClick={handleRecentButton} className="bg-yellow-400 rounded-xl p-1 px-3">
+                            Recent
+                        </button>
+                        <button onClick={handleConfirmButton} className="bg-green-400 rounded-xl p-1 px-3">
+                            Confirm
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
