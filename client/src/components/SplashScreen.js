@@ -5,8 +5,6 @@ import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
-
-
 import Query from '../snapshotoperations/Query';
 
 export default function SplashScreen() {
@@ -20,8 +18,7 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
-    const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
-    const [showSnapshots, setShowSnapshots] = useState(false);
+    const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
 
@@ -164,18 +161,17 @@ export default function SplashScreen() {
     }
 
     const showSwitchSnapshotModal = async () => {
-        setShowSwitchSnapshotModal(true);
-        const map = (await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs;
+        let map = (await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs;
         setShowSnapshots(map);
     }
     const closeSwitchSnapshotModal = () => {
-        setShowSwitchSnapshotModal(false);
+        setShowSnapshots(null);
     }
-    const confirmSwitchSnapshot = async (id) => {
-        console.log(id);
+    const confirmSwitchSnapshot = async (ssID) => {
+        let id = ssID;
         const snapshot = await apis.getSnapshot(id);
         store.setSnapshot(snapshot);
-        closeSwitchSnapshotModal();
+        setShowSnapshots(null);
         setFiles(null);
     }
     
@@ -282,7 +278,7 @@ export default function SplashScreen() {
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
             {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
-            {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
+            {showSnapshots && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
             {showACRModal && <ACRModal acr={showACRModal} handleCloseACRModal={handleCloseACRModal} />}
             {validateACRResult && <ValidateACRResult result={validateACRResult} handleCloseValidateACR={handleCloseValidateACR} />}
             {screen}
