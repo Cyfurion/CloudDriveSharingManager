@@ -5,6 +5,7 @@ import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
+import FileSnapshot from '../classes/filesnapshot-class';
 
 import Query from '../snapshotoperations/Query';
 
@@ -138,14 +139,20 @@ export default function SplashScreen() {
     const showSwitchSnapshotModal = async () => {
         setShowSwitchSnapshotModal(true);
         const map = (await apis.getUser(store.currentSnapshot.profile)).data;
-        console.log(map);
         setShowSnapshots(map);
-        
-
     }
     const closeSwitchSnapshotModal = () => {
         setShowSwitchSnapshotModal(false);
     }
+    const confirmSwitchSnapshot = async (e) => {
+        // console.log(e.target.id);
+        const snapshot = (new FileSnapshot()).deserialize((await apis.getSnapshot(e.target.id)).data.contents);
+        console.log(snapshot);
+        store.setSnapshot(snapshot);
+        closeSwitchSnapshotModal();
+        setFiles(null);
+    }
+    
     const handleHideCheckBox = () => {
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
@@ -246,7 +253,7 @@ export default function SplashScreen() {
             {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
             {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
-            {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} />}
+            {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
 
             {screen}
         </div>
