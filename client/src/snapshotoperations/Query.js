@@ -2,9 +2,9 @@ import { Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 
 const keywords = ['drive', 'owner', 'creator', 'from', 'to', 'readable', 'writable', 
-    'sharable', 'name', 'inFolder', 'folder', 'path', 'sharing',
+    'shareable', 'name', 'inFolder', 'folder', 'path', 'sharing',
     '-drive', '-owner', '-creator', '-from', '-to', '-readable', '-writable', 
-    '-sharable', '-name', '-inFolder', '-folder', '-path', '-sharing'];
+    '-shareable', '-name', '-inFolder', '-folder', '-path', '-sharing'];
 
 //name in quotes
 
@@ -169,7 +169,10 @@ class Operator {
                     return this.basicFieldChecker(snapshot, this.notEqualsQualifier, 'owner');
                 case 'from':
                     //find files shared by specified user
-                    throw new Error("from keyword is not yet implemented");
+                    return this.basicFieldChecker(snapshot, this.equalsQualifier, 'sharedBy');
+                case '-from':
+                    //find files shared by specified user
+                    return this.basicFieldChecker(snapshot, this.notEqualsQualifier, 'sharedBy');
                 case 'to':
                     // find files shared directly to user (not through groups or inheritted)
                     return this.to(snapshot, this.value);
@@ -185,9 +188,11 @@ class Operator {
                 case '-writable':
                     // find files writable by user
                     return this.noAccess(snapshot, 'write', this.value);
-                case 'sharable':
-                    // find files sharable by user
-                    throw new Error("sharable keyword is not yet implemented");
+                case 'shareable':
+                    // find files shareable by user
+                    return this.shareable(snapshot, this.value);
+                case '-shareable':
+                    return this.notShareable(snapshot, this.value);
                 case 'name':
                     // find files whose name matches 
                     return this.basicFieldChecker(snapshot, this.matchesQualifier, 'name');
@@ -271,7 +276,7 @@ class Operator {
     }
 
     driveQualifier(file, field, value) {
-        return (value === "MyDrive" && file[field] === "") || value === file[field]
+        return (value === "MyDrive" && file[field] === "") || value === file[field];//TODO what is this
     }
     notDriveQualifier(file, field, value) {
         return !((value === "MyDrive" && file[field] === "") || value === file[field]);
@@ -552,6 +557,54 @@ class Operator {
             if (file instanceof Folder) {
                 for (let subFile of file.files) {
                     files = files.concat(this.notUserSharing(subFile, user));
+                }
+            }
+        }
+        return files;
+    }
+
+    shareable(file, user) { 
+        let files = [];
+        if (file instanceof FileSnapshot) {
+            for (let rootFile of file.root.files) {
+                files = files.concat(this.shareable(rootFile, user));
+            }
+        } else {
+            for (let permission of file.permissions) {
+                if (permission.entity.toLowerCase() === user.toLowerCase() && permission.canShare) {
+                    files.push(file);
+                    break;
+                }
+            }
+            if (file instanceof Folder) {
+                for (let subFile of file.files) {
+                    files = files.concat(this.shareable(subFile, user));
+                }
+            }
+        }
+        return files;
+    }
+
+    notShareable(file, user) {
+        let files = [];
+        if (file instanceof FileSnapshot) {
+            for (let rootFile of file.root.files) {
+                files = files.concat(this.notShareable(rootFile, user));
+            }
+        } else {
+            let canPush = true;
+            for (let permission of file.permissions) {
+                if (permission.entity.toLowerCase() === user.toLowerCase() && permission.canShare) {
+                    canPush = false;
+                    break;
+                }
+            }
+            if (canPush) {
+                files.push(file);
+            }
+            if (file instanceof Folder) {
+                for (let subFile of file.files) {
+                    files = files.concat(this.notShareable(subFile, user));
                 }
             }
         }

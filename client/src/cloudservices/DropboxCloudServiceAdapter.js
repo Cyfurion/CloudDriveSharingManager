@@ -79,7 +79,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
                 if (file[".tag"] !== "folder") {
                     isInherited = true;
                 }
-                let p = new Permission(type, entity, role, isInherited);
+                let p = new Permission(type, entity, role, isInherited, true);//all files are shareable by people who have access
                 permissions.push(p);
                 permissionIds.push(file.shared_folder_id);
             }
