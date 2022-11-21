@@ -20,6 +20,7 @@ import FileCard from './FileCard';
 import DeviantFileCard from "./DeviantFileCard";
 import ACRModal from "./ACRModal";
 import ACRCard from "./ACRCard";
+import ValidateACRResult from "./ValidateACRResult";
 
 export {
     GoogleLoginButton,
@@ -43,5 +44,6 @@ export {
     SwitchSnapshotModal,
     DeviantFileCard,
     ACRModal,
-    ACRCard
+    ACRCard,
+    ValidateACRResult
 }

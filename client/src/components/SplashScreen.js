@@ -1,4 +1,4 @@
-import { ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
+import {ValidateACRResult, ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
@@ -23,6 +23,7 @@ export default function SplashScreen() {
     const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
     const [showSnapshots, setShowSnapshots] = useState(false);
     const [showACRModal, setShowACRModal] = useState(null);
+    const [validateACRResult, setValidateACRResult] = useState(null);
 
     const handleRefreshButton = async () =>{
         store.reset();
@@ -40,8 +41,13 @@ export default function SplashScreen() {
 
     const handleValidateACRButton = async () =>{
         let ACRList = (await apis.getUser(store.currentSnapshot.profile)).acrs;
-        console.log(store.currentSnapshot.validate(ACRList));
+        let result = store.currentSnapshot.validate(ACRList);
+        setValidateACRResult(result);
         
+    }
+
+    const handleCloseValidateACR = () =>{
+        setValidateACRResult(null);
     }
 
     const handleFileCheckBox = (e) => {
@@ -278,6 +284,7 @@ export default function SplashScreen() {
             {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
             {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
             {showACRModal && <ACRModal acr={showACRModal} handleCloseACRModal={handleCloseACRModal} />}
+            {validateACRResult && <ValidateACRResult result={validateACRResult} handleCloseValidateACR={handleCloseValidateACR} />}
             {screen}
         </div>
     );
