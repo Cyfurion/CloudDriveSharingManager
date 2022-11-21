@@ -171,9 +171,9 @@ export default function SplashScreen() {
     const closeSwitchSnapshotModal = () => {
         setShowSwitchSnapshotModal(false);
     }
-    const confirmSwitchSnapshot = async (e) => {
-        // console.log(e.target.id);
-        const snapshot = await apis.getSnapshot(e.target.id);
+    const confirmSwitchSnapshot = async (id) => {
+        console.log(id);
+        const snapshot = await apis.getSnapshot(id);
         store.setSnapshot(snapshot);
         closeSwitchSnapshotModal();
         setFiles(null);
