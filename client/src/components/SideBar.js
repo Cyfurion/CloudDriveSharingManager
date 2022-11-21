@@ -14,10 +14,18 @@ import apis from '../api';
 
 export default function SideBar( props ) {
     const [permissionView, setPermissionView] = useState(false);
-    const { store} = useContext(StoreContext);
+    const { store } = useContext(StoreContext);
+
+    const handleRefreshButton = () =>{
+        props.handleRefreshButton();
+    }
 
     const handleACRButton = () => {
         props.showACRModal();
+    }
+
+    const handleValidateACRButton = () =>{
+        props.handleValidateACRButton();
     }
 
     const handlePermissionButton = async () => {
@@ -76,7 +84,7 @@ export default function SideBar( props ) {
                     Permissions
                 </button>
 
-                <button className="sidebarbtn" >
+                <button onClick={handleRefreshButton} className="sidebarbtn" >
                     <RefreshIcon fontSize="small" sx={{color: 'black'}}/> 
                     Refresh
                 </button>
@@ -96,7 +104,7 @@ export default function SideBar( props ) {
                     Access Control Requirement
                 </button>
 
-                <button className="sidebarbtn" >
+                <button onClick={handleValidateACRButton} className="sidebarbtn" >
                     <LockResetIcon fontSize="small" sx={{color: 'black'}}/>
                     Validate ACR
                 </button>

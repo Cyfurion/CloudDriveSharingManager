@@ -33,9 +33,9 @@ export default function FileCard(props) {
             </th>
             <td className='max-w-[40vw] min-w-[40vw] flex flex-col text-ellipsis overflow-hidden whitespace-nowrap' type={"" + file.owner}>
                 <div className='flex items-center' >
-                    <button className="ml-2 p-1 rounded-full bg-gray-200 hover:bg-gray-300" onClick={(e) => handleClicked(e)}>
+                    {file.owner !== "SYSTEM" ? <button className="ml-2 p-1 rounded-full bg-gray-200 hover:bg-gray-300" onClick={(e) => handleClicked(e)}>
                         {showPermIcon}
-                    </button>
+                    </button> : ""}
                     {file.owner === 'SYSTEM' ? <FolderSpecialIcon /> : (file.files === undefined ? <InsertDriveFileIcon /> : <FolderIcon />)}
                     <span className={" " + (file.files !== undefined ? "underline" : "")} onClick={file.files === undefined ? null : (e) => props.handleClickFolder(e, file)} >{file.name}</span>
 
