@@ -148,7 +148,7 @@ export default function SplashScreen() {
 
     const showSwitchSnapshotModal = async () => {
         setShowSwitchSnapshotModal(true);
-        const map = (await apis.getUser(store.currentSnapshot.profile)).data;
+        const map = (await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs;
         setShowSnapshots(map);
     }
     const closeSwitchSnapshotModal = () => {
@@ -156,8 +156,7 @@ export default function SplashScreen() {
     }
     const confirmSwitchSnapshot = async (e) => {
         // console.log(e.target.id);
-        const snapshot = (new FileSnapshot()).deserialize((await apis.getSnapshot(e.target.id)).data.contents);
-        console.log(snapshot);
+        const snapshot = await apis.getSnapshot(e.target.id);
         store.setSnapshot(snapshot);
         closeSwitchSnapshotModal();
         setFiles(null);
