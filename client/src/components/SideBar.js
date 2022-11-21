@@ -82,7 +82,7 @@ export default function SideBar( props ) {
                     Switch Snapshot
                 </button>
 
-                <button onClick={handleACRButton} className="sidebarbtn" >
+                <button onClick={ handleACRButton } className="sidebarbtn" >
                     <ScreenLockLandscapeIcon fontSize="small" sx={{color: 'black'}}/>
                     Access Control Requirement
                 </button>
