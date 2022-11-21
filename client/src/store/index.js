@@ -2,11 +2,10 @@
  * This file handles current snapshot and directory information.
  */
 import api from '../api';
-import { findDeviantSharing } from '../snapshotoperations/SharingAnalysis'
 import AdapterContext from '../cloudservices';
 
 import React, { createContext, useContext, useState } from 'react';
-import FileSnapshot from '../classes/filesnapshot-class';
+import AccessControlRequirement from '../classes/accesscontrolrequirement-class';
 
 // Create store context.
 const StoreContext = createContext();

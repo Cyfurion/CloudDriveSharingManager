@@ -1,4 +1,5 @@
-import { File, Folder } from "../classes/file-class";
+import { File, Folder } from "./file-class";
+import Query from "../snapshotoperations/Query";
 import Permission from "./permission-class";
 
 export default class FileSnapshot {
@@ -8,8 +9,53 @@ export default class FileSnapshot {
         this.timestamp = timestamp;
     }
 
-    validate(acrs) {
-        return false;
+    validate(acrs, snapshot) {
+        const violations = new Map();
+        for (let acr of acrs) {
+            const acrViolations = {
+                ar: [],
+                aw: [],
+                dr: [],
+                dw: []
+            }
+            const files = (new Query(acr.query, snapshot)).evaluate()
+            for (let file of files) {
+                for (let permission of file.permissions) {
+                    if (acr.allowedReaders.length > 0) {
+                        // Check allowed readers.
+                        if (!acr.allowedReaders.includes(permission.entity) 
+                            && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
+                            acrViolations.ar.push(permission.entity);
+                        }
+                    }
+                    if (acr.allowedWriters.length > 0) {
+                        // Check allowed writers.
+                        if (permission.role === "writer"
+                            && !acr.allowedReaders.includes(permission.entity) 
+                            && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
+                            acrViolations.aw.push(permission.entity);
+                        }
+                    }
+                    if (acr.deniedReaders.length > 0) {
+                        // Check denied readers.
+                        if (acr.deniedReaders.includes(permission.entity) 
+                            || acr.deniedReaders.includes(permission.entity.split("@").pop())) {
+                            acrViolations.dr.push(permission.entity);
+                        }
+                    }
+                    if (acr.deniedWriters.length > 0) {
+                        // Check denied writers.
+                        if (permission.role === "writer"
+                            && (acr.deniedWriters.includes(permission.entity) 
+                            || acr.deniedWriters.includes(permission.entity.split("@").pop()))) {
+                            acrViolations.dw.push(permission.entity);
+                        }
+                    }
+                }
+            }
+            violations.set(acr.query, acrViolations);
+        }
+        return violations;
     }
 
     deserialize(str) {
