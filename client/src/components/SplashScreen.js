@@ -25,6 +25,7 @@ export default function SplashScreen() {
     const handleRefreshButton = async () =>{
         store.reset();
         await store.takeSnapshot();
+        setFiles(null);
     }
 
     const handleShowACRModal = async () => {
