@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import StoreContext from "../store";
+import Permission from "../classes/permission-class";
 
 export default function PermissionModal(props) {
     const { store } = useContext(StoreContext);
@@ -9,12 +10,9 @@ export default function PermissionModal(props) {
 
     let XIcon = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>;  
-
-
+    </svg>;
 
     let folder = store.getCurrentFolder();
-
     let files = [];
     for (let i = 0; i < folder.files.length; i++) {
         if (props.data.includes(folder.files[i].id))
@@ -91,7 +89,13 @@ export default function PermissionModal(props) {
 
     const handleProceed = (e) => {
         e.preventDefault();
-        props.editPermission();
+        let readers = [...readerList];
+        let writers = [...writerList];
+        let removeEntityList = [...removeList];
+        console.log( readers, writers, removeEntityList);
+
+        
+
     }
 
     const handleClose = () => {
@@ -119,8 +123,8 @@ export default function PermissionModal(props) {
                                     <h1 className="font-bold underline"> {file.isFolder === true ? "Folder:" : "File:"} {file.name}</h1>
                                     <div className="p-2 ">
                                         <h1 className="font-bold"> Permission:</h1>
-                                        {file.permissions.map((permission) => (
-                                            <h1 className="pl-3"> Entity: {permission.entity}, Role: {permission.role}</h1>
+                                        {file.permissions.map((permission, index) => (
+                                            <h1 className="pl-3"> {index+1}. Entity: {permission.entity}, Role: {permission.role}</h1>
                                         ))}
                                     </div>
                                 </div>

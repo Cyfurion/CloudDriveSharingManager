@@ -18,6 +18,7 @@ import FileFolderDiffResult from "./FileFolderDiffResult";
 import SwitchSnapshotModal from "./SwitchSnapshotModal";
 import FileCard from './FileCard';
 import DeviantFileCard from "./DeviantFileCard";
+import ACRModal from "./ACRModal";
 
 export {
     GoogleLoginButton,
@@ -39,5 +40,6 @@ export {
     FileFolderDiffResult,
     FileCard,
     SwitchSnapshotModal,
-    DeviantFileCard
+    DeviantFileCard,
+    ACRModal
 }

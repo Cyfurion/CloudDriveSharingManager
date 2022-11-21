@@ -55,3 +55,13 @@ code {
 .remove-perm-card{
   @apply flex justify-between bg-red-300  rounded-lg px-2 font-bold
 }
+
+.toggle-checkbox:checked {
+  @apply: right-0 border-green-400;
+  right: 0;
+  border-color: #68D391;
+}
+.toggle-checkbox:checked + .toggle-label {
+  @apply: bg-green-400;
+  background-color: #68D391;
+}

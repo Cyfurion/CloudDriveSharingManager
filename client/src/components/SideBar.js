@@ -13,6 +13,10 @@ import CancelIcon from '@mui/icons-material/Cancel';
 export default function SideBar( props ) {
     const [permissionView, setPermissionView] = useState(false);
 
+    const handleACRButton = () => {
+        props.showACRModal();
+    }
+
     const handlePermissionButton = () => {
         setPermissionView(true);
         props.handlePermissionModal();
@@ -78,7 +82,7 @@ export default function SideBar( props ) {
                     Switch Snapshot
                 </button>
 
-                <button className="sidebarbtn" >
+                <button onClick={handleACRButton} className="sidebarbtn" >
                     <ScreenLockLandscapeIcon fontSize="small" sx={{color: 'black'}}/>
                     Access Control Requirement
                 </button>

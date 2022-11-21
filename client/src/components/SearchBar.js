@@ -47,7 +47,7 @@ export default function SearchBar( props ) {
             </button>
         </div>
 
-        <input onChange={handleShowClear} onKeyDown={handleSubmit} name='q' id="default-searchbar" className="w-full mx outline-0 bg-inherit " type='text' placeholder="Search"/>
+        <input onChange={handleShowClear} onKeyDown={handleSubmit} name='q' id="default-searchbar" className="w-full outline-0 bg-inherit " type='text' placeholder="Search"/>
 
         <div style={{visibility : clearButton ? 'visible' : 'hidden'}}className="flex p-1 rounded-full hover:bg-gray-300">
             <button onClick={handleClearSearch}>

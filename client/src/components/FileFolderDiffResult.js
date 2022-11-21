@@ -1,5 +1,6 @@
 
 export default function FileFolderDiffResult(props) {
+    console.log(props.result);
 
     const handleClose = () => {
         props.closeFFDiffModal();
@@ -22,7 +23,7 @@ export default function FileFolderDiffResult(props) {
                         <div className="border-b border-black "> Current Folder: {props.result.folder.name} </div>
 
                         <h1 className="border-b"> Differing Files: </h1>
-                        <div className="flex accordion flex-col max-h-64 overflow-y-scroll  ">
+                        <div className="flex accordion flex-col max-h-64 overflow-y-auto  ">
                             {props.result.differingFiles.map((file)=>(
                                 <div className="border-b pl-5"> File Name: {file.file.name}
                                     
