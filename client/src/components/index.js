@@ -19,6 +19,7 @@ import SwitchSnapshotModal from "./SwitchSnapshotModal";
 import FileCard from './FileCard';
 import DeviantFileCard from "./DeviantFileCard";
 import ACRModal from "./ACRModal";
+import ACRCard from "./ACRCard";
 
 export {
     GoogleLoginButton,
@@ -41,5 +42,6 @@ export {
     FileCard,
     SwitchSnapshotModal,
     DeviantFileCard,
-    ACRModal
+    ACRModal,
+    ACRCard
 }

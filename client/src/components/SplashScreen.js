@@ -24,12 +24,12 @@ export default function SplashScreen() {
     const [showSnapshots, setShowSnapshots] = useState(false);
     const [showACRModal, setShowACRModal] = useState(false);
 
-    const handleACRButton = () => {
-        setShowACRModal( (prevState) => !prevState);
+    const handleShowACRModal = () => {
+        setShowACRModal( true);
     }
 
     const handleCloseACRModal = () => {
-        setShowACRModal( (prevState) => !prevState);
+        setShowACRModal( false);
     }
 
     const handleFileCheckBox = (e) => {
@@ -224,14 +224,16 @@ export default function SplashScreen() {
                                 handleQueryBuilderButton={handleQueryBuilderButton} />
                         <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
-                            <SideBar showACRModal={handleACRButton}
+                            <SideBar 
                                      showSwitchSnapshotModal={showSwitchSnapshotModal}
                                      showEditPermissionModal={showEditPermissionModal}
                                      handleHideCheckBox={handleHideCheckBox}
                                      handlePermissionModal={handlePermissionModal}
                                      handleAnalysisModal={handleAnalysisModal} 
                                      handleHomeButton={handleHomeButton} 
-                                     handleHistoryButton={handleHistoryButton}/>
+                                     handleHistoryButton={handleHistoryButton}
+                                     showACRModal={handleShowACRModal}
+                                     />
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
                                 <h1 className="font-bold"><button onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>
                                 <WorkSpace  visible={checkboxVisible}
