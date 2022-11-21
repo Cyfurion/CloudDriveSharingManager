@@ -1,17 +1,20 @@
 import { create } from "@mui/material/styles/createTransitions";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import AccessControlRequirement from "../classes/accesscontrolrequirement-class";
 import ACRCard from "./ACRCard";
-
+import StoreContext from "../store";
+import apis from "../api";
 
 export default function ACRModal(props) {
+    const {store} = useContext(StoreContext);
     const [AR, setAR] = useState([]);
     const [AW, setAW] = useState([]);
     const [DR, setDR] = useState([]);
     const [DW, setDW] = useState([]);
     const [Grp, setGrp] = useState(false);
     const [createACRScreen, setCreateACRScreen] = useState(false);
-    const [acrList, setacrList] = useState([]);
+    const [acrList, setACRList] = useState(props.acr);
+    console.log(props.acr);
 
 
     const handleAddAR = () => {
@@ -108,7 +111,7 @@ export default function ACRModal(props) {
         setCreateACRScreen(false);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let query = document.querySelector("#acr-search-query").value;
         let ars = [...AR];
         let aws = [...AW];
@@ -133,10 +136,12 @@ export default function ACRModal(props) {
             }
         }
 
-        let acr = new AccessControlRequirement(query, ars, aws, drs, dws, grps);
+        let acr = new AccessControlRequirement(store.currentSnapshot.profile,query, ars, aws, drs, dws, grps);
         let list = [...acrList];
         list = [...list, acr];
-        setacrList(list);
+        await apis.addACR(acr);
+
+        setACRList(list);
         document.querySelector("#acr-search-query").value = "";
         setAR([]);
         setDR([]);
@@ -146,12 +151,14 @@ export default function ACRModal(props) {
         setCreateACRScreen(false);
     }
 
-    const handleDeleteACR = (e) => {
-        let index = e.target.id;
+    const handleDeleteACR = async (e) => {
+        let index = e.currentTarget.id;
+        console.log(index);
         if ( index > -1){
             let list = [...acrList];
             list.splice(index, 1);
-            setacrList(list);
+            await apis.deleteACR(index, store.currentSnapshot.profile);
+            setACRList(list);
         }
     }
 

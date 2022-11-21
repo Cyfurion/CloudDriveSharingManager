@@ -15,7 +15,8 @@ export const StoreActionType = {
     PUSH_DIRECTORY: "PUSH_DIRECTORY",
     POP_DIRECTORY: "POP_DIRECTORY",
     SET_FOLDER: "SET_FOLDER",
-    SET_SNAPSHOT: "SET_SNAPSHOT"
+    SET_SNAPSHOT: "SET_SNAPSHOT",
+    RESET: "RESET"
 }
 
 function StoreContextProvider(props) {
@@ -49,6 +50,11 @@ function StoreContextProvider(props) {
                     directory: [payload.root],
                     currentSnapshot: payload
                 });
+            case StoreActionType.RESET:
+                return setStore({
+                    directory: [],
+                    currentSnapshot: null
+                });
             default:
                 throw new Error("Invalid StoreActionType: " + type);
         }
@@ -78,6 +84,7 @@ function StoreContextProvider(props) {
     store.getCurrentFolder = function () {
         return store.directory[store.directory.length - 1];
     }
+
     store.setSnapshot = function (snapshot) {
         storeReducer({
             type: StoreActionType.SET_SNAPSHOT,
@@ -90,6 +97,13 @@ function StoreContextProvider(props) {
             store.setSnapshot(snapshot);
             api.addSnapshot(snapshot);
         }
+    }
+
+    store.reset = function () {
+        storeReducer({
+            type: StoreActionType.RESET,
+            payload: null
+        });
     }
 
     return (

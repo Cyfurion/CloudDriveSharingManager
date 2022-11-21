@@ -5,7 +5,6 @@ import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
-import FileSnapshot from '../classes/filesnapshot-class';
 
 
 import Query from '../snapshotoperations/Query';
@@ -23,14 +22,26 @@ export default function SplashScreen() {
     const [ffDiffResult, setFFDiffResult] = useState(null);
     const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
     const [showSnapshots, setShowSnapshots] = useState(false);
-    const [showACRModal, setShowACRModal] = useState(false);
+    const [showACRModal, setShowACRModal] = useState(null);
 
-    const handleShowACRModal = () => {
-        setShowACRModal( true);
+    const handleRefreshButton = async () =>{
+        store.reset();
+        await store.takeSnapshot();
+    }
+
+    const handleShowACRModal = async () => {
+        let currentACRs = (await apis.getUser(store.currentSnapshot.profile)).acrs;
+        setShowACRModal( currentACRs );
     }
 
     const handleCloseACRModal = () => {
-        setShowACRModal( false);
+        setShowACRModal( null );
+    }
+
+    const handleValidateACRButton = async () =>{
+        let ACRList = (await apis.getUser(store.currentSnapshot.profile)).acrs;
+        console.log(store.currentSnapshot.validate(ACRList));
+        
     }
 
     const handleFileCheckBox = (e) => {
@@ -231,6 +242,8 @@ export default function SplashScreen() {
                         <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
                             <SideBar 
+                                     handleRefreshButton={handleRefreshButton}
+                                     handleValidateACRButton={handleValidateACRButton}
                                      showSwitchSnapshotModal={showSwitchSnapshotModal}
                                      showEditPermissionModal={showEditPermissionModal}
                                      handleHideCheckBox={handleHideCheckBox}
@@ -264,7 +277,7 @@ export default function SplashScreen() {
             {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
             {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
-            {showACRModal && <ACRModal handleCloseACRModal={handleCloseACRModal} />}
+            {showACRModal && <ACRModal acr={showACRModal} handleCloseACRModal={handleCloseACRModal} />}
             {screen}
         </div>
     );

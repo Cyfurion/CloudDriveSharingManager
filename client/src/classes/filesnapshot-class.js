@@ -9,16 +9,17 @@ export default class FileSnapshot {
         this.timestamp = timestamp;
     }
 
-    validate(acrs, snapshot) {
+    validate(acrs) {
         const violations = new Map();
         for (let acr of acrs) {
+            let clear = true;
             const acrViolations = {
                 ar: [],
                 aw: [],
                 dr: [],
                 dw: []
             }
-            const files = (new Query(acr.query, snapshot)).evaluate()
+            const files = (new Query(acr.query, this)).evaluate()
             for (let file of files) {
                 for (let permission of file.permissions) {
                     if (acr.allowedReaders.length > 0) {
@@ -26,6 +27,7 @@ export default class FileSnapshot {
                         if (!acr.allowedReaders.includes(permission.entity) 
                             && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
                             acrViolations.ar.push(permission.entity);
+                            clear = false;
                         }
                     }
                     if (acr.allowedWriters.length > 0) {
@@ -34,6 +36,7 @@ export default class FileSnapshot {
                             && !acr.allowedReaders.includes(permission.entity) 
                             && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
                             acrViolations.aw.push(permission.entity);
+                            clear = false;
                         }
                     }
                     if (acr.deniedReaders.length > 0) {
@@ -41,6 +44,7 @@ export default class FileSnapshot {
                         if (acr.deniedReaders.includes(permission.entity) 
                             || acr.deniedReaders.includes(permission.entity.split("@").pop())) {
                             acrViolations.dr.push(permission.entity);
+                            clear = false;
                         }
                     }
                     if (acr.deniedWriters.length > 0) {
@@ -49,11 +53,12 @@ export default class FileSnapshot {
                             && (acr.deniedWriters.includes(permission.entity) 
                             || acr.deniedWriters.includes(permission.entity.split("@").pop()))) {
                             acrViolations.dw.push(permission.entity);
+                            clear = false;
                         }
                     }
                 }
             }
-            violations.set(acr.query, acrViolations);
+            if (!clear) { violations.set(acr.query, acrViolations); }
         }
         return violations;
     }

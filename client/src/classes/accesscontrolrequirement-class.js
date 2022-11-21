@@ -1,5 +1,6 @@
 class AccessControlRequirement {
-    constructor (query, AR, AW, DR, DW, grp) {
+    constructor (profile,query, AR, AW, DR, DW, grp) {
+        this.profile = profile;
         this.query = query;
         this.allowedReaders = AR;
         this.allowedWriters = AW;
