@@ -1,4 +1,4 @@
-import {LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
+import { ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
 import AuthContext from '../auth';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
@@ -6,6 +6,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
 import FileSnapshot from '../classes/filesnapshot-class';
+
 
 import Query from '../snapshotoperations/Query';
 
@@ -22,6 +23,15 @@ export default function SplashScreen() {
     const [ffDiffResult, setFFDiffResult] = useState(null);
     const [showSnapshotModal, setShowSwitchSnapshotModal] = useState(false);
     const [showSnapshots, setShowSnapshots] = useState(false);
+    const [showACRModal, setShowACRModal] = useState(false);
+
+    const handleACRButton = () => {
+        setShowACRModal( (prevState) => !prevState);
+    }
+
+    const handleCloseACRModal = () => {
+        setShowACRModal( (prevState) => !prevState);
+    }
 
     const handleFileCheckBox = (e) => {
         const checked = e.target.checked;
@@ -168,7 +178,6 @@ export default function SplashScreen() {
 
         if(store.directory.length > 1){
             let result = findDeviantSharing(store.getCurrentFolder(), (threshold/100));
-            console.log(result);
             setAnalysisResult(result);
         }
         else{
@@ -222,7 +231,7 @@ export default function SplashScreen() {
                                 handleQueryBuilderButton={handleQueryBuilderButton} />
                         <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
-                            <SideBar    
+                            <SideBar showACRModal={handleACRButton}
                                      showSwitchSnapshotModal={showSwitchSnapshotModal}
                                      showEditPermissionModal={showEditPermissionModal}
                                      handleHideCheckBox={handleHideCheckBox}
@@ -244,7 +253,7 @@ export default function SplashScreen() {
             
     }
     return ( 
-        <div className=" min-w-fit min-h-screen ">
+        <div className=" min-w-fit min-h-screen  ">
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
                                                  fileFolderDiff={fileFolderDiff}
@@ -254,7 +263,7 @@ export default function SplashScreen() {
             {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
             {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
             {showSnapshotModal && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
-
+            {showACRModal && <ACRModal handleCloseACRModal={handleCloseACRModal} />}
             {screen}
         </div>
     );
