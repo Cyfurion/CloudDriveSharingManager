@@ -1,23 +1,37 @@
+import { useState } from "react";
+
 export default function SwitchSnapshotModal(props) {
     let snapshotList = [];
+    const [currentSS, setCurrentSS] = useState(null);
 
-    const handleClick = async (e) => {
-        props.confirmSwitchSnapshot(e);
+
+    const handleClick = (e) => {
+        let selected = e.target.outerText;
+        setCurrentSS(selected);
+
     }
     const handleClose = () => {
         props.closeSwitchSnapshotModal();
+    }
+    const handleRecent = (e) => {
+        let selected = props.result.values().next().value;
+        setCurrentSS(selected);
+    }
+    const handleConfirm = () => {
+        // props.confirmSwitchSnapshot(selectedSnapshot);
     }
 
     if (props.result) {
         props.result.forEach((value, key) => (
             snapshotList.push(
-                <p onClick={handleClick} id={key}>{value}</p>
+                <p className= "font-mono border-b-2 hover:bg-gray-100" onClick={handleClick} id={key} key={value} >{value}</p>
             )
         ));
     }
 
-    return (
-        <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
+    if(props.result){
+    return (  
+        <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full h-50vh">
             <div className="relative h-full w-full max-w-2xl p-4 md:h-auto " >
                 <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
@@ -29,11 +43,15 @@ export default function SwitchSnapshotModal(props) {
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <div className= "max-h-64 overflow-y-scroll">
+                    <div className= "max-h-64 w:50%  overflow-y-scroll ">
                         {snapshotList}
                     </div>
+                    <h3> Selected Snapshot: {currentSS} </h3>
+                    <button id={props.result.keys().next().value} onClick={handleRecent} > Return to Recent Snapshot</button>
+                    <button onClick={handleConfirm}> Confirm</button>
                 </div>
             </div>
         </div>
     );
+    }
 }
