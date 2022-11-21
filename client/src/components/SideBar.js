@@ -7,17 +7,26 @@ import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import StoreContext from '../store';
 import CancelIcon from '@mui/icons-material/Cancel';
+import apis from '../api';
 
 export default function SideBar( props ) {
     const [permissionView, setPermissionView] = useState(false);
+    const { store} = useContext(StoreContext);
 
     const handleACRButton = () => {
         props.showACRModal();
     }
 
-    const handlePermissionButton = () => {
+    const handlePermissionButton = async () => {
+        let [recentTimestamp] = ( await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs.values();
+        
+        if(recentTimestamp !== store.currentSnapshot.timestamp){
+            alert("Cannot edit permissions for older snapshots. Please select most recent snapshot");
+            return;
+        }
         setPermissionView(true);
         props.handlePermissionModal();
     }
