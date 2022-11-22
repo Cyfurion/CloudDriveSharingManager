@@ -292,7 +292,6 @@ export default function SplashScreen() {
     }
     return ( 
         <div className=" min-w-fit min-h-screen  ">
-            <Toast position="bottom-right"/>
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
                                                  fileFolderDiff={fileFolderDiff}
@@ -306,6 +305,7 @@ export default function SplashScreen() {
             {validateACRResult && <ValidateACRResult result={validateACRResult} handleCloseValidateACR={handleCloseValidateACR} />}
             {groupSSModal && <GroupSSModal handleCloseGroupSSModal={handleCloseGroupSSModal}  />}
             {screen}
+            <Toast position="bottom-right"/>
         </div>
     );
 }
