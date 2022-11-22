@@ -7,6 +7,7 @@ import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
+import GroupIcon from '@mui/icons-material/Group';
 import { useState, useContext } from 'react';
 import StoreContext from '../store';
 import { ToastContext } from '../toast';
@@ -79,9 +80,13 @@ export default function SideBar( props ) {
         props.showSwitchSnapshotModal();
     }
 
+    const handleGroupMembershipButton = ()=>{
+        props.handleGroupMembershipButton();
+    }
+
     if (permissionView){
         return (
-            <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4">
+            <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4 items-baseline">
                 <button onClick={editPermissionButton} type="button" className="sidebar-greenbtn"> <EditIcon fontSize="small" sx={{color: 'black'}}/> Edit Permissions </button>
                 <button onClick={cancelPermissionMode} type="button" className="sidebar-redbtn "> <CancelIcon fontSize="small" sx={{color: 'black'}} /> Exit </button>
            </div>
@@ -128,6 +133,10 @@ export default function SideBar( props ) {
                 <button onClick={handleHomeButton} className="sidebarbtn" >
                     <HomeIcon fontSize="small" sx={{color: 'black'}}/>
                     Home
+                </button>
+                <button onClick={handleGroupMembershipButton} className="sidebarbtn" >
+                    <GroupIcon fontSize="small" sx={{color: 'black'}}/>
+                    Group Membership Snapshot
                 </button>
            </div>
     );

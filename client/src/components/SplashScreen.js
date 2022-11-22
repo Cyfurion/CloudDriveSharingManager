@@ -1,4 +1,4 @@
-import {Toast,ValidateACRResult, ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
+import {GroupSSModal,Toast,ValidateACRResult, ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import { useContext, useState } from 'react';
@@ -24,6 +24,15 @@ export default function SplashScreen() {
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
+    const [groupSSModal, setGroupSSModal] = useState(false);
+
+    const handleGroupMembershipButton = () =>{
+        setGroupSSModal(true);
+    }
+
+    const handleCloseGroupSSModal = () =>{
+        setGroupSSModal(false);
+    }
 
     const handleRefreshButton = async () =>{
         store.reset();
@@ -256,6 +265,7 @@ export default function SplashScreen() {
                         <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
                             <SideBar 
+                                     handleGroupMembershipButton={handleGroupMembershipButton}
                                      handleRefreshButton={handleRefreshButton}
                                      handleValidateACRButton={handleValidateACRButton}
                                      showSwitchSnapshotModal={showSwitchSnapshotModal}
@@ -294,6 +304,7 @@ export default function SplashScreen() {
             {showSnapshots && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
             {showACRModal && <ACRModal acr={showACRModal} handleCloseACRModal={handleCloseACRModal} />}
             {validateACRResult && <ValidateACRResult result={validateACRResult} handleCloseValidateACR={handleCloseValidateACR} />}
+            {groupSSModal && <GroupSSModal handleCloseGroupSSModal={handleCloseGroupSSModal}  />}
             {screen}
         </div>
     );

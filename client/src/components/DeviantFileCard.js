@@ -14,7 +14,7 @@ export default function DeviantFileCard(props) {
 
 
     let permList = file.permissions.map((permission, index) => (
-        <div key={index.toString()} className="w-5/6 flex gap-x-5">
+        <div key={uuidv4()} className="w-5/6 flex gap-x-5">
             <h1 className="truncate">Entity: {permission.entity}</h1>
             <h1 className="flex flex-nowrap">Role: {permission.role}</h1>
         </div>
