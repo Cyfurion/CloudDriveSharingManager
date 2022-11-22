@@ -22,6 +22,7 @@ import ACRModal from "./ACRModal";
 import ACRCard from "./ACRCard";
 import ValidateACRResult from "./ValidateACRResult";
 import ACRCreationField from "./ACRCreationField";
+import Toast from "./Toast";
 
 export {
     GoogleLoginButton,
@@ -47,5 +48,6 @@ export {
     ACRModal,
     ACRCard,
     ValidateACRResult,
-    ACRCreationField
+    ACRCreationField,
+    Toast
 }

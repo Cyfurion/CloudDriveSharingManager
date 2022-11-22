@@ -9,12 +9,15 @@ import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState, useContext } from 'react';
 import StoreContext from '../store';
+import { ToastContext } from '../toast';
 import CancelIcon from '@mui/icons-material/Cancel';
 import apis from '../api';
+import { v4 as uuidv4} from "uuid";
 
 export default function SideBar( props ) {
     const [permissionView, setPermissionView] = useState(false);
     const { store } = useContext(StoreContext);
+    const {state, dispatch} = useContext(ToastContext);
 
     const handleRefreshButton = () =>{
         props.handleRefreshButton();
@@ -29,6 +32,19 @@ export default function SideBar( props ) {
     }
 
     const handlePermissionButton = async () => {
+        console.log(store.directory.length);
+        if(store.directory.length === 1){
+            dispatch({
+                type:"ADD_NOTIFICATION",
+                payload : {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Edit permission denied",
+                    message: "Cannot edit permission of root"
+                }
+            });
+            return;
+        }
         let [recentTimestamp] = ( await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs.values();
         
         if(recentTimestamp !== store.currentSnapshot.timestamp){
