@@ -1,13 +1,16 @@
-import {ValidateACRResult, ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
+import {Toast,ValidateACRResult, ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
 import AuthContext from '../auth';
+import { ToastContext } from '../toast';
 import { useContext, useState } from 'react';
 import StoreContext from '../store';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
 import Query from '../snapshotoperations/Query';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function SplashScreen() {
+    const {state, dispatch} = useContext(ToastContext);
     const { auth } = useContext(AuthContext);
     const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
@@ -150,7 +153,15 @@ export default function SplashScreen() {
 
     const showEditPermissionModal = () => {
         if (selectedIDs.length === 0) {
-            alert("SELECT A FILE OR FOLDER FIRST");
+            dispatch({
+                type:"ADD_NOTIFICATION",
+                payload : {
+                    id: uuidv4(),
+                    type: "WARNING",
+                    title: "Cannot edit permissions",
+                    message: "Please select a file or folder first"
+                }
+            })
             return;
         }
         setPermissionsModal(true);
@@ -271,6 +282,7 @@ export default function SplashScreen() {
     }
     return ( 
         <div className=" min-w-fit min-h-screen  ">
+            <Toast position="bottom-right"/>
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
                                                  fileFolderDiff={fileFolderDiff}

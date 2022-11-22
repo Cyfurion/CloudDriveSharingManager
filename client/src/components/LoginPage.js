@@ -1,7 +1,7 @@
-import React from "react";
-import { GoogleLoginButton } from './';
-import { DropboxLoginButton } from './';
+import { GoogleLoginButton, DropboxLoginButton } from './';
+
 export default function LoginPage() {
+
     return (
         <div className="flex flex-col items-center space-y-5 pt-10 ">
             <div className="">
@@ -16,7 +16,7 @@ export default function LoginPage() {
                 
                 <div >
                     <DropboxLoginButton />
-                </div>
+                </div>  
             </div>
 
         </div>

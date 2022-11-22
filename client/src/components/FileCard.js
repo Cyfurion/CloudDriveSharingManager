@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
-
+import { v4 as uuidv4 } from 'uuid';
 
 export default function FileCard(props) {
     const { store } = useContext(StoreContext);
@@ -43,7 +43,7 @@ export default function FileCard(props) {
                 {file.owner === "SYSTEM" ? "" :
                     <div className="flex flex-row items-start gap-x-1 ml-3">
                         {clicked && <div className="px-2"> Permissions: {file.permissions.length === 0 ? "No Permissions" : file.permissions.map((permission, index) => (
-                            <div className="pl-2 py-1">
+                            <div key={uuidv4()} className="pl-2 py-1">
                                 <h1> {index + 1}. Entity: {permission.entity}, Role: {permission.role}</h1>
                             </div>
                         ))}

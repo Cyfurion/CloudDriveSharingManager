@@ -65,3 +65,39 @@ code {
   @apply: bg-green-400;
   background-color: #68D391;
 }
+
+.notif-container {
+  @apply text-base box-border fixed z-[9999] font-mono
+}
+
+.top-right{
+  @apply top-3 right-3 animate-notifToRight
+}
+
+.bottom-right{
+  @apply bottom-3 right-3 animate-notifToRight
+}
+
+.bottom-left{
+  @apply bottom-3 left-3 animate-notifToLeft
+}
+
+.top-left{ 
+  @apply top-3 left-3 animate-notifToLeft
+}
+
+.notif-title{
+  @apply font-bold text-base text-left mt-0 mb-2 w-[300px] h-[18px]
+}
+
+.notif-msg {
+  @apply m-0 text-left h-5 -ml-[1px] overflow-hidden text-ellipsis whitespace-nowrap
+}
+
+.notif-card {
+  @apply border-black rounded-md ease-in relative pointer-events-auto overflow-hidden  p-5 mt-0 mx-0 mb-[6px] w-[500px] max-h-[100px] border-[3px] shadow-md opacity-90 hover:shadow-none hover:opacity-100 hover:cursor-pointer
+}
+
+.notif-image {
+  @apply float-left mr-[15px] mt-2
+}

@@ -1,4 +1,5 @@
 import DeviantFileCard from "./DeviantFileCard";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function AnalysisResult(props) {
 
@@ -26,7 +27,7 @@ export default function AnalysisResult(props) {
                         <div className="flex flex-col gap-y-1 p-1 border-b border-black">
                             Majority Permissions:
                             { props.result.majority[0].length === 0 ? " No Permissions" : props.result.majority[0].map((permission,index) => (
-                                <div className="flex justify-between px-5 font-bold bg-gray-300 rounded-xl">
+                                <div key={uuidv4()} className="flex justify-between px-5 font-bold bg-gray-300 rounded-xl">
                                     <h1 className="truncate"> {index+1}. Entity: {permission.entity}</h1>
                                     <h1> Role: {permission.role}</h1>
                                 </div>
