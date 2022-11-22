@@ -3,8 +3,14 @@ export class CloudServiceAdapter {
         this.endpoint = endpoint;
     }
 
+    PermissionTypes = {};
+
     deploy() {
         throw new Error("deploy() must be implemented.");
+    }
+
+    takeGroupSnapshot(){
+        throw new Error("takeGroupSnapshot() must be implemented.");
     }
 
     takeSnapshot() {

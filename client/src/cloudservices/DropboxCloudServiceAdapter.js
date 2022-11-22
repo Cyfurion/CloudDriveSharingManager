@@ -4,7 +4,13 @@ import { File, Folder } from "../classes/file-class";
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 
-export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
+export class DropboxCloudServiceAdapter extends CloudServiceAdapter { 
+    PermissionTypes = {
+        owner: 'owner',
+        editor: 'editor',
+        viewer: 'viewer'
+    }
+
     deploy() {
     }
 
@@ -66,15 +72,10 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
             for (let user of dropboxPermissions.result.users) {
                 let type = 'user'; 
                 let entity = user.user.email;
-                let role = '';
                 if (user.access_type[".tag"] === owner) {
                     owner = user.user.email;
                 }
-                if (user.access_type[".tag"] === owner || user.access_type[".tag"] === 'editor') {
-                    role = 'write';
-                } else {
-                    role = 'read';
-                }
+                let role = user.access_type[".tag"];
                 let isInherited = user.is_inherited;
                 if (file[".tag"] !== "folder") {
                     isInherited = true;
@@ -88,7 +89,8 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         if (file.client_modified) {
             createdTime = file.client_modified;
         }
-        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime);
+        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime, "");
+        //dropbox doesnt have sharedby
     }
 }
 

@@ -1,7 +1,7 @@
 class GroupSnapshot {
-    constructor(profile, groups, groupEmail, timestamp) {
+    constructor(profile, members, groupEmail, timestamp) {
         this.profile = profile;
-        this.groups = groups;
+        this.members = members;
         this.groupEmail = groupEmail;
         this.timestamp = timestamp;
     }
