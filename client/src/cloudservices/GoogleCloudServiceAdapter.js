@@ -8,13 +8,23 @@ import { findFileFolderSharingDifferences } from '../snapshotoperations/SharingA
 import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
+    PermissionTypes = {
+        owner: 'owner',
+        organizer: 'organizer',
+        fileOrganizer: 'fileOrganizer',
+        writer: 'writer',
+        commenter: 'commenter',
+        reader: 'reader'
+    }
+    
     deploy() {
         //TODO not implemented
     }
-
+    
     async takeGroupSnapshot(snapshotString, groupEmail, timestamp) {
-        let members = snapshotString.match('"mailto:[^"]*"');
+        let members = snapshotString.match(/"mailto:[^"]*"/g);
         members = members.map(member =>  member.substring('"mailto:'.length, member.length-1));
+        console.log(new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp));
         return new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp);
     }
     
@@ -29,7 +39,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         // making map of key = parent and value = list of children
         for (let i = 0; i < files.length; i++) {
             // change this when adding to file schema
-            let currentFile = createFileObject(files[i]);
+            let currentFile = await this.createFileObject(files[i]);
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
             }
@@ -90,6 +100,41 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         } while (token);
         return files;
     }
+
+    /**
+     * Converts a Google Drive API file into a CDSM file.
+     * @param file the Google Drive API file structure to convert
+     * @returns CDSM File object
+     */
+    async createFileObject(file) {
+        let id = file.id;
+        let name = file.name;
+        let permissions = [];
+        let permissionIds = [];
+        if (file.permissions !== undefined) {
+            for (let i = 0; i < file.permissions.length; i++) {
+                let permission = file.permissions[i];
+                let canShare = (permission.role === this.PermissionTypes.owner
+                        || permission.role === this.PermissionTypes.organizer 
+                        || permission.role === this.PermissionTypes.fileOrganizer
+                        || permission.role === this.PermissionTypes.writer);
+                permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
+                    permission.emailAddress, permission.role, false, canShare));
+                permissionIds.push(permission.id);
+            }
+        }
+        let drive = "";
+        if (file.driveId !== undefined) {
+            drive = file.driveId;
+        }
+        let owner = file.owners[0].emailAddress;
+        let createdTime = file.createdTime;
+        let sharedBy = owner;
+        if(file.sharingUser){
+            sharedBy = file.sharingUser.emailAddress;
+        }
+        return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime, sharedBy);
+    }
 }
 
 /**
@@ -120,34 +165,4 @@ function snapshotHelper(parentToChildMap, folder) { //add paths to files
     folder.files = childrenList;
 }
 
-/**
- * Converts a Google Drive API file into a CDSM file.
- * @param file the Google Drive API file structure to convert
- * @returns CDSM File object
- */
-function createFileObject(file) {
-    let id = file.id;
-    let name = file.name;
-    let permissions = [];
-    let permissionIds = [];
-    if (file.permissions !== undefined) {
-        for (let i = 0; i < file.permissions.length; i++) {
-            let permission = file.permissions[i];
-            permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
-                permission.emailAddress, permission.role === 'reader' ? 'read' : 'write', false
-                , permission.role === 'reader' ? false : true));
-            permissionIds.push(permission.id);
-        }
-    }
-    let drive = "";
-    if (file.driveId !== undefined) {
-        drive = file.driveId;
-    }
-    let owner = file.owners[0].emailAddress;
-    let createdTime = file.createdTime;
-    let sharedBy = owner;
-    if(file.sharingUser){
-        sharedBy = file.sharingUser.emailAddress;
-    }
-    return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime, sharedBy);
-}
+

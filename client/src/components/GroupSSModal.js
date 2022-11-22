@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
 import { v4 as uuidv4} from "uuid";
+import AdapterContext from "../cloudservices";
 import { ToastContext } from '../toast';
 
 export default function GroupSSModal(props) {
     const {state, dispatch} = useContext(ToastContext);
+    const { adapter } = useContext(AdapterContext);
     const [uploadedFile, setUploadedFile] = useState(null);
 
     const handleClose = () => {
@@ -47,7 +49,6 @@ export default function GroupSSModal(props) {
             return;
         }
 
-
         if( uploadedFile === null){
             dispatch({
                 type:"ADD_NOTIFICATION",
@@ -63,7 +64,7 @@ export default function GroupSSModal(props) {
 
         const reader = new FileReader();
         reader.onload = (e) =>{
-            console.log(e.target.result);
+            adapter.adapter.takeGroupSnapshot(e.target.result, name);//TODO add time
         }
         reader.readAsText(uploadedFile);
         
