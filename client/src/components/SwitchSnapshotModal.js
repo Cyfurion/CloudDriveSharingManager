@@ -27,6 +27,10 @@ export default function SwitchSnapshotModal(props) {
         let ssid = currentSS;
         props.confirmSwitchSnapshot(ssid);
     }
+    const handleBlur = (e) =>{
+        if(e.target.id === 'modal-container')
+            handleClose();
+    }
 
     if (props.result) {
         props.result.forEach((value, key) => (
@@ -40,7 +44,7 @@ export default function SwitchSnapshotModal(props) {
 
     if(props.result){
     return (  
-        <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full h-50vh">
+        <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full h-50vh">
             <div className="relative min-h-[50vh] min-w-[50vw] max-w-2xl p-4 md:h-auto font-mono " >
                 <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
                     

@@ -41,6 +41,11 @@ export default function AnalysisModal(props) {
         setThreshold( (prevValue) => prevValue=50);
     }
 
+    const handleBlur = (e) =>{
+        if(e.target.id === 'modal-container')
+            handleClose();
+    }
+
     let slider = 
         <div className="flex flex-col items-center py-16 gap-y-8 "> 
             <h1 className="font-mono text-base leading-relaxed text-gray-500 dark:text-gray-400"> Set threshold for deviancy analysis </h1>
@@ -53,7 +58,7 @@ export default function AnalysisModal(props) {
         </div>
 
     return (
-        <div id="defaultModal" tabIndex="-1" aria-hidden="true" className="h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
+        <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
                 <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
 
