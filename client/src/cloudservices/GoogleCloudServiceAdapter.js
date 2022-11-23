@@ -39,11 +39,10 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         return true;
     }
     
-    async takeGroupSnapshot(snapshotString, groupEmail, timestamp) {
+    async takeGroupSnapshot(snapshotString, groupEmail, timestamp, name) {
         let members = snapshotString.match(/"mailto:[^"]*"/g);
         members = members.map(member =>  member.substring('"mailto:'.length, member.length-1));
-        console.log(new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp));
-        return new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp);
+        return new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp, name);
     }
     
     /**

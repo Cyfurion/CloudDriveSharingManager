@@ -28,8 +28,8 @@ export default function DeviantFileCard(props) {
     return (
         <div key={file.id} className="flex flex-col pl-2">
             <div className="flex gap-x-2 ">
-                <h1 className="truncate"> {props.index + 1}.{file.name} </h1>
-                <button className=" rounded-full bg-gray-200 hover:bg-gray-300" onClick={handlePermView}> {downIcon} </button> 
+            <button className=" rounded-full bg-gray-200 hover:bg-gray-300" onClick={handlePermView}> {downIcon} </button> 
+                <h1 className="truncate"> {file.name} </h1>
             </div>
             {permView && <div className="flex flex-col pl-5 rounded-xl bg-gray-300 font-bold"> {permList} </div>}
         </div>

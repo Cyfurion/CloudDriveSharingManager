@@ -36,5 +36,6 @@ module.exports = {
     addACR,
     addGroupSnapshot,
     deleteACR,
-    getUser
+    getUser,
+    addGroupSnapshot
 }
