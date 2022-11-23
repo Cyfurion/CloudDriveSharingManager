@@ -91,6 +91,12 @@ export default function ACRModal(props) {
         props.handleCloseACRModal();
     }
 
+    const handleBlur = (e ) =>{
+        if (e.target.id === 'modal-container'){
+            props.handleCloseACRModal();
+         }
+    }
+
     const handleCancelCreationScreen = () => {
         document.querySelector("#acr-search-query").value = "";
         setAR([]);
@@ -183,7 +189,7 @@ export default function ACRModal(props) {
         </div>;
 
     return (
-        <div id="defaultModal" tabIndex="-1" aria-hidden="true" className=" fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
+        <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className=" bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="flex justify-center  relative min-h-[50vh] min-w-[50vw] max-w-2xl p-4 md:h-auto font-mono">
                 <div className=" relative rounded-3xl bg-white shadow w-full dark:bg-gray-700 border-2 border-black">
 
