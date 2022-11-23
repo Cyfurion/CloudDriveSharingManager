@@ -19,7 +19,7 @@ export default class FileSnapshot {
                 dr: [],
                 dw: []
             }
-            const files = (new Query(acr.query, this)).evaluate()
+            const files = (new Query(acr.query, this, writers)).evaluate()
             for (let file of files) {
                 for (let permission of file.permissions) {
                     if (acr.allowedReaders.length > 0) {
