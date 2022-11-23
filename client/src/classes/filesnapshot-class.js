@@ -9,8 +9,7 @@ export default class FileSnapshot {
         this.timestamp = timestamp;
     }
 
-    validate(acrs) {
-        const writers = ["owner", "editor", "writer"];
+    validate(acrs, writers) {
         const violations = new Map();
         for (let acr of acrs) {
             let clear = true;
@@ -20,7 +19,7 @@ export default class FileSnapshot {
                 dr: [],
                 dw: []
             }
-            const files = (new Query(acr.query, this)).evaluate()
+            const files = (new Query(acr.query, this, writableRoles)).evaluate()
             for (let file of files) {
                 for (let permission of file.permissions) {
                     if (acr.allowedReaders.length > 0) {

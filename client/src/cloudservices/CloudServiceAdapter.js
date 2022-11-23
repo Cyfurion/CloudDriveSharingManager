@@ -3,7 +3,9 @@ export class CloudServiceAdapter {
         this.endpoint = endpoint;
     }
 
-    PermissionTypes = {};
+    permissionTypes = {};
+
+    writable = [];
 
     deploy() {
         throw new Error("deploy() must be implemented.");

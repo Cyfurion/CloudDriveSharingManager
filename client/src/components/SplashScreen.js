@@ -8,8 +8,10 @@ import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshoto
 import apis from '../api';
 import Query from '../snapshotoperations/Query';
 import { v4 as uuidv4 } from 'uuid';
+import AdapterContext from "../cloudservices";
 
 export default function SplashScreen() {
+    const { adapter } = useContext(AdapterContext);
     const {state, dispatch} = useContext(ToastContext);
     const { auth } = useContext(AuthContext);
     const { store } = useContext(StoreContext);
@@ -51,7 +53,7 @@ export default function SplashScreen() {
 
     const handleValidateACRButton = async () =>{
         let ACRList = (await apis.getUser(store.currentSnapshot.profile)).acrs;
-        let result = store.currentSnapshot.validate(ACRList);
+        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable);
         setValidateACRResult(result);
         
     }
@@ -138,7 +140,9 @@ export default function SplashScreen() {
     }
 
     const handleQuery = (query) => {
-        let q = new Query(query, store.currentSnapshot);
+        console.log("writable");
+        console.log(adapter.adapter.writable);
+        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
         setFiles(q.evaluate());
     }
 
