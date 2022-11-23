@@ -9,6 +9,14 @@ addACR = async (req, res) => {
     return res.status(201).json({ success: true }).send();
 }
 
+addGroupSnapshot = async (req, res) => {
+    const user = await User.findOne({ profile: req.body.profile });
+    user.groupSnapshots.push(JSON.stringify(req.body));
+    await user.save();
+    await mongoose.syncIndexes();
+    return res.status(201).json({ success: true }).send();
+}
+
 deleteACR = async (req, res) => {
     const user = await User.findOne({ profile: req.body });
     user.acrs.splice(req.params.index, 1);
