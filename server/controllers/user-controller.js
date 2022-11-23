@@ -11,6 +11,14 @@ addACR = async (req, res) => {
 
 addGroupSnapshot = async (req, res) => {
     const user = await User.findOne({ profile: req.body.profile });
+    for (let i = 0; i < user.groupSnapshots.length; i++) {
+        if (JSON.parse(user.groupSnapshots[i]).groupEmail === req.body.groupEmail) {
+            user.groupSnapshots[i] = JSON.stringify(req.body);
+            await user.save();
+            await mongoose.syncIndexes();
+            return res.status(201).json({ success: true }).send();
+        }
+    }
     user.groupSnapshots.push(JSON.stringify(req.body));
     await user.save();
     await mongoose.syncIndexes();
