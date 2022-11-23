@@ -3,8 +3,6 @@ import { CloudServiceAdapter } from './CloudServiceAdapter';
 import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
-import Query from '../snapshotoperations/Query'
-import { findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
 import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
@@ -20,8 +18,25 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     writable = [this.permissionTypes.writer, this.permissionTypes.fileOrganizer
         ,this.permissionTypes.organizer, this.permissionTypes.owner]
     
-    deploy() {
-        //TODO not implemented
+    deploy(files, deletePermissions, addPermissions) {
+        // TODO
+        for (let file of files) {
+
+        }
+    }
+    async deployValidate(files) {
+        for (let file of files) {
+            const upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id })).result.permissions;
+            if (file.permissionIds.length !== upstreamPermissions.length) {
+                return false;
+            }
+            for (let i = 0; i < upstreamPermissions.length; i++) {
+                if (!file.permissionIds.includes(upstreamPermissions[i].id)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     async takeGroupSnapshot(snapshotString, groupEmail, timestamp) {

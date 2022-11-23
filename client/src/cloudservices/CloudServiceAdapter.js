@@ -11,6 +11,10 @@ export class CloudServiceAdapter {
         throw new Error("deploy() must be implemented.");
     }
 
+    deployValidate() {
+        throw new Error("deployValidate() must be implemented.");
+    }
+
     takeGroupSnapshot(){
         throw new Error("takeGroupSnapshot() must be implemented.");
     }
