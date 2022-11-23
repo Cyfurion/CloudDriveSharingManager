@@ -8,7 +8,7 @@ import { findFileFolderSharingDifferences } from '../snapshotoperations/SharingA
 import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
-    PermissionTypes = {
+    permissionTypes = {
         owner: 'owner',
         organizer: 'organizer',
         fileOrganizer: 'fileOrganizer',
@@ -16,6 +16,9 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         commenter: 'commenter',
         reader: 'reader'
     }
+
+    writable = [this.permissionTypes.writer, this.permissionTypes.fileOrganizer
+        ,this.permissionTypes.organizer, this.permissionTypes.owner]
     
     deploy() {
         //TODO not implemented
@@ -114,10 +117,10 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         if (file.permissions !== undefined) {
             for (let i = 0; i < file.permissions.length; i++) {
                 let permission = file.permissions[i];
-                let canShare = (permission.role === this.PermissionTypes.owner
-                        || permission.role === this.PermissionTypes.organizer 
-                        || permission.role === this.PermissionTypes.fileOrganizer
-                        || permission.role === this.PermissionTypes.writer);
+                let canShare = (permission.role === this.permissionTypes.owner
+                        || permission.role === this.permissionTypes.organizer 
+                        || permission.role === this.permissionTypes.fileOrganizer
+                        || permission.role === this.permissionTypes.writer);
                 permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
                     permission.emailAddress, permission.role, false, canShare));
                 permissionIds.push(permission.id);

@@ -9,7 +9,7 @@ export default class FileSnapshot {
         this.timestamp = timestamp;
     }
 
-    validate(acrs) {
+    validate(acrs, writers) {
         const violations = new Map();
         for (let acr of acrs) {
             let clear = true;
@@ -19,40 +19,56 @@ export default class FileSnapshot {
                 dr: [],
                 dw: []
             }
-            const files = (new Query(acr.query, this)).evaluate()
+            const files = (new Query(acr.query, this, writers)).evaluate()
             for (let file of files) {
                 for (let permission of file.permissions) {
                     if (acr.allowedReaders.length > 0) {
                         // Check allowed readers.
                         if (!acr.allowedReaders.includes(permission.entity) 
-                            && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
-                            acrViolations.ar.push(permission.entity);
+                            && !acr.allowedReaders.includes(permission.entity.split("@").pop()))
+                        {
+                            acrViolations.ar.push({
+                                file: file.name,
+                                entity: permission.entity
+                            });
                             clear = false;
                         }
                     }
                     if (acr.allowedWriters.length > 0) {
                         // Check allowed writers.
-                        if (permission.role === "write"
+                        if (writers.includes(permission.role)
                             && !acr.allowedReaders.includes(permission.entity) 
-                            && !acr.allowedReaders.includes(permission.entity.split("@").pop())) {
-                            acrViolations.aw.push(permission.entity);
+                            && !acr.allowedReaders.includes(permission.entity.split("@").pop()))
+                        {
+                            acrViolations.aw.push({
+                                file: file.name,
+                                entity: permission.entity
+                            });
                             clear = false;
                         }
                     }
                     if (acr.deniedReaders.length > 0) {
                         // Check denied readers.
                         if (acr.deniedReaders.includes(permission.entity) 
-                            || acr.deniedReaders.includes(permission.entity.split("@").pop())) {
-                            acrViolations.dr.push(permission.entity);
+                            || acr.deniedReaders.includes(permission.entity.split("@").pop()))
+                        {
+                            acrViolations.dr.push({
+                                file: file.name,
+                                entity: permission.entity
+                            });
                             clear = false;
                         }
                     }
                     if (acr.deniedWriters.length > 0) {
                         // Check denied writers.
-                        if (permission.role === "write"
+                        if (writers.includes(permission.role)
                             && (acr.deniedWriters.includes(permission.entity) 
-                            || acr.deniedWriters.includes(permission.entity.split("@").pop()))) {
-                            acrViolations.dw.push(permission.entity);
+                            || acr.deniedWriters.includes(permission.entity.split("@").pop())))
+                        {
+                            acrViolations.dw.push({
+                                file: file.name,
+                                entity: permission.entity
+                            });
                             clear = false;
                         }
                     }

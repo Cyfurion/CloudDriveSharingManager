@@ -64,7 +64,7 @@ export default function GroupSSModal(props) {
 
         const reader = new FileReader();
         reader.onload = (e) =>{
-            adapter.adapter.takeGroupSnapshot(e.target.result, name);//TODO add time
+            adapter.adapter.takeGroupSnapshot(e.target.result, name, JSON.stringify(uploadedFile.lastModifiedDate));
         }
         reader.readAsText(uploadedFile);
         

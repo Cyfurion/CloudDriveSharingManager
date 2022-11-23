@@ -5,11 +5,13 @@ import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 
 export class DropboxCloudServiceAdapter extends CloudServiceAdapter { 
-    PermissionTypes = {
+    perrmissionTypes = {
         owner: 'owner',
         editor: 'editor',
         viewer: 'viewer'
     }
+
+    writable = [this.permissionTypes.owner, this.permissionTypes.editor];
 
     deploy() {
     }
@@ -89,7 +91,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         if (file.client_modified) {
             createdTime = file.client_modified;
         }
-        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime, "");
+        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime, owner);
         //dropbox doesnt have sharedby
     }
 }
