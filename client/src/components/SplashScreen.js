@@ -26,14 +26,15 @@ export default function SplashScreen() {
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
-    const [groupSSModal, setGroupSSModal] = useState(false);
+    const [groupSS, setGroupSS] = useState(null);
 
-    const handleGroupMembershipButton = () =>{
-        setGroupSSModal(true);
+    const handleGroupMembershipButton = async () =>{
+        let groups = (await apis.getUser(store.currentSnapshot.profile)).groupSnapshots;
+        setGroupSS(groups);
     }
 
     const handleCloseGroupSSModal = () =>{
-        setGroupSSModal(false);
+        setGroupSS(null);
     }
 
     const handleRefreshButton = async () =>{
@@ -187,6 +188,7 @@ export default function SplashScreen() {
 
     const showSwitchSnapshotModal = async () => {
         let map = (await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs;
+        console.log(await apis.getUser(store.currentSnapshot.profile));
         setShowSnapshots(map);
     }
     const closeSwitchSnapshotModal = () => {
@@ -307,7 +309,7 @@ export default function SplashScreen() {
             {showSnapshots && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
             {showACRModal && <ACRModal acr={showACRModal} handleCloseACRModal={handleCloseACRModal} />}
             {validateACRResult && <ValidateACRResult result={validateACRResult} handleCloseValidateACR={handleCloseValidateACR} />}
-            {groupSSModal && <GroupSSModal handleCloseGroupSSModal={handleCloseGroupSSModal}  />}
+            {groupSS && <GroupSSModal list={groupSS} handleCloseGroupSSModal={handleCloseGroupSSModal}  />}
             {screen}
             <Toast position="bottom-right"/>
         </div>

@@ -38,7 +38,7 @@ export default function AnalysisResult(props) {
                                 </div>
                             ))}
                         </div>
-                        <h1> Deviant Files: </h1>
+                        <h1> Deviant Files: { "[" + props.result.deviants.length + " found]"} </h1>
                         <div className="flex flex-col max-h-64 overflow-y-auto">
                             {props.result.deviants.map((file, index) => (
                                 <DeviantFileCard data={file} index={index} />

@@ -143,7 +143,6 @@ export default function ACRModal(props) {
 
     const handleDeleteACR = async (e) => {
         let index = e.currentTarget.id;
-        console.log(index);
         if ( index > -1){
             let list = [...acrList];
             list.splice(index, 1);

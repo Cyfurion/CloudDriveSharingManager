@@ -35,5 +35,6 @@ getUser = async (req, res) => {
 module.exports = {
     addACR,
     deleteACR,
-    getUser
+    getUser,
+    addGroupSnapshot
 }
