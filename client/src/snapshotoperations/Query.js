@@ -7,16 +7,16 @@ const keywords = ['drive', 'owner', 'creator', 'from', 'to', 'readable', 'writab
     '-shareable', '-name', '-inFolder', '-folder', '-path', '-sharing'];
 
 //name in quotes
-
-export default class Query {
-    constructor(queryString, snapshot) {
+export default class Query {  
+    constructor(queryString, snapshot, writableRoles) {
         this.queryString = queryString;
         this.snapshot = snapshot;
+        this.writableRoles =  writableRoles;
         this.operators = this.parse(queryString);
     }
 
     evaluate() {
-        return this.operators.evaluate(this.snapshot);
+        return this.operators.evaluate(this.snapshot, this.writableRoles);
     }
 
     parse(queryString) {
@@ -148,7 +148,7 @@ class Operator {
         this.right = right;
     }
 
-    evaluate(snapshot) {
+    evaluate(snapshot, writableRoles) {
         if (!this.left && !this.right) {
             switch (this.operator.toLowerCase()) {
                 case 'drive':
@@ -184,10 +184,10 @@ class Operator {
                     return this.noAccess(snapshot, 'read', this.value);
                 case 'writable':
                     // find files writable by user
-                    return this.hasAccess(snapshot, 'write', this.value);
+                    return this.hasAccess(snapshot, 'write', this.value, writableRoles);
                 case '-writable':
                     // find files writable by user
-                    return this.noAccess(snapshot, 'write', this.value);
+                    return this.noAccess(snapshot, 'write', this.value, writableRoles);
                 case 'shareable':
                     // find files shareable by user
                     return this.shareable(snapshot, this.value);
@@ -373,20 +373,26 @@ class Operator {
         return files;
     }
 
-    hasAccess(file, accessType, user) { 
+    hasAccess(file, accessType, user, writableRoles) { 
+        console.log("oops");
+        console.log("file ", file);
+        console.log("access type ", accessType);
+        console.log("user ", user);
+        console.log("writable roles ", writableRoles);
         let files = [];
+        console.log(typeof file);
         if (file instanceof FileSnapshot) {
             for (let rootFile of file.root.files) {
-                files = files.concat(this.hasAccess(rootFile, accessType, user));
+                console.log("going to snapshot");
+                files = files.concat(this.hasAccess(rootFile, accessType, user, writableRoles));
             }
         } else {
             if (file.permissions.length === 0 && accessType === 'read') { 
                 files.push(file);
             }
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase() || 'anyone' === user.toLowerCase()) {
-                    if ((accessType === 'write' && (permission.role === 'write' || permission.role === 'owner'))  
-                    || accessType === 'read' ) {
+                if (permission.entity.toLowerCase() === user.toLowerCase()) {
+                    if((accessType === 'read') || (accessType === 'write' && writableRoles.includes(permission.role))){
                         files.push(file);
                         break;
                     }
@@ -394,25 +400,26 @@ class Operator {
             }
             if (file instanceof Folder) {
                 for (let subFile of file.files) {
-                    files = files.concat(this.hasAccess(subFile, accessType, user));
+                    files = files.concat(this.hasAccess(subFile, accessType, user, writableRoles));
                 }
             }
         }
         return files;
     }
-    noAccess(file, accessType, user) {
+    noAccess(file, accessType, user, writableRoles) {
         let files = [];
         if (file instanceof FileSnapshot) {
             for (let rootFile of file.root.files) {
-                files = files.concat(this.noAccess(rootFile, accessType, user));
+                files = files.concat(this.noAccess(rootFile, accessType, user, writableRoles));
             }
         } else {
             let canPush = true;
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase() 
-                    && ((accessType === 'write' && permission.role === accessType) || accessType === 'read')) { 
+                if (permission.entity.toLowerCase() === user.toLowerCase()) {
+                    if((accessType === 'read') || (accessType === 'write' && writableRoles.includes(permission.role))){
                     canPush = false;
                     break;
+                    }
                 }
             }
             if (canPush) {
@@ -420,7 +427,7 @@ class Operator {
             }
             if (file instanceof Folder) {
                 for (let subFile of file.files) {
-                    files = files.concat(this.noAccess(subFile, accessType, user));
+                    files = files.concat(this.noAccess(subFile, accessType, user, writableRoles));
                 }
             }
         }
