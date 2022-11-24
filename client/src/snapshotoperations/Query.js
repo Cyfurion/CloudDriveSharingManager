@@ -21,7 +21,12 @@ export default class Query {
     }
 
     evaluate() {
-        return this.operators.evaluate(this.snapshot, this.writableRoles);
+        try{
+            return this.operators.evaluate(this.snapshot, this.writableRoles);
+        }catch(e){
+            throw new Error("Incorrectly formatted query.");
+        }
+        
     }
 
     parse(queryString) {
@@ -60,6 +65,9 @@ export default class Query {
                     i += keyword.length;
                     if (String(queryString.charAt(i)) === ':') {
                         i++;
+                        if(i >= queryString.length){
+                            throw new Error("Every operator must be associated with a value.");
+                        }
                         while (queryString.charAt(i).trim() === '') {
                             i++;
                         }
@@ -344,7 +352,7 @@ class Operator {
                 files = files.concat(this.basicFieldChecker(rootFile, booleanQualifier, field));
             }
         } else {
-            if(file[field] === ''){
+            if(file[field] === '' && field === 'sharedBy'){
                 throw new Error("This query is not applicable to selected drive service.");
             }
             if (booleanQualifier(file, field, this.value)) {
