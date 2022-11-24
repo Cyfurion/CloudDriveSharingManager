@@ -12,7 +12,7 @@ import AdapterContext from "../cloudservices";
 
 export default function SplashScreen() {
     const { adapter } = useContext(AdapterContext);
-    const {state, dispatch} = useContext(ToastContext);
+    const { dispatch} = useContext(ToastContext);
     const { auth } = useContext(AuthContext);
     const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
@@ -27,6 +27,7 @@ export default function SplashScreen() {
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
     const [groupSS, setGroupSS] = useState(null);
+    const [searchActive, setSearchActive] = useState(false);
 
     const handleGroupMembershipButton = async () =>{
         let groups = (await apis.getUser(store.currentSnapshot.profile)).groupSnapshots;
@@ -121,6 +122,7 @@ export default function SplashScreen() {
     }
 
     const handleHomeButton = () => {
+        setSearchActive(false);
         store.setFolder(store.currentSnapshot.root);
         setFiles(null);
     }
@@ -142,6 +144,7 @@ export default function SplashScreen() {
 
     const handleQuery = (query) => {
         let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
+        setSearchActive(true);
         setFiles(q.evaluate());
     }
 
@@ -198,6 +201,15 @@ export default function SplashScreen() {
         store.setSnapshot(snapshot);
         setShowSnapshots(null);
         setFiles(null);
+        dispatch({
+            type: "ADD_NOTIFICATION",
+            payload :{
+                id: uuidv4(),
+                type: "SUCCESS",
+                title: "File Snapshot Changed",
+                message: "Successfully changed file snapshot"
+            }
+        })
     }
     
     const handleHideCheckBox = () => {
@@ -282,7 +294,8 @@ export default function SplashScreen() {
                                      showACRModal={handleShowACRModal}
                                      />
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
-                                <h1 className="font-bold"><button onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>
+                                <h1 className="font-bold"> Current Snapshot: {store.currentSnapshot.timestamp} </h1>
+                                {searchActive ? <h1 className="font-bold"> Search Results </h1> : <h1 className="font-bold"><button  onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>}
                                 <WorkSpace  visible={checkboxVisible}
                                             handleAllFileCheckbox={handleAllFileCheckbox}
                                             handleFileCheckBox={handleFileCheckBox} 

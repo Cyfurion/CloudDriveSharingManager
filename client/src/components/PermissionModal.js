@@ -19,6 +19,8 @@ export default function PermissionModal(props) {
             files.push({ name: folder.files[i].name, permissions: folder.files[i].permissions, isFolder: folder.files[i].files === undefined ? false : true });
     }
 
+    console.log(files);
+
     const handleAddReader = (e) => {
         e.preventDefault();
         let readerEmail = document.querySelector("#add-email-text").value;
