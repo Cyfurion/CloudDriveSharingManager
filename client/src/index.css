@@ -49,7 +49,7 @@ code {
 }
 
 .add-perm-card{
-  @apply flex justify-between bg-green-300  rounded-lg px-2 font-bold
+  @apply flex items-center justify-between bg-green-300  rounded-lg px-2 font-bold
 }
 
 .remove-perm-card{
