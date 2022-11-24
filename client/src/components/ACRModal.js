@@ -1,11 +1,13 @@
-import { create } from "@mui/material/styles/createTransitions";
 import { useState, useContext } from "react";
 import AccessControlRequirement from "../classes/accesscontrolrequirement-class";
 import StoreContext from "../store";
 import apis from "../api";
 import {ACRCreationField, ACRCard} from "./";
+import { ToastContext } from "../toast";
+import { v4 as uuidv4} from 'uuid'
 
 export default function ACRModal(props) {
+    const {dispatch} = useContext(ToastContext)
     const {store} = useContext(StoreContext);
     const [AR, setAR] = useState([]);
     const [AW, setAW] = useState([]);
@@ -15,11 +17,14 @@ export default function ACRModal(props) {
     const [createACRScreen, setCreateACRScreen] = useState(false);
     const [acrList, setACRList] = useState(props.acr);
 
-    const handleAddAR = (entity) => {
+    const handleAddAR = () => {
+        let entity = document.querySelector("#acr-ar-input-bar").value;
         if (entity.length !== 0) {
             let list = [...AR];
             list = [...list, entity];
+            document.querySelector("#acr-ar-input-bar").value = "";
             setAR(list);
+            
         }
     }
 
@@ -33,10 +38,14 @@ export default function ACRModal(props) {
         }
     }
 
-    const handleAddAW = (entity) => {
+    const handleAddAW = () => {
+        let entity = document.querySelector("#acr-aw-input-bar").value;
+        
         if (entity.length !== 0) {
             let list = [...AW];
             list = [...list, entity];
+            document.querySelector("#acr-aw-input-bar").value = "";
+
             setAW(list);
         }
     }
@@ -51,10 +60,14 @@ export default function ACRModal(props) {
         }
     }
 
-    const handleAddDR = (entity) => {
+    const handleAddDR = () => {
+        let entity = document.querySelector("#acr-dr-input-bar").value;
+
         if (entity.length !== 0) {
             let list = [...DR];
             list = [...list, entity];
+            document.querySelector("#acr-dr-input-bar").value = "";
+
             setDR(list);
         }
     }
@@ -69,10 +82,14 @@ export default function ACRModal(props) {
         }
     }
 
-    const handleAddDW = (entity) => {
+    const handleAddDW = () => {
+        let entity = document.querySelector("#acr-dw-input-bar").value;
+
         if (entity.length !== 0) {
             let list = [...DW];
             list = [...list, entity];
+            document.querySelector("#acr-dw-input-bar").value = "";
+
             setDW(list);
         }
     }
@@ -116,12 +133,28 @@ export default function ACRModal(props) {
         let grps = Grp;
 
         if (query.length === 0) {
-            alert("Please fill in a search query to make ACR");
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Cannot make ACR",
+                    message: "Please fill in Search Query Field"
+                }
+            });
             return;
         }
 
         if (ars.length === 0 && aws.length === 0 && drs.length === 0 && dws.length === 0) {
-            alert("one of the fields must be filled: AR, AW, DR, DW");
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Cannot make ACR",
+                    message: "Please add entity to enforce ACR"
+                }
+            });
             return;
         }
 
@@ -165,11 +198,8 @@ export default function ACRModal(props) {
     let ACRCreationScreen =
         <div className="flex flex-col border-t p-4 gap-y-3 ">
 
-            <div className="flex w-full justify-start items-baseline ">
-                <h1 className="p-1 ml-16 pl-2 justify-self-start "> Search Query: </h1>
-                <input placeholder="Search Query" className="qbtextfield w-4/6 " type='text' id="acr-search-query" />
-            </div>
             
+            <ACRCreationField label="Search Query" inputID="acr-search-query" placeholder="query"  />
             <ACRCreationField label={"Allowed Reader"} list={AR} inputID={"acr-ar-input-bar"} handleAdd={handleAddAR} handleDelete={handleDeleteAR}/>
             <ACRCreationField label={"Allowed Writer"} list={AW} inputID={"acr-aw-input-bar"} handleAdd={handleAddAW} handleDelete={handleDeleteAW}/>
             <ACRCreationField label={"Denied Readers"} list={DR} inputID={"acr-dr-input-bar"} handleAdd={handleAddDR} handleDelete={handleDeleteDR}/>

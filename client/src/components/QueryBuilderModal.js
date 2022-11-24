@@ -1,3 +1,5 @@
+import { CreationField, ACRCreationField } from "./"
+
 
 export default function QueryBuilderModal(props) {
 
@@ -13,7 +15,6 @@ export default function QueryBuilderModal(props) {
     }
 
     const handleAddButton = (e, id) => {
-        e.stopPropagation();
         let query = document.querySelector(id).value;
         if (query.length !== 0) {
             let queryBuilder = id.substring(1, id.length) + ":\"" + query + "\"";
@@ -27,15 +28,15 @@ export default function QueryBuilderModal(props) {
         }
     }
 
-    const handleBlur = (e) =>{
-        if(e.target.id === 'modal-container')
+    const handleBlur = (e) => {
+        if (e.target.id === 'modal-container')
             handleClose();
     }
 
     return (
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
-            <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
-                <div className="relative rounded-3xl bg-gray-100 shadow dark:bg-gray-700 border-2 border-black">
+            <div className="relative min-w-[50vw] min-h-[50vh] max-w-2xl p-4 md:h-auto">
+                <div className="font-mono relative rounded-3xl bg-gray-100 shadow dark:bg-gray-700 border-2 border-black">
 
 
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
@@ -46,75 +47,38 @@ export default function QueryBuilderModal(props) {
                         </button>
                     </div>
                     <div className="space-y-6 p-6">
-                        <div className="flex justify-center">
-                            <input className="p-1 w-full border-2 rounded-lg border-black" type='text' id="qbsearchbar" placeholder='Build your query' />
-                        </div>
-                        <div className="flex justify-center gap-x-2">
-                            <button onClick={handleSubmit} className="qbbtn"> Submit</button>
-                            <button onClick={handleClear} className="bg-red-300 rounded-lg border-2 border-black font-bold px-2"> Clear</button>
-                        </div>
+                        
+                        <ACRCreationField placeholder="Build your query" inputID="qbsearchbar"/>
+                        <div className="flex justify-center items-center gap-x-10">
+                                <button onClick={handleSubmit} className="rounded-lg bg-green-600 text-white p-1 px-3"> Submit</button>
+                                <button onClick={handleClear} className="rounded-lg bg-red-600 text-white p-1 px-3"> Clear</button>
+                            </div>
 
-                        <div className="flex flex-col items-center gap-y-3">
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="owner" className="font-bold"> Owner: </label>
-                                <input placeholder="user" className="qbtextfield" type='text' id="owner" />
-                                <button onClick={(e) => handleAddButton(e, '#owner')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="drive" className="font-bold"> Drive: </label>
-                                <input placeholder="drive" className="qbtextfield" type='text' id="drive" />
-                                <button onClick={(e) => handleAddButton(e, '#drive')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="creator" className="font-bold"> Creator: </label>
-                                <input placeholder="user" className="qbtextfield" type='text' id="creator" />
-                                <button onClick={(e) => handleAddButton(e, '#creator')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="from" className="font-bold"> From: </label>
-                                <input placeholder="user" className="qbtextfield" type='text' id="from" />
-                                <button onClick={(e) => handleAddButton(e, '#from')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="to" className="font-bold"> To: </label>
-                                <input placeholder="user" className="qbtextfield" type='text' id="to" />
-                                <button onClick={(e) => handleAddButton(e, '#to')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="readable" className="font-bold"> Readable: </label>
-                                <input placeholder="user" className="qbtextfield" type='text' id="readable" />
-                                <button onClick={(e) => handleAddButton(e, '#readable')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="writable" className="font-bold"> Writable: </label>
-                                <input placeholder="user" className="qbtextfield" type='text' id="writable" />
-                                <button onClick={(e) => handleAddButton(e, '#writable')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="name" className="font-bold"> Name: </label>
-                                <input placeholder="regex" className="qbtextfield" type='text' id="name" />
-                                <button onClick={(e) => handleAddButton(e, '#name')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="inFolder" className="font-bold"> In Folder: </label>
-                                <input placeholder="regex" className="qbtextfield" type='text' id="inFolder" />
-                                <button onClick={(e) => handleAddButton(e, '#inFolder')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="folder" className="font-bold"> Folder: </label>
-                                <input placeholder="regex" className="qbtextfield" type='text' id="folder" />
-                                <button onClick={(e) => handleAddButton(e, '#folder')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="path" className="font-bold"> Path: </label>
-                                <input placeholder="path" className="qbtextfield" type='text' id="path" />
-                                <button onClick={(e) => handleAddButton(e, '#path')} className="qbbtn"> Add </button>
-                            </div>
-                            <div className="flex flex-row items-center gap-x-8">
-                                <label htmlFor="sharing" className="font-bold"> Sharing: </label>
-                                <input placeholder="none, anyone, user, domain" className="qbtextfield" type='text' id="sharing" />
-                                <button onClick={(e) => handleAddButton(e, '#sharing')} className="qbbtn"> Add </button>
-                            </div>
+                        <div className="flex flex-col  gap-y-3">
+                            <ACRCreationField addIcon="Add" label="User" placeholder="user" inputID="owner" handleAdd={(e)=>handleAddButton(e, "#owner")} />
+                            
+                            <ACRCreationField addIcon="Add" label="Drive" placeholder="drive" inputID="drive" handleAdd={(e)=>handleAddButton(e, "#drive")} />
+
+                            <ACRCreationField addIcon="Add" label="Creator" placeholder="user" inputID="creator" handleAdd={(e)=>handleAddButton(e, "#creator")} />
+                            
+                            <ACRCreationField addIcon="Add" label="From" placeholder="user" inputID="from" handleAdd={(e)=>handleAddButton(e, "#from")} />
+                            
+                            <ACRCreationField addIcon="Add" label="To" placeholder="user" inputID="to" handleAdd={(e)=>handleAddButton(e, "#to")} />
+
+                            <ACRCreationField addIcon="Add" label="Readable" placeholder="user" inputID="readable" handleAdd={(e)=>handleAddButton(e, "#readable")} />
+
+                            <ACRCreationField addIcon="Add" label="Writable" placeholder="user" inputID="writable" handleAdd={(e)=>handleAddButton(e, "#writable")} />
+                           
+                            <ACRCreationField addIcon="Add" label="Name" placeholder="regex" inputID="name" handleAdd={(e)=>handleAddButton(e, "#name")} />
+                            
+                            <ACRCreationField addIcon="Add" label="In Folder" placeholder="regex" inputID="inFolder" handleAdd={(e)=>handleAddButton(e, "#inFolder")} />
+                            
+                            <ACRCreationField addIcon="Add" label="Folder" placeholder="regex" inputID="folder" handleAdd={(e)=>handleAddButton(e, "#folder")} />
+                            
+                            <ACRCreationField addIcon="Add" label="Path" placeholder="path" inputID="path" handleAdd={(e)=>handleAddButton(e, "#path")} />
+                            
+                            <ACRCreationField addIcon="Add" label="Sharing" placeholder="none, anyone, user, domain" inputID="sharing" handleAdd={(e)=>handleAddButton(e, "#sharing")} />
+                            
                         </div>
                     </div>
                 </div>
