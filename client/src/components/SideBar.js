@@ -130,13 +130,15 @@ export default function SideBar( props ) {
                     Validate ACR
                 </button>
 
-                <button onClick={handleHomeButton} className="sidebarbtn" >
-                    <HomeIcon fontSize="small" sx={{color: 'black'}}/>
-                    Home
-                </button>
+                
                 <button onClick={handleGroupMembershipButton} className="sidebarbtn" >
                     <GroupIcon fontSize="small" sx={{color: 'black'}}/>
                     Group Membership Snapshot
+                </button>
+
+                <button onClick={handleHomeButton} className="sidebarbtn" >
+                    <HomeIcon fontSize="small" sx={{color: 'black'}}/>
+                    Home
                 </button>
            </div>
     );

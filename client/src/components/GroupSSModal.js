@@ -158,7 +158,7 @@ export default function GroupSSModal(props) {
                     </div>
 
                     <h1 className="flex justify-center" > Group Snapshots: </h1>
-                    <div className="flex flex-col max-h-80  gap-y-2 overflow-y-auto px-10">
+                    <div className="flex flex-col max-h-72  gap-y-2 overflow-y-auto px-10">
                         
                         {groups.map((group, index) => (
                             <div className="flex gap-x-3 items-start">
