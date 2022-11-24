@@ -1,60 +1,51 @@
 export default function ValidateACRResult(props) {
     let ACRViolationList = props.result; //MAP
     let displayList = [];
-    
+
+    function violationCard(props) {
+        return (
+            <h1 className="ml-5">
+                <b>File:</b> {props.file}
+                <br />
+                <b>Entity:</b> {props.entity}
+                <hr />
+            </h1>
+        )
+    }
+
     ACRViolationList.forEach((value, key) => {
         displayList.push(
             <div className="bg-red-200 rounded-xl w-4/5 p-2">
                 <h1>Query: "{key}"</h1>
                 <div className="ml-5">AR:
                     {value.ar.map(entry => (
-                        <h1 className="ml-5">
-                            <b>File:</b> {entry.file}
-                            <br />
-                            <b>Entity:</b> {entry.entity}
-                            <hr />
-                        </h1>
+                        violationCard({file: entry.file, entity: entry.entity})
                     ))}
                 </div>
                 <div className="pl-5">AW:
                     {value.aw.map(entry => (
-                        <h1 className="ml-5">
-                            <b>File:</b> {entry.file}
-                            <br />
-                            <b>Entity:</b> {entry.entity}
-                            <hr />
-                        </h1>
+                        violationCard({file: entry.file, entity: entry.entity})
                     ))}
                 </div>
                 <div className="pl-5">DR:
                     {value.dr.map(entry => (
-                        <h1 className="ml-5">
-                            <b>File:</b> {entry.file}
-                            <br />
-                            <b>Entity:</b> {entry.entity}
-                            <hr />
-                        </h1>
+                        violationCard({file: entry.file, entity: entry.entity})
                     ))}
                 </div>
                 <div className="ml-5">DW:
                     {value.dw.map(entry => (
-                        <h1 className="ml-5">
-                            <b>File:</b> {entry.file}
-                            <br />
-                            <b>Entity:</b> {entry.entity}
-                            <hr />
-                        </h1>
+                        violationCard({file: entry.file, entity: entry.entity})
                     ))}
                 </div>
             </div>
         );
     });
 
-    const handleClose = () =>{
+    const handleClose = () => {
         props.handleCloseValidateACR();
     }
-    const handleBlur = (e) =>{
-        if(e.target.id === 'modal-container')
+    const handleBlur = (e) => {
+        if (e.target.id === 'modal-container')
             handleClose();
     }
 
@@ -72,12 +63,12 @@ export default function ValidateACRResult(props) {
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    
-                    <div className="flex flex-col items-center max-h-[60vh] overflow-y-auto gap-y-2 ">
-                        ACR Violations:
-                        {ACRViolationList.size === 0 ? <h1>No Violations Found</h1> : displayList}   
+
+                    <h1 className='justify-center flex'> ACR Violations: </h1>
+                    <div className="flex flex-col items-center max-h-[55vh] p-4 overflow-y-auto gap-y-2 ">
+                        {ACRViolationList.size === 0 ? <h1>No Violations Found</h1> : displayList}
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     );

@@ -2,11 +2,14 @@ import { useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import AdapterContext from "../cloudservices";
 import { ToastContext } from '../toast';
+import StoreContext from "../store";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import apis from "../api";
+import {  ACRCreationField} from './'
 
 export default function GroupSSModal(props) {
+    const {store } = useContext(StoreContext);
     const { state, dispatch } = useContext(ToastContext);
     const { adapter } = useContext(AdapterContext);
     const [uploadedFile, setUploadedFile] = useState(null);
@@ -41,6 +44,7 @@ export default function GroupSSModal(props) {
     const handleCreateSnapshot = async () => {
         let name = document.querySelector("#group-ss-name").value;
         let groupEmail = document.querySelector("#group-email").value;
+
         if (name.length === 0) {
             dispatch({
                 type: "ADD_NOTIFICATION",
@@ -89,11 +93,20 @@ export default function GroupSSModal(props) {
         let groupSS = null;
         reader.onload = async (e) => {
             groupSS = await adapter.adapter.takeGroupSnapshot(e.target.result, groupEmail, JSON.stringify(uploadedFile.lastModifiedDate), name);
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type : "SUCCESS",
+                    title: "Group Snapshot Made",
+                    message: "Successfully made group snapshot "
+                }
+            })
             await apis.addGroupSnapshot(groupSS);
-            setGroups((prevGroup) => [...prevGroup, groupSS]);
+            let user = await apis.getUser(store.currentSnapshot.profile);
+            setGroups(user.groupSnapshots);
         }
         reader.readAsText(uploadedFile);
-
 
 
     }
@@ -119,7 +132,7 @@ export default function GroupSSModal(props) {
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className=" bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="font-mono flex justify-center relative min-h-[70vh] min-w-[50vw] max-w-2xl p-4 md:h-auto text-mono">
                 <div className=" relative rounded-3xl bg-white shadow w-full dark:bg-gray-700 border-2 border-black">
-
+        
 
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
                         <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Group Memberships</h3>
@@ -129,16 +142,9 @@ export default function GroupSSModal(props) {
                         </button>
                     </div>
 
-                    <div className="flex flex-col border-t p-4 gap-y-3 items-center border-b-2 ">
-                        <div className="flex w-full justify-start items-baseline ">
-                            <h1 className="p-1 ml-16 pl-2 justify-self-start ">  Group Name: </h1>
-                            <input className="qbtextfield w-4/6 " type='text' id="group-ss-name" />
-                        </div>
-
-                        <div className="flex w-full justify-start items-baseline ">
-                            <h1 className="p-1 ml-16 pl-2 justify-self-start ">  Group Email: </h1>
-                            <input className="qbtextfield w-4/6 " type='text' id="group-email" />
-                        </div>
+                    <div className="flex flex-col border-t p-4 gap-y-3  border-b-2 ">
+                        <ACRCreationField label ="Group Name" inputID="group-ss-name" placeholder="name" />
+                        <ACRCreationField label ="Group Email" inputID="group-email" placeholder="email" />
 
                         <div className="flex w-full justify-center items-baseline ">
                             <h1 className="p-1 ml-16 pl-2 justify-self-start ">  Upload HTML: </h1>
@@ -151,8 +157,9 @@ export default function GroupSSModal(props) {
 
                     </div>
 
+                    <h1 className="flex justify-center" > Group Snapshots: </h1>
                     <div className="flex flex-col max-h-80  gap-y-2 overflow-y-auto px-10">
-                        <h1 className="flex justify-center" > Group Snapshots: </h1>
+                        
                         {groups.map((group, index) => (
                             <div className="flex gap-x-3 items-start">
                                 <Accordion sx={{
@@ -185,7 +192,6 @@ export default function GroupSSModal(props) {
                                         </div>
                                     </AccordionDetails>
                                 </Accordion>
-                                <button id={index} onClick={handleDeleteGroupSS} className="bg-red-600 hover:bg-red-700 text-white rounded-full p-1 ml-2 mt-2"> {trashIcon} </button>
                             </div>
                         ))}
                     </div>
