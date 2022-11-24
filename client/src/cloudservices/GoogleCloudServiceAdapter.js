@@ -15,15 +15,49 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         reader: 'reader'
     }
 
-    writable = [this.permissionTypes.writer, this.permissionTypes.fileOrganizer
-        ,this.permissionTypes.organizer, this.permissionTypes.owner]
+    writable = [this.permissionTypes.writer, this.permissionTypes.fileOrganizer, 
+        this.permissionTypes.organizer, this.permissionTypes.owner
+    ]
     
-    deploy(files, deletePermissions, addPermissions) {
-        // TODO
+    /**
+     * Given a list of files, for each file, deletes all permissions associated with any entity in the
+     * `deletePermissions` parameter, and adds all permissions given in the `addPermissions` parameter. You must create
+     * a new snapshot directly after this function call.
+     * @param {File[]} files The files to operate on.
+     * @param {String[]} deletePermissions The list of email addresses to delete.
+     * @param {Permission[]} addPermissions The list of permissions to add.
+     */
+    async deploy(files, deletePermissions, addPermissions) {
         for (let file of files) {
-
+            // Delete specified permissions (if they exist).
+            for (let i = 0; i < files.permissions.length; i++) {
+                if (deletePermissions.includes(files.permissions[i].entity)) {
+                    // Matching permission found, delete.
+                    await this.endpoint.client.drive.permissions.delete({
+                        fileId: file.id,
+                        permissionId: file.permissionIds[i]
+                    });
+                }
+            }
+            // Add all permissions to this file.
+            for (let permission of addPermissions) {
+                await this.endpoint.client.drive.permissions.create({
+                    fileId: file.id,
+                    resource: {
+                        role: permission.role,
+                        type: permission.type,
+                        emailAddress: permission.entity
+                    }
+                });
+            }
         }
     }
+    /**
+     * Given a list of `File` objects, checks whether these files have matching (up-to-date) permissions with their
+     * counterparts in the cloud drive.
+     * @param {File[]} files The list of files to check.
+     * @returns `true` if the local files permissions match the cloud drive files permissions, and `false` otherwise.
+     */
     async deployValidate(files) {
         for (let file of files) {
             const upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id })).result.permissions;
@@ -47,8 +81,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     
     /**
      * Takes in a list of Google API files and creates a snapshot tree from it.
-     * @param files 
-     * @returns snapshot tree
+     * @returns A `FileSnapshot` snapshot tree.
      */
     async takeSnapshot() {
         let files = await this.retrieve();

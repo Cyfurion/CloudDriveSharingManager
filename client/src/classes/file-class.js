@@ -1,5 +1,5 @@
 class File {
-    constructor(id, name, permissions, permissionIds, drive, owner, path, createdTime, sharedBy) {//creator, path, createdTime) {
+    constructor(id, name, permissions, permissionIds, drive, owner, path, createdTime, sharedBy) {
         this.id = id;
         this.name = name;
         this.permissions = permissions;
