@@ -4,8 +4,20 @@ class AnalysisResult{
     }
 }
 
-class SnapshotChangeResults extends AnalysisResult{
+class CompareSnapshotsResults extends AnalysisResult{
+    constructor(idTofFileDifferenceMap){
+        super("compare-snapshot-results");
+        this.idTofFileDifferenceMap = idTofFileDifferenceMap;
+    }
+}
 
+class PermissionDifferences{
+    constructor(file, addedPermissions, removedPermissions, samePermissions){
+        this.file = file;
+        this.addedPermissions = addedPermissions;
+        this.removedPermissions = removedPermissions;
+        this.samePermissions = samePermissions;
+    }
 }
 
 class FileFolderDifferenceAnalysisResult extends AnalysisResult{
@@ -36,8 +48,9 @@ class DeviantAnalysisResult extends AnalysisResult{
 
 module.exports = {
     AnalysisResult,
-    SnapshotChangeResults,
+    CompareSnapshotsResults,
     FileFolderDifferenceAnalysisResult,
     DeviantAnalysisResult,
-    FileFolderDifferences
+    FileFolderDifferences,
+    PermissionDifferences
 }
