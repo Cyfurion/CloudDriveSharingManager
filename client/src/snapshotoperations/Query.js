@@ -1,10 +1,14 @@
 import { Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
+import apis from '../api';
 
-const keywords = ['drive', 'owner', 'creator', 'from', 'to', 'readable', 'writable', 
+const keywords = ['groups', 'drive', 'owner', 'creator', 'from', 'to', 'readable', 'writable', 
     'shareable', 'name', 'inFolder', 'folder', 'path', 'sharing',
     '-drive', '-owner', '-creator', '-from', '-to', '-readable', '-writable', 
     '-shareable', '-name', '-inFolder', '-folder', '-path', '-sharing'];
+
+const keywordsWithUsers = ['owner', 'creator', 'from', 'to', 'readable', 'writable', 
+    'shareable', '-owner', '-creator', '-from', '-to', '-readable', '-writable', '-shareable'];
 
 //name in quotes
 export default class Query {  
@@ -13,6 +17,7 @@ export default class Query {
         this.snapshot = snapshot;
         this.writableRoles =  writableRoles;
         this.operators = this.parse(queryString);
+        this.groupsOn = true;
     }
 
     evaluate() {
@@ -22,6 +27,8 @@ export default class Query {
     parse(queryString) {
         let i = 0;
         let operatorStack = ['('];
+        let containsDrive = false;
+        let containsPath = false;
         queryTraversal: while(i < queryString.length) {
             if (String(queryString.charAt(i)).trim() === '') { // if whitespace, skip
                 i++;
@@ -58,7 +65,28 @@ export default class Query {
                         }
                         let parsedWord = this.parseWord(queryString, i);
                         i = parsedWord.i;
-                        operatorStack.push(new Operator(keyword, parsedWord.word));
+                        if(keyword === 'groups'){
+                            if(!(operatorStack.length === 1 && operatorStack[0] === '(')){
+                                throw new Error("Group must be first conjunct in a search query.");
+                            }
+                            if(parsedWord.word.toLowerCase() === 'on'){
+                                this.groupsOn = true;
+                            }else if(parsedWord.word.toLowerCase() === 'off'){
+                                this.groupsOn = false;
+                            }else{
+                                throw new Error('Groups: must be followed by "on" or "off".');
+                            }
+                        }else{
+                            if(keyword.toLowerCase() === 'drive'){
+                                containsDrive = true;
+                            }else if(keyword.toLowerCase() === 'path'){
+                                containsPath = true;
+                            }
+                            if(keywordsWithUsers.includes(keyword) && parsedWord.word.toLowerCase() === 'me'){
+                                parsedWord.word = this.snapshot.profile[0];
+                            }
+                            operatorStack.push(new Operator(keyword, parsedWord.word, null, null, this.groupsOn));
+                        }
                         continue queryTraversal;
                     }
                 }
@@ -71,6 +99,9 @@ export default class Query {
         this.popUntilParenthesis(operatorStack);
         if (operatorStack.length !== 1) {
             throw new InvalidQueryError("Incorrectly formatted query.");
+        }
+        if(containsPath && !containsDrive){
+            throw new Error("Path can only be used in conjunction with drive.");
         }
         return operatorStack[0];
     }
@@ -141,11 +172,12 @@ class InvalidQueryError extends Error {
 }
 
 class Operator {
-    constructor(operator, value, left, right) {
+    constructor(operator, value, left, right, groupsOn) {
         this.operator = operator;
         this.value = value; // null if and/or
         this.left = left;
         this.right = right;
+        this.groupsOn = groupsOn;
     }
 
     evaluate(snapshot, writableRoles) {
@@ -312,6 +344,9 @@ class Operator {
                 files = files.concat(this.basicFieldChecker(rootFile, booleanQualifier, field));
             }
         } else {
+            if(file[field] === ''){
+                throw new Error("This query is not applicable to selected drive service.");
+            }
             if (booleanQualifier(file, field, this.value)) {
                 files.push(file);
             }
@@ -373,25 +408,27 @@ class Operator {
         return files;
     }
 
-    hasAccess(file, accessType, user, writableRoles) { 
-        console.log("oops");
-        console.log("file ", file);
-        console.log("access type ", accessType);
-        console.log("user ", user);
-        console.log("writable roles ", writableRoles);
+    async hasAccess(file, accessType, user, writableRoles) { 
         let files = [];
-        console.log(typeof file);
         if (file instanceof FileSnapshot) {
+            let validEntities = [user.toLowerCase()];
+            if(this.groupsOn){
+                let groupSnapshots = (await apis.getUser(file.profile)).groupSnapshots;
+                for(let gsnap of groupSnapshots){
+                    if(gsnap.members.includes(user)){
+                        validEntities.push(gsnap.email);
+                    }
+                }
+            }
             for (let rootFile of file.root.files) {
-                console.log("going to snapshot");
-                files = files.concat(this.hasAccess(rootFile, accessType, user, writableRoles));
+                files = files.concat(this.hasAccess(rootFile, accessType, validEntities, writableRoles));
             }
         } else {
             if (file.permissions.length === 0 && accessType === 'read') { 
                 files.push(file);
             }
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase()) {
+                if (user.includes(permission.entity.toLowerCase())) {
                     if((accessType === 'read') || (accessType === 'write' && writableRoles.includes(permission.role))){
                         files.push(file);
                         break;
@@ -406,16 +443,25 @@ class Operator {
         }
         return files;
     }
-    noAccess(file, accessType, user, writableRoles) {
+    async noAccess(file, accessType, user, writableRoles) {
         let files = [];
         if (file instanceof FileSnapshot) {
+            let validEntities = [user.toLowerCase()];
+            if(this.groupsOn){
+                let groupSnapshots = (await apis.getUser(file.profile)).groupSnapshots;
+                for(let gsnap of groupSnapshots){
+                    if(gsnap.members.includes(user)){
+                        validEntities.push(gsnap.email);
+                    }
+                }
+            }   
             for (let rootFile of file.root.files) {
-                files = files.concat(this.noAccess(rootFile, accessType, user, writableRoles));
+                files = files.concat(this.noAccess(rootFile, accessType, validEntities, writableRoles));
             }
         } else {
             let canPush = true;
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase()) {
+                if (user.includes(permission.entity.toLowerCase())) {
                     if((accessType === 'read') || (accessType === 'write' && writableRoles.includes(permission.role))){
                     canPush = false;
                     break;
@@ -522,15 +568,24 @@ class Operator {
         return files;
     }
 
-    userSharing(file, user) { 
+    async userSharing(file, user) { 
         let files = [];
         if (file instanceof FileSnapshot) {
+            let validEntities = [user.toLowerCase()];
+            if(this.groupsOn){
+                let groupSnapshots = (await apis.getUser(file.profile)).groupSnapshots;
+                for(let gsnap of groupSnapshots){
+                    if(gsnap.members.includes(user)){
+                        validEntities.push(gsnap.email);
+                    }
+                }
+            }  
             for (let rootFile of file.root.files) {
-                files = files.concat(this.userSharing(rootFile, user));
+                files = files.concat(this.userSharing(rootFile, validEntities));
             }
         } else {
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase()) {
+                if (user.includes(permission.entity.toLowerCase())) {
                     files.push(file);
                     break;
                 }
@@ -544,16 +599,25 @@ class Operator {
         return files;
     }
 
-    notUserSharing(file, user) {
+    async notUserSharing(file, user) {
         let files = [];
         if (file instanceof FileSnapshot) {
+            let validEntities = [user.toLowerCase()];
+            if(this.groupsOn){
+                let groupSnapshots = (await apis.getUser(file.profile)).groupSnapshots;
+                for(let gsnap of groupSnapshots){
+                    if(gsnap.members.includes(user)){
+                        validEntities.push(gsnap.email);
+                    }
+                }
+            }  
             for (let rootFile of file.root.files) {
-                files = files.concat(this.notUserSharing(rootFile, user));
+                files = files.concat(this.notUserSharing(rootFile, validEntities));
             }
         } else {
             let canPush = true;
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase()) {
+                if (user.includes(permission.entity.toLowerCase())) {
                     canPush = false;
                     break;
                 }
@@ -570,15 +634,24 @@ class Operator {
         return files;
     }
 
-    shareable(file, user) { 
+    async shareable(file, user) { 
         let files = [];
         if (file instanceof FileSnapshot) {
+            let validEntities = [user.toLowerCase()];
+            if(this.groupsOn){
+                let groupSnapshots = (await apis.getUser(file.profile)).groupSnapshots;
+                for(let gsnap of groupSnapshots){
+                    if(gsnap.members.includes(user)){
+                        validEntities.push(gsnap.email);
+                    }
+                }
+            }  
             for (let rootFile of file.root.files) {
-                files = files.concat(this.shareable(rootFile, user));
+                files = files.concat(this.shareable(rootFile, validEntities));
             }
         } else {
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase() && permission.canShare) {
+                if (user.includes(permission.entity.toLowerCase()) && permission.canShare) {
                     files.push(file);
                     break;
                 }
@@ -592,16 +665,25 @@ class Operator {
         return files;
     }
 
-    notShareable(file, user) {
+    async notShareable(file, user) {
         let files = [];
         if (file instanceof FileSnapshot) {
+            let validEntities = [user.toLowerCase()];
+            if(this.groupsOn){
+                let groupSnapshots = (await apis.getUser(file.profile)).groupSnapshots;
+                for(let gsnap of groupSnapshots){
+                    if(gsnap.members.includes(user)){
+                        validEntities.push(gsnap.email);
+                    }
+                }
+            }  
             for (let rootFile of file.root.files) {
-                files = files.concat(this.notShareable(rootFile, user));
+                files = files.concat(this.notShareable(rootFile, validEntities));
             }
         } else {
             let canPush = true;
             for (let permission of file.permissions) {
-                if (permission.entity.toLowerCase() === user.toLowerCase() && permission.canShare) {
+                if (user.includes(permission.entity.toLowerCase()) && permission.canShare) {
                     canPush = false;
                     break;
                 }

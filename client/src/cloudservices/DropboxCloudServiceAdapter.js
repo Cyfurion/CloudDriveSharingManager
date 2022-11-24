@@ -91,7 +91,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         if (file.client_modified) {
             createdTime = file.client_modified;
         }
-        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime, owner);
+        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime, "");
         //dropbox doesnt have sharedby
     }
 }

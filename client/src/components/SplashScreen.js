@@ -141,8 +141,6 @@ export default function SplashScreen() {
     }
 
     const handleQuery = (query) => {
-        console.log("writable");
-        console.log(adapter.adapter.writable);
         let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
         setFiles(q.evaluate());
     }
