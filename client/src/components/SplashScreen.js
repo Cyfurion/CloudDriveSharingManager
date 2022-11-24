@@ -155,7 +155,6 @@ export default function SplashScreen() {
     }
 
     const editPermission = () => {
-        console.log("edit permission");
         //last steps after done editing permissions
         setPermissionsModal(false);
         let list = document.querySelectorAll('.file-checkbox');
@@ -180,7 +179,6 @@ export default function SplashScreen() {
             return;
         }
         setPermissionsModal(true);
-        console.log( "edit permissions for ids: " + selectedIDs );
     }
 
     const hideEditPermissionModal = () => {
@@ -189,7 +187,6 @@ export default function SplashScreen() {
 
     const showSwitchSnapshotModal = async () => {
         let map = (await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs;
-        console.log(await apis.getUser(store.currentSnapshot.profile));
         setShowSnapshots(map);
     }
     const closeSwitchSnapshotModal = () => {
