@@ -16,8 +16,9 @@ export default class Query {
         this.queryString = queryString;
         this.snapshot = snapshot;
         this.writableRoles =  writableRoles;
-        this.operators = this.parse(queryString);
         this.groupsOn = true;
+        this.operators = this.parse(queryString);
+        console.log(this.operators);
     }
 
     evaluate() {
@@ -65,11 +66,11 @@ export default class Query {
                     i += keyword.length;
                     if (String(queryString.charAt(i)) === ':') {
                         i++;
-                        if(i >= queryString.length){
-                            throw new Error("Every operator must be associated with a value.");
-                        }
                         while (queryString.charAt(i).trim() === '') {
                             i++;
+                            if(i >= queryString.length){
+                                throw new Error("Every operator must be associated with a value.");
+                            }
                         }
                         let parsedWord = this.parseWord(queryString, i);
                         i = parsedWord.i;
@@ -83,6 +84,18 @@ export default class Query {
                                 this.groupsOn = false;
                             }else{
                                 throw new Error('Groups: must be followed by "on" or "off".');
+                            }
+                            console.log("substring: ",queryString.substring(i));
+                            while (queryString.charAt(i).trim() === '') {
+                                i++;
+                                if(i >= queryString.length){
+                                    throw new Error("Groups must be associated with other operators.");
+                                }
+                            }
+                            if(queryString.substring(i).indexOf('and ') === 0){
+                                i+=4;
+                            }else{
+                                throw new Error('Groups: must be followed by an "and".');
                             }
                         }else{
                             if(keyword.toLowerCase() === 'drive'){
