@@ -162,7 +162,6 @@ export default function SplashScreen() {
 
     const editPermission = async (payload) => {
         let validate = await adapter.adapter.deployValidate(payload.files);
-
         if(validate){
             const post = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
             setPermissionsModal(false);
@@ -180,8 +179,15 @@ export default function SplashScreen() {
 
         else{
             dispatch({
-
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type : "DANGER",
+                    title: "Edit permission failed",
+                    message: "current permissions mismatch with cloud drive"
+                }
             })
+            return;
         }
         
     }
