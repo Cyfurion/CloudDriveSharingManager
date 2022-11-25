@@ -18,7 +18,7 @@ export default function SplashScreen() {
     const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
-    const[ showPermissionsModal, setPermissionsModal] = useState(false);
+    const [showPermissionsModal, setPermissionsModal] = useState(false);
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
@@ -57,7 +57,7 @@ export default function SplashScreen() {
 
     const handleValidateACRButton = () =>{
         let ACRList = store.user.acrs;
-        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable);
+        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
         setValidateACRResult(result);
         
     }
@@ -150,7 +150,6 @@ export default function SplashScreen() {
         let name = 'Search Result'
         let folder = new Folder( name, files);
         store.pushDirectory(folder);
-        
         setSearchActive(true);
          setFiles(files);
     }
@@ -247,7 +246,7 @@ export default function SplashScreen() {
         if(store.directory.length > 1){
             let result = findDeviantSharing(store.getCurrentFolder(), (threshold/100));
             console.log(result);
-            //setAnalysisResult(result);
+            setAnalysisResult(result);
         }
         else{
             dispatch({

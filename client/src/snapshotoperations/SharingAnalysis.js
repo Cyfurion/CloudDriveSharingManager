@@ -3,6 +3,7 @@ import { DeviantAnalysisResult,
     FileFolderDifferenceAnalysisResult,
     PermissionDifferences,
     CompareSnapshotsResults  } from "../classes/AnalysisResult";
+import { File } from '../classes/file-class';
 
 function compareSnapshots(snapshot1, snapshot2){
     //putting all files into a map where key is their id
@@ -75,7 +76,8 @@ function findDeviantSharing(folder, threshold) {
     if (majority[1].length / folder.files.length >= threshold) {
         for (let permissionSet of permissionsMap.entries()) {
             if (permissionSet[0] !== majority[0]) {
-                let permissionDifferences = comparePermissions(folder, permissionSet[1][0], true);
+                let fileWithMajorityPermissions = new File("", "", JSON.parse(majority[0]));
+                let permissionDifferences = comparePermissions(fileWithMajorityPermissions, permissionSet[1][0], true);
                 let deviantDifferences = [];
                 for(let file of permissionSet[1]){
                     deviantDifferences = new PermissionDifferences(file, 
