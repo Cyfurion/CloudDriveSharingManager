@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function DeviantFileCard(props) {
     let file = props.data;
+    console.log(props.data);
     const [permView, setPermView] = useState(false);
 
     let downIcon = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -11,9 +12,9 @@ export default function DeviantFileCard(props) {
 
 
 
-
-
-    let permList = file.permissions.map((permission, index) => (
+    
+  
+    let permList = file.file.permissions.map((permission, index) => (
         <div key={uuidv4()} className="w-5/6 flex gap-x-5">
             <h1 className="truncate">Entity: {permission.entity}</h1>
             <h1 className="flex flex-nowrap">Role: {permission.role}</h1>
@@ -26,10 +27,10 @@ export default function DeviantFileCard(props) {
     }
 
     return (
-        <div key={file.id} className="flex flex-col pl-2">
+        <div key={file.file.id} className="flex flex-col pl-2">
             <div className="flex gap-x-2 ">
             <button className=" rounded-full bg-gray-200 hover:bg-gray-300" onClick={handlePermView}> {downIcon} </button> 
-                <h1 className="truncate"> {file.name} </h1>
+                <h1 className="truncate"> {file.file.name} </h1>
             </div>
             {permView && <div className="flex flex-col pl-5 rounded-xl bg-gray-300 font-bold"> {permList} </div>}
         </div>
