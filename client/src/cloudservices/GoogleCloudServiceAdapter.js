@@ -60,7 +60,14 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      */
     async deployValidate(files) {
         for (let file of files) {
-            const upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id })).result.permissions;
+            let upstreamPermissions;
+            try {
+                upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id }));
+            } catch {
+                // File wasn't found.
+                return false;
+            }
+            upstreamPermissions = upstreamPermissions.result.permissions;
             if (file.permissionIds.length !== upstreamPermissions.length) {
                 return false;
             }
