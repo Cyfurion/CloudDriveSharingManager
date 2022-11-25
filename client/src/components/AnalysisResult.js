@@ -2,7 +2,7 @@ import DeviantFileCard from "./DeviantFileCard";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function AnalysisResult(props) {
-
+    console.log(props.result);
     const handleClose = () => {
         props.closeDeviancyAnalysisModal();
     }
@@ -12,7 +12,10 @@ export default function AnalysisResult(props) {
             handleClose();
     }
 
+   
+
     return (
+        
         <div onClick={handleBlur} id="modal-container" tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 h-modal fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
                 <div className=" relative rounded-3xl bg-white font-mono shadow dark:bg-gray-700 border-2 border-black">
