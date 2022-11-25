@@ -5,7 +5,6 @@ import api from '../api';
 import AdapterContext from '../cloudservices';
 
 import React, { createContext, useContext, useState } from 'react';
-import AccessControlRequirement from '../classes/accesscontrolrequirement-class';
 
 // Create store context.
 const StoreContext = createContext();
@@ -16,13 +15,15 @@ export const StoreActionType = {
     POP_DIRECTORY: "POP_DIRECTORY",
     SET_FOLDER: "SET_FOLDER",
     SET_SNAPSHOT: "SET_SNAPSHOT",
-    RESET: "RESET"
+    RESET: "RESET",
+    UPDATE_USER: "UPDATE_USER"
 }
 
 function StoreContextProvider(props) {
     const [store, setStore] = useState({
         directory: [],
-        currentSnapshot: null
+        currentSnapshot: null,
+        user: null
     });
 
     const { adapter } = useContext(AdapterContext);
@@ -33,27 +34,38 @@ function StoreContextProvider(props) {
             case StoreActionType.PUSH_DIRECTORY:
                 return setStore({
                     directory: [...store.directory, payload],
-                    currentSnapshot: store.currentSnapshot
+                    currentSnapshot: store.currentSnapshot,
+                    user: store.user
                 });
             case StoreActionType.POP_DIRECTORY:
                 return setStore({
                     directory: store.directory.slice(0, store.directory.length - 1),
-                    currentSnapshot: store.currentSnapshot
+                    currentSnapshot: store.currentSnapshot,
+                    user: store.user
                 })
             case StoreActionType.SET_FOLDER:
                 return setStore({
                     directory: [payload],
-                    currentSnapshot: store.currentSnapshot
+                    currentSnapshot: store.currentSnapshot,
+                    user: store.user
                 });
             case StoreActionType.SET_SNAPSHOT:
                 return setStore({
-                    directory: [payload.root],
-                    currentSnapshot: payload
+                    directory: [payload.snapshot.root],
+                    currentSnapshot: payload.snapshot,
+                    user: payload.user
                 });
             case StoreActionType.RESET:
                 return setStore({
                     directory: [],
-                    currentSnapshot: null
+                    currentSnapshot: null,
+                    user: null
+                });
+            case StoreActionType.UPDATE_USER:
+                return setStore({
+                    directory: store.directory,
+                    currentSnapshot: store.currentSnapshot,
+                    user: payload
                 });
             default:
                 throw new Error("Invalid StoreActionType: " + type);
@@ -85,18 +97,30 @@ function StoreContextProvider(props) {
         return store.directory[store.directory.length - 1];
     }
 
-    store.setSnapshot = function (snapshot) {
+    store.setSnapshot = async function (snapshot) {
+        const user = await api.getUser(snapshot.profile);
         storeReducer({
             type: StoreActionType.SET_SNAPSHOT,
-            payload: snapshot
+            payload: {
+                snapshot: snapshot,
+                user: user
+            }
         });
     }
     store.takeSnapshot = async function () {
         if (adapter.adapter) {
             let snapshot = await adapter.adapter.takeSnapshot();
-            store.setSnapshot(snapshot);
-            api.addSnapshot(snapshot);
+            await api.addSnapshot(snapshot);
+            await store.setSnapshot(snapshot);
         }
+    }
+
+    store.updateUser = async function () {
+        const user = await api.getUser(store.user.profile);
+        storeReducer({
+            type: StoreActionType.UPDATE_USER,
+            payload: user
+        });
     }
 
     store.reset = function () {

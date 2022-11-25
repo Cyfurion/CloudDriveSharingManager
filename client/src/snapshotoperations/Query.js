@@ -18,7 +18,6 @@ export default class Query {
         this.writableRoles =  writableRoles;
         this.groupsOn = true;
         this.operators = this.parse(queryString);
-        console.log(this.operators);
     }
 
     evaluate() {
@@ -186,7 +185,6 @@ export default class Query {
         return {word: word, i: i};
     }
 }
-
 
 class InvalidQueryError extends Error {
 

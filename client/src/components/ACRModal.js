@@ -165,10 +165,11 @@ export default function ACRModal(props) {
             }
         }
 
-        let acr = new AccessControlRequirement(store.currentSnapshot.profile,query, ars, aws, drs, dws, grps);
+        let acr = new AccessControlRequirement(store.user.profile, query, ars, aws, drs, dws, grps);
         let list = [...acrList];
         list = [...list, acr];
         await apis.addACR(acr);
+        await store.updateUser();
 
         setACRList(list);
         handleCancelCreationScreen();
@@ -179,7 +180,8 @@ export default function ACRModal(props) {
         if ( index > -1){
             let list = [...acrList];
             list.splice(index, 1);
-            await apis.deleteACR(index, store.currentSnapshot.profile);
+            await apis.deleteACR(index, store.user.profile);
+            await store.updateUser();
             setACRList(list);
         }
     }

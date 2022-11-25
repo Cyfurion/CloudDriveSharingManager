@@ -46,7 +46,7 @@ export default function SideBar( props ) {
             });
             return;
         }
-        let [recentTimestamp] = ( await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs.values();
+        let [recentTimestamp] = store.user.fileSnapshotIDs.values();
         
         if(recentTimestamp !== store.currentSnapshot.timestamp){
             alert("Cannot edit permissions for older snapshots. Please select most recent snapshot");

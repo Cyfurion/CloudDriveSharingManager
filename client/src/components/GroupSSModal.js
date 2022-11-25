@@ -103,8 +103,8 @@ export default function GroupSSModal(props) {
                 }
             })
             await apis.addGroupSnapshot(groupSS);
-            let user = await apis.getUser(store.currentSnapshot.profile);
-            setGroups(user.groupSnapshots);
+            await store.updateUser();
+            setGroups(store.user.groupSnapshots);
         }
         reader.readAsText(uploadedFile);
 
