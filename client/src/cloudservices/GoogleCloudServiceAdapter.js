@@ -83,6 +83,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     async takeGroupSnapshot(snapshotString, groupEmail, timestamp, name) {
         let members = snapshotString.match(/"mailto:[^"]*"/g);
         members = members.map(member =>  member.substring('"mailto:'.length, member.length-1));
+        members = new Set(members);
+        members = Array.from(members);
         return new GroupSnapshot(this.getProfile(), members, groupEmail, timestamp, name);
     }
     
