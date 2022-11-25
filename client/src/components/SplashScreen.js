@@ -225,7 +225,7 @@ export default function SplashScreen() {
         if(store.directory.length > 1){
             let result = findDeviantSharing(store.getCurrentFolder(), (threshold/100));
             console.log(result);
-            //setAnalysisResult(result);
+            setAnalysisResult(result);
         }
         else{
             dispatch({
