@@ -9,6 +9,7 @@ import apis from '../api';
 import Query from '../snapshotoperations/Query';
 import { v4 as uuidv4 } from 'uuid';
 import AdapterContext from "../cloudservices";
+import { Folder } from '../classes/file-class';
 
 export default function SplashScreen() {
     const { adapter } = useContext(AdapterContext);
@@ -28,8 +29,9 @@ export default function SplashScreen() {
     const [validateACRResult, setValidateACRResult] = useState(null);
     const [groupSS, setGroupSS] = useState(null);
     const [searchActive, setSearchActive] = useState(false);
+    const [permissionView, setPermissionView] = useState(false);
 
-    const handleGroupMembershipButton = async () =>{
+    const handleGroupMembershipButton = () =>{
         let groups = store.user.groupSnapshots;
         setGroupSS(groups);
     }
@@ -44,7 +46,7 @@ export default function SplashScreen() {
         setFiles(null);
     }
 
-    const handleShowACRModal = async () => {
+    const handleShowACRModal =  () => {
         let currentACRs = store.user.acrs;
         setShowACRModal( currentACRs );
     }
@@ -53,7 +55,7 @@ export default function SplashScreen() {
         setShowACRModal( null );
     }
 
-    const handleValidateACRButton = async () =>{
+    const handleValidateACRButton = () =>{
         let ACRList = store.user.acrs;
         let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
         setValidateACRResult(result);
@@ -143,9 +145,13 @@ export default function SplashScreen() {
     }
 
     const handleQuery = (query) => {
-        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
+        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
+        let files = q.evaluate();
+        let name = 'Search Result'
+        let folder = new Folder( name, files);
+        store.pushDirectory(folder);
         setSearchActive(true);
-        setFiles(q.evaluate());
+         setFiles(files);
     }
 
     const fillSearch = (querybuilder) => {
@@ -154,15 +160,30 @@ export default function SplashScreen() {
         handleQuery(querybuilder);
     }
 
-    const editPermission = () => {
-        //last steps after done editing permissions
-        setPermissionsModal(false);
-        let list = document.querySelectorAll('.file-checkbox');
-        for (let i = 0; i < list.length; i++) {
-            list[i].checked = false;
+    const editPermission = async (payload) => {
+        let validate = await adapter.adapter.deployValidate(payload.files);
+
+        if(validate){
+            const post = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            setPermissionsModal(false);
+            setPermissionView(false);
+            setCheckboxVisible(false);
+            let list = document.querySelectorAll('.file-checkbox');
+            for (let i = 0; i < list.length; i++) {
+                list[i].checked = false;
+            }
+            document.querySelector('.allfile-checkbox').checked = false;
+            setSelectedIDs([]);
+            await store.takeSnapshot();
+            setFiles(null);  
         }
-        document.querySelector('.allfile-checkbox').checked = false;
-        setSelectedIDs([]);
+
+        else{
+            dispatch({
+
+            })
+        }
+        
     }
 
     const showEditPermissionModal = () => {
@@ -185,7 +206,7 @@ export default function SplashScreen() {
         setPermissionsModal(false);
     }
 
-    const showSwitchSnapshotModal = async () => {
+    const showSwitchSnapshotModal =  () => {
         let map = store.user.fileSnapshotIDs;
         setShowSnapshots(map);
     }
@@ -272,6 +293,18 @@ export default function SplashScreen() {
         console.log('snapshot changes');
     }
 
+    const handlePermissionMode = () =>{
+        setPermissionView(true);
+        setCheckboxVisible(true);
+    }
+
+    const cancelPermissionMode = () =>{
+
+        setPermissionView(false);
+        setCheckboxVisible(false);
+
+    }
+
 
     if (files === null) {
         if (store.currentSnapshot === null) {
@@ -297,6 +330,9 @@ export default function SplashScreen() {
                         <div className="bg-black h-1"></div>
                         <div className="grid grid-flow-col justify-start">
                             <SideBar 
+                                    handlePermissionMode={handlePermissionMode}
+                                    cancelPermissionMode={cancelPermissionMode}
+                                     permissionView={permissionView}
                                      handleGroupMembershipButton={handleGroupMembershipButton}
                                      handleRefreshButton={handleRefreshButton}
                                      handleValidateACRButton={handleValidateACRButton}
@@ -311,7 +347,8 @@ export default function SplashScreen() {
                                      />
                             <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
                                 <h1 className="font-bold"> Current Snapshot: {store.currentSnapshot.timestamp} </h1>
-                                {searchActive ? <h1 className="font-bold"> Search Results </h1> : <h1 className="font-bold"><button  onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>}
+                                <h1 className="font-bold"><button  onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>
+                                {searchActive ? <h1 className="font-bold"> Search Results </h1> : "" }
                                 <WorkSpace  visible={checkboxVisible}
                                             handleAllFileCheckbox={handleAllFileCheckbox}
                                             handleFileCheckBox={handleFileCheckBox} 
@@ -325,6 +362,7 @@ export default function SplashScreen() {
     }
     return ( 
         <div className=" min-w-fit min-h-screen  ">
+            {console.log(store.directory)}
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
                                                  fileFolderDiff={fileFolderDiff}

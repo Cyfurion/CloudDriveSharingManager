@@ -2,8 +2,6 @@ import {FileFolderDiffCard} from './'
 
 
 export default function FileFolderDiffResult(props) {
-    console.log(props.result);
-
     const handleClose = () => {
         props.closeFFDiffModal();
     }

@@ -2,14 +2,14 @@ import { useContext, useState } from "react";
 import StoreContext from "../store";
 import { ToastContext } from "../toast";
 import Permission from "../classes/permission-class";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import { v4 as uuidv4 } from 'uuid';
+import AdapterContext from "../cloudservices";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function PermissionModal(props) {
     const { dispatch } = useContext(ToastContext);
+
     const [type, setType] = useState("Type");
     const { store } = useContext(StoreContext);
     const [readerList, setReaderList] = useState([]);
@@ -23,9 +23,12 @@ export default function PermissionModal(props) {
 
     let folder = store.getCurrentFolder();
     let files = [];
+
     for (let i = 0; i < folder.files.length; i++) {
-        if (props.data.includes(folder.files[i].id))
-            files.push({ name: folder.files[i].name, permissions: folder.files[i].permissions, isFolder: folder.files[i].files === undefined ? false : true });
+        if (props.data.includes(folder.files[i].id)) {
+            files.push(folder.files[i]);
+        }
+
     }
 
     const handleChange = (e) => {
@@ -154,14 +157,27 @@ export default function PermissionModal(props) {
 
     }
 
-    const handleProceed = (e) => {
+    const handleProceed = async (e) => {
         let readers = [...readerList];
         let writers = [...writerList];
         let deletePermissions = [...removeList];
+        if (readers.length === 0 && writers.length === 0 && deletePermissions.length === 0) {
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Cannot edit permissions",
+                    message: "No permission changes provided"
+                }
+            })
+            return;
+        }
         let addPermissions = [];
-        readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'read')));
-        writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'write')));
-        console.log(files, deletePermissions, addPermissions);
+        readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'reader')));
+        writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'writer')));
+        let payload = { files: files, deletePermissions: deletePermissions, addPermissions : addPermissions};
+        props.editPermission(payload);
     }
 
     const handleClose = () => {
@@ -183,7 +199,6 @@ export default function PermissionModal(props) {
             <div className="flex justify-center  relative min-h-[70vh] min-w-[85vw] max-w-2xl p-4 md:h-auto font-mono">
                 <div className=" relative rounded-3xl bg-white shadow w-full dark:bg-gray-700 border-2 border-black">
 
-
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
                         <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Edit Permissions</h3>
                         <button onClick={handleClose} type="button" className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="defaultModal">
@@ -196,7 +211,7 @@ export default function PermissionModal(props) {
                         <div className="flex gap-2 flex-col pr-4 pt-4 pb-4 max-h-[70vh] border-r overflow-y-auto dark:border-gray-600">
                             {files.map((file) => (
                                 <div className=" p-2 border-b border-black">
-                                    <h1 className="font-bold underline"> {file.isFolder === true ? "Folder:" : "File:"} {file.name}</h1>
+                                    <h1 className="font-bold underline"> {file.files !== undefined ? "Folder:" : "File:"} {file.name}</h1>
                                     <div className="p-2 ">
                                         <h1 className="font-bold"> Permission:</h1>
                                         {file.permissions.map((permission, index) => (

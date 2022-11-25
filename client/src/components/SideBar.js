@@ -12,13 +12,11 @@ import { useState, useContext } from 'react';
 import StoreContext from '../store';
 import { ToastContext } from '../toast';
 import CancelIcon from '@mui/icons-material/Cancel';
-import apis from '../api';
 import { v4 as uuidv4} from "uuid";
 
 export default function SideBar( props ) {
-    const [permissionView, setPermissionView] = useState(false);
     const { store } = useContext(StoreContext);
-    const {state, dispatch} = useContext(ToastContext);
+    const { dispatch} = useContext(ToastContext);
 
     const handleRefreshButton = () =>{
         props.handleRefreshButton();
@@ -32,8 +30,7 @@ export default function SideBar( props ) {
         props.handleValidateACRButton();
     }
 
-    const handlePermissionButton = async () => {
-        console.log(store.directory.length);
+    const handlePermissionButton =  () => {
         if(store.directory.length === 1){
             dispatch({
                 type:"ADD_NOTIFICATION",
@@ -60,7 +57,7 @@ export default function SideBar( props ) {
             });
             return;
         }
-        setPermissionView(true);
+        props.handlePermissionMode();
         props.handlePermissionModal();
     }
 
@@ -76,27 +73,24 @@ export default function SideBar( props ) {
         props.handleHistoryButton();
     }
 
-    const cancelPermissionMode = () =>{
-        setPermissionView(false);
-        props.handleHideCheckBox();
+    const handleSwitchSnapshotButton = () => {
+        props.showSwitchSnapshotModal();
     }
 
     const editPermissionButton = () => {
         props.showEditPermissionModal();
     }
-    const handleSwitchSnapshotButton = () => {
-        props.showSwitchSnapshotModal();
-    }
+
 
     const handleGroupMembershipButton = ()=>{
         props.handleGroupMembershipButton();
     }
 
-    if (permissionView){
+    if (props.permissionView){
         return (
             <div className="flex flex-col justify-start mt-4 mx-5 gap-y-4 items-baseline">
                 <button onClick={editPermissionButton} type="button" className="sidebar-greenbtn"> <EditIcon fontSize="small" sx={{color: 'black'}}/> Edit Permissions </button>
-                <button onClick={cancelPermissionMode} type="button" className="sidebar-redbtn "> <CancelIcon fontSize="small" sx={{color: 'black'}} /> Exit </button>
+                <button onClick={props.cancelPermissionMode} type="button" className="sidebar-redbtn "> <CancelIcon fontSize="small" sx={{color: 'black'}} /> Exit </button>
            </div>
         )
     }
