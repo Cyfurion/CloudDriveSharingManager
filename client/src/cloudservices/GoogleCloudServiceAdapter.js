@@ -6,6 +6,9 @@ import Permission from '../classes/permission-class';
 import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
+
+    groupsAllowed = true;
+    
     permissionTypes = {
         owner: 'owner',
         organizer: 'organizer',

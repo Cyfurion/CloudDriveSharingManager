@@ -13,21 +13,22 @@ const keywordsWithUsers = ['owner', 'creator', 'from', 'to', 'readable', 'writab
 //name in quotes
 export default class Query {  
     
-    constructor(queryString, snapshot, writableRoles, user) {
+    constructor(queryString, snapshot, writableRoles, user, groupsAllowed) {
         this.queryString = queryString;
         this.snapshot = snapshot;
         this.writableRoles =  writableRoles;
-        this.groupsOn = true;
+        this.groupsAllowed = groupsAllowed;
+        this.groupsOn = groupsAllowed;
         this.user = user;
         this.operators = this.parse(queryString);
     }
 
     evaluate() {
-        //try{
+        try{
             return this.operators.evaluate(this.snapshot, this.writableRoles, this.user);
-        //}catch(e){
-        //    throw new Error("Incorrectly formatted query.");
-        //}
+        }catch(e){
+            throw new Error("Incorrectly formatted query.");
+        }
         
     }
 
@@ -76,6 +77,9 @@ export default class Query {
                         let parsedWord = this.parseWord(queryString, i);
                         i = parsedWord.i;
                         if(keyword === 'groups'){
+                            if(!this.groupsAllowed){
+                                throw new Error("Groups not supported in selected drive service.");
+                            }
                             if(!(operatorStack.length === 1 && operatorStack[0] === '(')){
                                 throw new Error("Group must be first conjunct in a search query.");
                             }

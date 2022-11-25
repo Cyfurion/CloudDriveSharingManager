@@ -9,7 +9,7 @@ export default class FileSnapshot {
         this.timestamp = timestamp;
     }
 
-    validate(acrs, writers, user) {
+    validate(acrs, writers, user, groupsAllowed) {
         const violations = new Map();
         for (let acr of acrs) {
             let clear = true;
@@ -19,7 +19,7 @@ export default class FileSnapshot {
                 dr: [],
                 dw: []
             }
-            const files = (new Query(acr.query, this, writers, user)).evaluate()
+            const files = (new Query(acr.query, this, writers, user, groupsAllowed)).evaluate()
             for (let file of files) {
                 for (let permission of file.permissions) {
                     if (acr.allowedReaders.length > 0) {
