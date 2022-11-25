@@ -62,12 +62,12 @@ export default function PermissionModal(props) {
         }
 
         let list = [...readerList];
-        list = [...list, {entity:readerEmail, type:type}];
+        list = [...list, { entity: readerEmail, type: type }];
         console.log(list);
         document.querySelector("#add-email-text").value = "";
         setType("Type");
         setReaderList(list);
-        
+
     }
 
     const handleAddWriter = (e) => {
@@ -101,7 +101,7 @@ export default function PermissionModal(props) {
 
 
         let list = [...writerList];
-        list = [...list,{ entity:writerEmail,type:type}];
+        list = [...list, { entity: writerEmail, type: type }];
         document.querySelector("#add-email-text").value = "";
         setType("Type");
         setWriterList(list);
@@ -159,9 +159,9 @@ export default function PermissionModal(props) {
         let writers = [...writerList];
         let deletePermissions = [...removeList];
         let addPermissions = [];
-        readers.map((entry)=> addPermissions.push(new Permission(entry.type, entry.entity, 'read')));
-        writers.map((entry)=> addPermissions.push(new Permission(entry.type, entry.entity, 'write')));
-        console.log(files, deletePermissions, addPermissions );
+        readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'read')));
+        writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'write')));
+        console.log(files, deletePermissions, addPermissions);
     }
 
     const handleClose = () => {
@@ -213,26 +213,30 @@ export default function PermissionModal(props) {
                                     Add Permissions:
                                     <div className="grid grid-cols-2">
                                         <div className="flex flex-col p-2 gap-y-1"> Reader:
-                                            {readerList.map((entry, index) => (
-                                                <div key={index} className="add-perm-card">
-                                                    <div>
-                                                        <h1> Type: {entry.type}</h1>
-                                                        <h1> Entity: {entry.entity}</h1>
-                                                    </div>    
-                                                    <button className="rounded-xl hover:bg-gray-400" id={index} onClick={handleRemoveReader} > {XIcon} </button>
-                                                </div>
-                                            ))}
+                                            <div className=" max-h-52 gap-y-1 flex flex-col overflow-y-auto text-sm">
+                                                {readerList.map((entry, index) => (
+                                                    <div key={index} className="add-perm-card ">
+                                                        <div className="flex flex-col ">
+                                                            <h1 className="truncate"> Type: {entry.type}</h1>
+                                                            <h1 title={entry.entity} className="truncate max-w-xs"> Entity: {entry.entity}</h1>
+                                                        </div>
+                                                        <button className="rounded-xl hover:bg-gray-400" id={index} onClick={handleRemoveReader} > {XIcon} </button>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                         <div className="flex flex-col p-2 gap-y-1 border-l" > Writer:
-                                            {writerList.map((entry, index) => (
-                                                <div key={index} className="add-perm-card">
-                                                     <div>
-                                                        <h1> Type: {entry.type}</h1>
-                                                        <h1> Entity: {entry.entity}</h1>
+                                            <div className=" max-h-52 gap-y-1 flex flex-col overflow-y-auto text-sm">
+                                                {writerList.map((entry, index) => (
+                                                    <div key={index} className="add-perm-card ">
+                                                        <div className="flex flex-col ">
+                                                            <h1 className="truncate"> Type: {entry.type}</h1>
+                                                            <h1 title={entry.entity} className="truncate max-w-xs"> Entity: {entry.entity}</h1>
+                                                        </div>
+                                                        <button className="rounded-xl hover:bg-gray-400" id={index} onClick={handleRemoveWriter} > {XIcon} </button>
                                                     </div>
-                                                    <button className="rounded-xl hover:bg-gray-400" id={index} onClick={handleRemoveWriter} > {XIcon} </button>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -265,8 +269,8 @@ export default function PermissionModal(props) {
                             </div>
 
                             <div className="flex flex-row justify-center gap-x-3">
-                                <button onClick={handleAddReader} className="rounded-md p-1 font-bold flex self-center bg-green-400"> Add Reader </button>
-                                <button onClick={handleAddWriter} className="rounded-md p-1 font-bold flex self-center bg-green-400"> Add Writer </button>
+                                <button onClick={handleAddReader} className="rounded-md p-1 font-bold flex self-center bg-green-400 hover:bg-green-500"> Add Reader </button>
+                                <button onClick={handleAddWriter} className="rounded-md p-1 font-bold flex self-center bg-green-400 hover:bg-green-500"> Add Writer </button>
                                 <div className="bg-white ">
                                     <button onClick={(e) => setTypeOpen((prev) => !prev)} className="block h-8 w-20 border-2 rounded-lg focus: focus:rounded-t-lg border-gray-400 focus:border-blue-400 "> {type} </button>
                                     {typeOpen &&
@@ -291,11 +295,11 @@ export default function PermissionModal(props) {
                             </div>
 
                             <div className="p-1 flex flex-row justify-center gap-x-3 border-b border-black">
-                                <button onClick={handleAddRemoveList} className="rounded-md p-1 font-bold flex self-center bg-red-400"> Add Entity </button>
+                                <button onClick={handleAddRemoveList} className="rounded-md p-1 font-bold flex self-center bg-red-400 hover:bg-red-500"> Add Entity </button>
                             </div>
 
                             <div className="self-center">
-                                <button onClick={handleProceed} className="rounded-md p-1 px-5 font-bold flex self-center bg-green-500"> Proceed </button>
+                                <button onClick={handleProceed} className="rounded-md p-1 px-5 font-bold flex self-center bg-green-500 hover:bg-green-600"> Proceed </button>
                             </div>
                         </div>
                     </div>
