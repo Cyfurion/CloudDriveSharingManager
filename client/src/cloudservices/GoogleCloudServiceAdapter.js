@@ -30,8 +30,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     async deploy(files, deletePermissions, addPermissions) {
         for (let file of files) {
             // Delete specified permissions (if they exist).
-            for (let i = 0; i < files.permissions.length; i++) {
-                if (deletePermissions.includes(files.permissions[i].entity)) {
+            for (let i = 0; i < file.permissions.length; i++) {
+                if (deletePermissions.includes(file.permissions[i].entity)) {
                     // Matching permission found, delete.
                     await this.endpoint.client.drive.permissions.delete({
                         fileId: file.id,

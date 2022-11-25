@@ -97,6 +97,18 @@ function StoreContextProvider(props) {
         return store.directory[store.directory.length - 1];
     }
 
+    store.onLogin = async function () {
+        if (adapter.adapter) {
+            let user;
+            try {
+                user = await api.getUser(await adapter.adapter.getProfile());
+                store.setSnapshot(await api.getSnapshot(user.fileSnapshotIDs.keys().next().value));
+            } catch {
+                store.takeSnapshot();
+            }
+        }
+    }
+
     store.setSnapshot = async function (snapshot) {
         const user = await api.getUser(snapshot.profile);
         storeReducer({
@@ -112,6 +124,7 @@ function StoreContextProvider(props) {
             let snapshot = await adapter.adapter.takeSnapshot();
             await api.addSnapshot(snapshot);
             await store.setSnapshot(snapshot);
+            store.onLogin();
         }
     }
 
