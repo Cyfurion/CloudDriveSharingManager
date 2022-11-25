@@ -1,3 +1,5 @@
+import {FileFolderDiffCard} from './'
+
 
 export default function FileFolderDiffResult(props) {
     console.log(props.result);
@@ -13,7 +15,7 @@ export default function FileFolderDiffResult(props) {
 
     return (
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
-            <div className="relative h-full w-full max-w-2xl p-4 md:h-auto">
+            <div className=" font-mono relative min-h-[70vh] min-w-[40vw] max-w-2xl p-4 md:h-auto">
                 <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
 
 
@@ -26,29 +28,29 @@ export default function FileFolderDiffResult(props) {
                     </div>
 
                     <div className="flex flex-col p-4 ">
-                        <div className="border-b border-black "> Current Folder: {props.result.folder.name} </div>
-
+                        <div className="border-b border-black max-h-64 overflow-y-auto">
+                             Current Folder: {props.result.folder.name}
+                            <div className="flex flex-col gap-y-1">
+                                {props.result.folder.permissions.length !== 0 ? props.result.folder.permissions.map((perm)=>(
+                                    <FileFolderDiffCard perm={perm}/>
+                                )) : <h1> No Permissions Found</h1>}
+                            </div>
+                         </div>
+                    
                         <h1 className="border-b"> Differing Files: </h1>
-                        <div className="flex accordion flex-col max-h-64 overflow-y-auto  ">
-                            {props.result.differingFiles.map((file)=>(
+                        <div className="flex  flex-col max-h-64 overflow-y-auto  ">
+                            {props.result.differingFiles.length !== 0 ? props.result.differingFiles.map((file)=>(
                                 <div className="border-b pl-5"> File Name: {file.file.name}
                                     
                                     {file.fileDifferences.map((permission)=>(
-                                        <div className="flex flex-col pl-5 bg-green-100">
-                                            <h1> Entity: {permission.entity}</h1>
-                                            <h1> Role: {permission.role}</h1>
-                                         </div>
+                                        <FileFolderDiffCard perm={permission}/>
                                     ))}
                                     {file.folderDifferences.map((permission)=>(
-                                        <div className="flex flex-col pl-5">
-                                            folder Differences:
-                                            <h1> Entity: {permission.entity}</h1>
-                                            <h1> Role: {permission.role}</h1>
-                                         </div>
+                                        <FileFolderDiffCard perm={permission}/>
                                     ))}
                                  </div>
                                 
-                            ))}
+                            )) : <h1 className="flex justify-center"> No Differences Found</h1>}
                         </div>
 
                     </div>

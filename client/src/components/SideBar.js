@@ -49,7 +49,15 @@ export default function SideBar( props ) {
         let [recentTimestamp] = ( await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs.values();
         
         if(recentTimestamp !== store.currentSnapshot.timestamp){
-            alert("Cannot edit permissions for older snapshots. Please select most recent snapshot");
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id : uuidv4(),
+                    type : "DANGER",
+                    title : "Edit permission denied",
+                    message: "Please select the most recent snapshot"
+                }
+            });
             return;
         }
         setPermissionView(true);

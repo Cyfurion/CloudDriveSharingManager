@@ -160,7 +160,15 @@ export default function ACRModal(props) {
 
         for (let i = 0; i < acrList.length; i++) {
             if (acrList[i].query === query) {
-                alert("ACR with current query exists. Please try something else");
+                dispatch({
+                    type: "ADD_NOTIFICATION",
+                    payload : {
+                        id : uuidv4(),
+                        type : "WARNING",
+                        title : "Cannot Create ACR",
+                        message: "ACR with current query exists"
+                    }
+                });
                 return;
             }
         }
@@ -196,14 +204,14 @@ export default function ACRModal(props) {
     ))
 
     let ACRCreationScreen =
-        <div className="flex flex-col border-t p-4 gap-y-3 ">
+        <div className="flex flex-col border-t p-4 gap-y-3 max-h-[70vh] overflow-y-auto ">
 
             
             <ACRCreationField label="Search Query" inputID="acr-search-query" placeholder="query"  />
-            <ACRCreationField label={"Allowed Reader"} list={AR} inputID={"acr-ar-input-bar"} handleAdd={handleAddAR} handleDelete={handleDeleteAR}/>
-            <ACRCreationField label={"Allowed Writer"} list={AW} inputID={"acr-aw-input-bar"} handleAdd={handleAddAW} handleDelete={handleDeleteAW}/>
-            <ACRCreationField label={"Denied Readers"} list={DR} inputID={"acr-dr-input-bar"} handleAdd={handleAddDR} handleDelete={handleDeleteDR}/>
-            <ACRCreationField label={"Denied Writers"} list={DW} inputID={"acr-dw-input-bar"} handleAdd={handleAddDW} handleDelete={handleDeleteDW}/>
+            <ACRCreationField label={"Allowed Reader"} placeholder="entity" list={AR} inputID={"acr-ar-input-bar"} handleAdd={handleAddAR} handleDelete={handleDeleteAR}/>
+            <ACRCreationField label={"Allowed Writer"} placeholder="entity" list={AW} inputID={"acr-aw-input-bar"} handleAdd={handleAddAW} handleDelete={handleDeleteAW}/>
+            <ACRCreationField label={"Denied Readers"} placeholder="entity" list={DR} inputID={"acr-dr-input-bar"} handleAdd={handleAddDR} handleDelete={handleDeleteDR}/>
+            <ACRCreationField label={"Denied Writers"} placeholder="entity" list={DW} inputID={"acr-dw-input-bar"} handleAdd={handleAddDW} handleDelete={handleDeleteDW}/>
 
             <div className="flex w-full justify-center gap-x-2">
                 Take group membership into account?

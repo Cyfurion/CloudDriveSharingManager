@@ -224,10 +224,20 @@ export default function SplashScreen() {
 
         if(store.directory.length > 1){
             let result = findDeviantSharing(store.getCurrentFolder(), (threshold/100));
-            setAnalysisResult(result);
+            console.log(result);
+            //setAnalysisResult(result);
         }
         else{
-            alert("cannot do analysis on current directory");
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id : uuidv4(),
+                    type : "DANGER",
+                    title : "Analysis mode closed",
+                    message: "Cannot do analysis on current directory"
+                }
+            });
+            return;
         }
     }
 
@@ -245,7 +255,16 @@ export default function SplashScreen() {
             setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
         }
         else{
-            alert("cannot do analysis on current diretory");
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id : uuidv4(),
+                    type : "DANGER",
+                    title : "Analysis mode closed",
+                    message: "Cannot do analysis on current directory"
+                }
+            });
+            return;
         }
     }
 

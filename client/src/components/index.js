@@ -24,6 +24,7 @@ import ValidateACRResult from "./ValidateACRResult";
 import ACRCreationField from "./ACRCreationField";
 import Toast from "./Toast";
 import GroupSSModal from "./GroupSSModal";
+import FileFolderDiffCard from "./FileFolderDiffCard";
 
 export {
     GoogleLoginButton,
@@ -51,5 +52,6 @@ export {
     ValidateACRResult,
     ACRCreationField,
     Toast,
-    GroupSSModal
+    GroupSSModal,
+    FileFolderDiffCard
 }

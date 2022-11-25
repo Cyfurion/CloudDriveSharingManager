@@ -27,9 +27,11 @@ export default function ACRCreationField( {children, placeholder,label, list, ha
                     <input placeholder={placeholder ? placeholder : ""} id={inputID} className="qbtextfield w-4/6" type='text' />
                     {handleAdd ? <button onClick={handleAddButton} className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-2 ml-3"> {addIcon ? addIcon : plusIcon} </button> : ""}
                 </div>
+ 
+                <div className=" flex flex-col w-full items-center max-h-64 gap-y-3 overflow-y-auto">
                 { list ? list.map((entry, index) => (
-                    <div className="bg-green-600 rounded-xl flex justify-between w-1/3 px-3 font-bold p-1">
-                        <h1 className="truncate">
+                    <div className="bg-green-600 rounded-xl flex justify-between w-3/5 px-3 ml-28 font-bold p-1">
+                        <h1 title={entry} className="truncate">
                             {index + 1}. Entity: {entry}
                         </h1>
                         <button onClick={handleDeleteButton} id={index} className="rounded-xl hover:bg-gray-400" >
@@ -37,6 +39,7 @@ export default function ACRCreationField( {children, placeholder,label, list, ha
                         </button>
                     </div>
                 )) : ""}
+                </div>
             </div>
             {children ? children : ""}
         </div>
