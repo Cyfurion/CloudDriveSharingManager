@@ -30,7 +30,7 @@ export default function SplashScreen() {
     const [searchActive, setSearchActive] = useState(false);
 
     const handleGroupMembershipButton = async () =>{
-        let groups = (await apis.getUser(store.currentSnapshot.profile)).groupSnapshots;
+        let groups = store.user.groupSnapshots;
         setGroupSS(groups);
     }
 
@@ -45,7 +45,7 @@ export default function SplashScreen() {
     }
 
     const handleShowACRModal = async () => {
-        let currentACRs = (await apis.getUser(store.currentSnapshot.profile)).acrs;
+        let currentACRs = store.user.acrs;
         setShowACRModal( currentACRs );
     }
 
@@ -54,7 +54,7 @@ export default function SplashScreen() {
     }
 
     const handleValidateACRButton = async () =>{
-        let ACRList = (await apis.getUser(store.currentSnapshot.profile)).acrs;
+        let ACRList = store.user.acrs;
         let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable);
         setValidateACRResult(result);
         
@@ -186,7 +186,7 @@ export default function SplashScreen() {
     }
 
     const showSwitchSnapshotModal = async () => {
-        let map = (await apis.getUser(store.currentSnapshot.profile)).fileSnapshotIDs;
+        let map = store.user.fileSnapshotIDs;
         setShowSnapshots(map);
     }
     const closeSwitchSnapshotModal = () => {
