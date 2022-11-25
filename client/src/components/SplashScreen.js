@@ -17,7 +17,7 @@ export default function SplashScreen() {
     const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
     const [showQBB, setShowQBB] = useState(false);
-    const[ showPermissionsModal, setPermissionsModal] = useState(false);
+    const [showPermissionsModal, setPermissionsModal] = useState(false);
     const [files, setFiles] = useState(null);
     const [selectedIDs, setSelectedIDs] = useState([]);
     const [checkboxVisible, setCheckboxVisible] = useState(false);
@@ -55,7 +55,7 @@ export default function SplashScreen() {
 
     const handleValidateACRButton = async () =>{
         let ACRList = store.user.acrs;
-        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable);
+        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user);
         setValidateACRResult(result);
         
     }
@@ -143,7 +143,7 @@ export default function SplashScreen() {
     }
 
     const handleQuery = (query) => {
-        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
+        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user);
         setSearchActive(true);
         setFiles(q.evaluate());
     }
