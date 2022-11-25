@@ -31,29 +31,31 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param {Permission[]} addPermissions The list of permissions to add.
      */
     async deploy(files, deletePermissions, addPermissions) {
+        const promises = [];
         for (let file of files) {
             // Delete specified permissions (if they exist).
             for (let i = 0; i < file.permissions.length; i++) {
                 if (deletePermissions.includes(file.permissions[i].entity)) {
                     // Matching permission found, delete.
-                    await this.endpoint.client.drive.permissions.delete({
+                    promises.push(this.endpoint.client.drive.permissions.delete({
                         fileId: file.id,
                         permissionId: file.permissionIds[i]
-                    });
+                    }));
                 }
             }
             // Add all permissions to this file.
             for (let permission of addPermissions) {
-                await this.endpoint.client.drive.permissions.create({
+                promises.push(this.endpoint.client.drive.permissions.create({
                     fileId: file.id,
                     resource: {
                         role: permission.role,
                         type: permission.type,
                         emailAddress: permission.entity
                     }
-                });
+                }));
             }
         }
+        await Promise.all(promises);
     }
     /**
      * Given a list of `File` objects, checks whether these files have matching (up-to-date) permissions with their
