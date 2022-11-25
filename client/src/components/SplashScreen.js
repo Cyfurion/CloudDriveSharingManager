@@ -308,7 +308,7 @@ export default function SplashScreen() {
 
     if (files === null) {
         if (store.currentSnapshot === null) {
-            store.takeSnapshot();
+            store.onLogin();
         } else {
             setFiles(store.getCurrentFolder().files);
         }
