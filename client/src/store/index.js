@@ -124,7 +124,6 @@ function StoreContextProvider(props) {
             let snapshot = await adapter.adapter.takeSnapshot();
             await api.addSnapshot(snapshot);
             await store.setSnapshot(snapshot);
-            store.onLogin();
         }
     }
 
