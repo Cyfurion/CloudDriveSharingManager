@@ -3,6 +3,8 @@ export class CloudServiceAdapter {
         this.endpoint = endpoint;
     }
 
+    groupsAllowed = false;
+
     permissionTypes = {};
 
     writable = [];

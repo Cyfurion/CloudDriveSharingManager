@@ -55,7 +55,7 @@ export default function SplashScreen() {
 
     const handleValidateACRButton = async () =>{
         let ACRList = store.user.acrs;
-        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user);
+        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
         setValidateACRResult(result);
         
     }
@@ -143,7 +143,7 @@ export default function SplashScreen() {
     }
 
     const handleQuery = (query) => {
-        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user);
+        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
         setSearchActive(true);
         setFiles(q.evaluate());
     }
