@@ -362,7 +362,6 @@ export default function SplashScreen() {
     }
     return ( 
         <div className=" min-w-fit min-h-screen  ">
-            {console.log(store.directory)}
             {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
                                                  fileFolderDiff={fileFolderDiff}
