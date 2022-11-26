@@ -4,6 +4,7 @@ import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 import GroupSnapshot from '../classes/groupsnapshot-class';
+import { ErrorResponse } from '@remix-run/router';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
 
@@ -123,6 +124,15 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
+        let driveList = await this.getDrives();
+        for(let drive of driveList){
+            console.log("entering");
+            let drivePermissions = await this.getPermissions(drive.id);
+            let permObj = await this.createPermissionList(drivePermissions);
+            let driveFolder = new Folder(new File(drive.id, drive.name, permObj[0],
+                permObj[1], drive.name, "SYSTEM", '/'.concat(drive.name), "", "SYSTEM"),[]);
+            root.files.push(driveFolder);
+        }
         let snap = new FileSnapshot(
             this.getProfile(),
             root, 
@@ -148,21 +158,55 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
     }
 
+    async getDrives(){
+        let response = (await this.endpoint.client.drive.drives.list({
+            })).result;
+        return response.drives;
+    }
+        
+
+    async getPermissions(fileId){
+        let response = (await this.endpoint.client.drive.permissions.list({
+            'fileId':fileId,
+            'supportsAllDrives':true,
+            'fields':'*'})).result;
+        return response.permissions;
+    }
+
     // Returns an array of every un-trashed file accessible to the user.
     async retrieve() {
         let files = [];
         let token = "";
         do {
             let response = (await this.endpoint.client.drive.files.list({
-                'fields': 'files(id,name,createdTime,permissions,parents,owners,sharingUser),nextPageToken',
+                'fields': 'files(id,name,createdTime,permissions,parents,owners,sharingUser, hasAugmentedPermissions),nextPageToken',
                 'pageSize': 1000,
                 'pageToken': token,
-                'q': 'trashed = false'
+                'q': 'trashed = false',
+                'includeItemsFromAllDrives': true,
+                'supportsAllDrives': true
             })).result;
             files = files.concat(response.files);
             token = response.nextPageToken;
         } while (token);
         return files;
+    }
+
+    async createPermissionList(permissions){
+        let permissionList = [];
+        let permissionIds = [];
+        if (permissions !== undefined) {
+            for (let permission of permissions) {
+                let canShare = (permission.role === this.permissionTypes.owner
+                        || permission.role === this.permissionTypes.organizer 
+                        || permission.role === this.permissionTypes.fileOrganizer
+                        || permission.role === this.permissionTypes.writer);
+                permissionList.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
+                    permission.emailAddress, permission.role, false, canShare));
+                permissionIds.push(permission.id);
+            }
+        }
+        return (permissionList, permissionIds);
     }
 
     /**
@@ -191,7 +235,10 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         if (file.driveId !== undefined) {
             drive = file.driveId;
         }
-        let owner = file.owners[0].emailAddress;
+        let owner = "";
+        if(file.owners !== undefined){
+            owner = file.owners[0].emailAddress;
+        }
         let createdTime = file.createdTime;
         let sharedBy = owner;
         if(file.sharingUser){
