@@ -23,13 +23,7 @@ export default function PermissionModal(props) {
 
     let folder = store.getCurrentFolder();
     let files = [];
-
-    for (let i = 0; i < folder.files.length; i++) {
-        if (props.data.includes(folder.files[i].id)) {
-            files.push(folder.files[i]);
-        }
-
-    }
+    folder.files.map((file)=> props.data.includes(file.id) ? files.push(file) : "");
 
     const handleChange = (e) => {
         console.log(e.target.value);
@@ -177,6 +171,7 @@ export default function PermissionModal(props) {
         readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'reader')));
         writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'writer')));
         let payload = { files: files, deletePermissions: deletePermissions, addPermissions : addPermissions};
+        
         props.editPermission(payload);
     }
 

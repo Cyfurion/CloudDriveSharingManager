@@ -25,7 +25,7 @@ export default function FileCard(props) {
         <tr key={file.id} className="filecard border-b-2 hover:bg-gray-100">
             <th>
                 <input
-                    style={{ visibility: store.directory.length === 1 ? 'hidden' : props.visible ? 'visible' : 'hidden' }}
+                    style={{ visibility:  props.visible ? 'visible' : 'hidden' }} //
                     className="file-checkbox"
                     value={file.id}
                     onChange={props.handleFileCheckBox}

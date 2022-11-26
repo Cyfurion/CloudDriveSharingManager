@@ -1,19 +1,22 @@
-import {GroupSSModal,Toast,ValidateACRResult, ACRModal,LoginPage,WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen,AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal} from './';
+//libraries and packages
+import { useContext, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+
+//our stuff
+import { GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
-import { useContext, useState } from 'react';
 import StoreContext from '../store';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import {findDeviantSharing, findFileFolderSharingDifferences} from '../snapshotoperations/SharingAnalysis';
+import { findDeviantSharing, findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
 import Query from '../snapshotoperations/Query';
-import { v4 as uuidv4 } from 'uuid';
 import AdapterContext from "../cloudservices";
-import { Folder } from '../classes/file-class';
+import { Folder, File } from '../classes/file-class';
 
 export default function SplashScreen() {
     const { adapter } = useContext(AdapterContext);
-    const { dispatch} = useContext(ToastContext);
+    const { dispatch } = useContext(ToastContext);
     const { auth } = useContext(AuthContext);
     const { store } = useContext(StoreContext);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
@@ -31,46 +34,61 @@ export default function SplashScreen() {
     const [searchActive, setSearchActive] = useState(false);
     const [permissionView, setPermissionView] = useState(false);
 
-    const handleGroupMembershipButton = () =>{
+    //show Group Membership Modal
+    const handleGroupMembershipButton = () => {
+        //retrieve group snapshot [] and pass it to the modal
         let groups = store.user.groupSnapshots;
         setGroupSS(groups);
     }
 
-    const handleCloseGroupSSModal = () =>{
+    //close Group Membership Modal
+    const handleCloseGroupSSModal = () => {
         setGroupSS(null);
     }
 
-    const handleRefreshButton = async () =>{
+    //retakes a snapshot
+    const handleRefreshButton = async () => {
         store.reset();
         await store.takeSnapshot();
         setFiles(null);
-    }
+    }   
 
-    const handleShowACRModal =  () => {
+    //shows ACR Modal
+    const handleShowACRModal = () => {
+        //retrieve acr and pass to modal
         let currentACRs = store.user.acrs;
-        setShowACRModal( currentACRs );
+        setShowACRModal(currentACRs);
     }
 
+    //close ACR Modal
     const handleCloseACRModal = () => {
-        setShowACRModal( null );
+        setShowACRModal(null);
     }
 
-    const handleValidateACRButton = () =>{
+    //Opens ACR Result Modal
+    const handleValidateACRButton = () => {
+        //retrieves acr List and validate, pass to modal
         let ACRList = store.user.acrs;
         let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
         setValidateACRResult(result);
-        
+
     }
 
-    const handleCloseValidateACR = () =>{
+    //Closes ACR Result Modal
+    const handleCloseValidateACR = () => {
         setValidateACRResult(null);
     }
 
+    //handles checkbox for each file
     const handleFileCheckBox = (e) => {
+        //gets their 'checked' status
         const checked = e.target.checked;
+        //if checked, then add to selectedIDs
         if (checked) {
             setSelectedIDs([...selectedIDs, e.target.value]);
-        } else {
+        } 
+        //if not checked, then remove from selectedIDs
+        else {
             const allCheck = document.querySelector('.allfile-checkbox');
             if (allCheck) {
                 document.querySelector('.allfile-checkbox').checked = false;
@@ -79,10 +97,13 @@ export default function SplashScreen() {
         }
     }
 
+    //handles clickALL checkbox
     const handleAllFileCheckbox = (e) => {
+        //gets checked status
         const checked = e.target.checked;
         let list = document.querySelectorAll('.file-checkbox');
         let s = [];
+        //if checked, set to check and add all to selectedIDs
         if (checked) {
             setSelectedIDs([]);
             for (let i = 0; i < list.length; i++) {
@@ -91,6 +112,7 @@ export default function SplashScreen() {
             }
             setSelectedIDs(s);
         }
+        // if not checked, remove all files from selectedIDs and set uncheck
         else {
             for (let i = 0; i < list.length; i++) {
                 list[i].checked = false;
@@ -99,71 +121,116 @@ export default function SplashScreen() {
         }
     }
 
+    //handles clicking on folder to see contents inside
     const handleClickFolder = (e, folder) => {
         e.stopPropagation();
+        //reset selectedIDs, if any and set checks to unchecks
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
+        //push folder to directory and display them
         store.pushDirectory(folder);
         setFiles(null);
-    }
+    }   
 
+    //marked for removal
     const handlePermissionModal = () => {
+        console.log("test");
         setCheckboxVisible(true);
     }
 
+    //Opens analysis mode options(deviancy, etc) modal
     const handleAnalysisModal = () => {
         setShowAnalysisModal((prevState) => !prevState);
     };
 
+    //Opens query builder for query
     const handleQueryBuilderButton = () => {
-        setShowQBB( (prevState) => !prevState);
+        setShowQBB((prevState) => !prevState);
     }
 
+    //takes user back to root
     const handleHomeButton = () => {
+        //set searchMode to false
         setSearchActive(false);
+        //set current direcotry to root and display
         store.setFolder(store.currentSnapshot.root);
         setFiles(null);
     }
 
+    //shows Modal with all permission changes
     const handleHistoryButton = (folder) => {
         return;
     }
 
+    //go back up one directory
     const handleBackButton = (folder) => {
+        //set selectedIDs to empty and set checks to unchecks
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
+        //remove from directory and display files from the next
         store.popDirectory(folder);
         setFiles(null);
     }
 
+    //submits search query in search bar
     const handleQuery = (query) => {
+        //if in permission mode, disallow search
+        if(permissionView){
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id : uuidv4(),
+                    type : "WARNING",
+                    title: "Cannot handle query",
+                    message: "Cannot search while in edit permissions"
+                }
+            })
+            return;
+        }
+
+        //make query object with given queryString
         let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
+        //evalute to get the files
         let files = q.evaluate();
-        let name = 'Search Result'
-        let folder = new Folder( name, files);
-        store.pushDirectory(folder);
+        //create a "Search Folder" folder
+        let searchFile = new File("", "Search Result", [], "", "", "SYSTEM", "/Search Result", "", "");
+        let searchFolder = new Folder(searchFile, files);
+
+        //set search to active and set current direcotry to the search folder
         setSearchActive(true);
-         setFiles(files);
+        store.setFolder(searchFolder);
+        setFiles(null);
     }
 
+    //fill the search bar with query from querybuilder
     const fillSearch = (querybuilder) => {
-        setShowQBB( (prevState) => !prevState);
+        //closes query builder modal
+        setShowQBB((prevState) => !prevState);
+        //set the string from query builder to search bard
         document.querySelector('#default-searchbar').value = querybuilder;
         handleQuery(querybuilder);
     }
 
+
+    //handles permission changes upon clicking 'proceed'
     const editPermission = async (payload) => {
+        //check if current files to push changes on have up-to-date permissions
         let validate = await adapter.adapter.deployValidate(payload.files);
-        if(validate){
+
+        //if they are up-to-date, push permission changes
+        if (validate) {
+            // deploy permission changes
             const post = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+
+            //close permission modal, view, hide checkbox ,set checks to unchecks, selectedIds -> []
             setPermissionsModal(false);
             setPermissionView(false);
             setCheckboxVisible(false);
@@ -173,30 +240,35 @@ export default function SplashScreen() {
             }
             document.querySelector('.allfile-checkbox').checked = false;
             setSelectedIDs([]);
+
+            //take snapshot
             await store.takeSnapshot();
-            setFiles(null);  
+            setFiles(null);
         }
 
-        else{
+        // if not up-to-date, dispatch toast
+        else {
             dispatch({
                 type: "ADD_NOTIFICATION",
                 payload: {
                     id: uuidv4(),
-                    type : "DANGER",
+                    type: "DANGER",
                     title: "Edit permission failed",
                     message: "current permissions mismatch with cloud drive"
                 }
             })
             return;
         }
-        
+
     }
 
+    // Open Modal to edit permissions
     const showEditPermissionModal = () => {
+        //do not open modal if no files/folder is open
         if (selectedIDs.length === 0) {
             dispatch({
-                type:"ADD_NOTIFICATION",
-                payload : {
+                type: "ADD_NOTIFICATION",
+                payload: {
                     id: uuidv4(),
                     type: "WARNING",
                     title: "Cannot edit permissions",
@@ -205,29 +277,41 @@ export default function SplashScreen() {
             })
             return;
         }
+
+        //open modal
         setPermissionsModal(true);
     }
 
+    // Close Modal to edit permissions
     const hideEditPermissionModal = () => {
         setPermissionsModal(false);
     }
 
-    const showSwitchSnapshotModal =  () => {
+    //show switch snapshot modal
+    const showSwitchSnapshotModal = () => {
+        //retrieve map of ids and snapshots and pass to modal
         let map = store.user.fileSnapshotIDs;
         setShowSnapshots(map);
     }
+
+    //closes swtich snapshot modal
     const closeSwitchSnapshotModal = () => {
         setShowSnapshots(null);
     }
+
+    //handles switching snapshot given ssID
     const confirmSwitchSnapshot = async (ssID) => {
         let id = ssID;
-        const snapshot = await apis.getSnapshot(id);
-        store.setSnapshot(snapshot);
         setShowSnapshots(null);
+        //retrieve snapshot from db
+        const snapshot = await apis.getSnapshot(id);
+        //set store snapshot to retrieved one
+        store.setSnapshot(snapshot);
         setFiles(null);
+        //dispatch toast
         dispatch({
             type: "ADD_NOTIFICATION",
-            payload :{
+            payload: {
                 id: uuidv4(),
                 type: "SUCCESS",
                 title: "File Snapshot Changed",
@@ -235,8 +319,10 @@ export default function SplashScreen() {
             }
         })
     }
-    
+
+    //hides all checkboxes option
     const handleHideCheckBox = () => {
+        //empty any selected files and set checks to uncheck
         setSelectedIDs([]);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
@@ -246,21 +332,24 @@ export default function SplashScreen() {
         setCheckboxVisible(false);
     }
 
+    //performs deviancy analysis on store.getCurrentFolder() given threshold from analysis modal and passes to a result modal
     const deviancyAnalysis = (threshold) => {
+        //closes analysis mode modal
         setShowAnalysisModal(false);
 
-        if(store.directory.length > 1){
-            let result = findDeviantSharing(store.getCurrentFolder(), (threshold/100));
-            console.log(result);
+        //if it isn't a system file then perform deviancy
+        if (store.getCurrentFolder().name !== "root" && store.getCurrentFolder().name !== "Search Result") {
+            let result = findDeviantSharing(store.getCurrentFolder(), (threshold / 100));
             setAnalysisResult(result);
         }
-        else{
+        //dispatch toast
+        else {
             dispatch({
                 type: "ADD_NOTIFICATION",
-                payload : {
-                    id : uuidv4(),
-                    type : "DANGER",
-                    title : "Analysis mode closed",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Analysis mode closed",
                     message: "Cannot do analysis on current directory"
                 }
             });
@@ -268,26 +357,33 @@ export default function SplashScreen() {
         }
     }
 
+    //closes deviancy result modal
     const closeDeviancyAnalysisModal = () => {
         setAnalysisResult(null);
     }
 
+    //closes File/Folder Diff Modal
     const closeFFDiffModal = () => {
         setFFDiffResult(null);
     }
 
+    //performs File/Folder Diff on store.currentFolder() thats not root, myDrive, sharedWithMe or Search Result
     const fileFolderDiff = () => {
+        //closes modal for analysis mode
         setShowAnalysisModal(false);
-        if( store.directory.length >= 3){
+
+        //if current file is owned by system do analyis
+        if ( store.getCurrentFolder().owner !== "SYSTEM")   {
             setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
         }
-        else{
+        // else dispatch toast
+        else {
             dispatch({
                 type: "ADD_NOTIFICATION",
-                payload : {
-                    id : uuidv4(),
-                    type : "DANGER",
-                    title : "Analysis mode closed",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Analysis mode closed",
                     message: "Cannot do analysis on current directory"
                 }
             });
@@ -295,22 +391,63 @@ export default function SplashScreen() {
         }
     }
 
+    //TODO
     const snapshotChanges = () => {
         console.log('snapshot changes');
     }
 
-    const handlePermissionMode = () =>{
+
+    //show permission mode (permissions button calls this)
+    const handlePermissionMode = () => {
+        let [recentTimestamp] = store.user.fileSnapshotIDs.values();
+        
+        //check if current snapshot is the most recent
+        if(recentTimestamp !== store.currentSnapshot.timestamp){
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload : {
+                    id : uuidv4(),
+                    type : "DANGER",
+                    title : "Edit permission denied",
+                    message: "Please select the most recent snapshot"
+                }
+            });
+            return;
+        }
+
+        //prevent edit permission if at root and search is not active
+        if(store.directory.length === 1 && !searchActive){
+            dispatch({
+                type:"ADD_NOTIFICATION",
+                payload : {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Edit permission denied",
+                    message: "Cannot edit permission of root"
+                }
+            });
+            return;
+        }
+
+        //enable the two buttons and show checkbox
+        console.log("Permission Button trigerred");
         setPermissionView(true);
         setCheckboxVisible(true);
     }
 
-    const cancelPermissionMode = () =>{
-
+    //cancel permission mode (exit button calls this)
+    const cancelPermissionMode = () => {
+        //disable the two buttons and checkbox, clear selectedIDs
+        setSelectedIDs([]);
+        let list = document.querySelectorAll('.file-checkbox');
+        for (let i = 0; i < list.length; i++) {
+            list[i].checked = false;
+        }
+        document.querySelector('.allfile-checkbox').checked = false;
         setPermissionView(false);
         setCheckboxVisible(false);
-
+        console.log(selectedIDs);
     }
-
 
     if (files === null) {
         if (store.currentSnapshot === null) {
@@ -320,68 +457,103 @@ export default function SplashScreen() {
         }
     }
 
+    //login screen
     let screen = <div>
         <TopBar />
         <div className=" bg-black h-1">  </div>
         <LoginPage />
     </div>;
 
+    //show loggedIn screen
     if (auth.isAuthorized) {
         screen = store.currentSnapshot === null ?
-                    <LoadingScreen />
-                        :
-                    <div className="flex-nowrap">
-                        <TopBar handleQuery={handleQuery}
-                                handleQueryBuilderButton={handleQueryBuilderButton} />
-                        <div className="bg-black h-1"></div>
-                        <div className="grid grid-flow-col justify-start">
-                            <SideBar 
-                                    handlePermissionMode={handlePermissionMode}
-                                    cancelPermissionMode={cancelPermissionMode}
-                                     permissionView={permissionView}
-                                     handleGroupMembershipButton={handleGroupMembershipButton}
-                                     handleRefreshButton={handleRefreshButton}
-                                     handleValidateACRButton={handleValidateACRButton}
-                                     showSwitchSnapshotModal={showSwitchSnapshotModal}
-                                     showEditPermissionModal={showEditPermissionModal}
-                                     handleHideCheckBox={handleHideCheckBox}
-                                     handlePermissionModal={handlePermissionModal}
-                                     handleAnalysisModal={handleAnalysisModal} 
-                                     handleHomeButton={handleHomeButton} 
-                                     handleHistoryButton={handleHistoryButton}
-                                     showACRModal={handleShowACRModal}
-                                     />
-                            <div className=" w-[85vw] h-[92vh] overflow-y-scroll overflow-x-hidden text-ellipsis break-words">
-                                <h1 className="font-bold"> Current Snapshot: {store.currentSnapshot.timestamp} </h1>
-                                <h1 className="font-bold"><button  onClick={handleBackButton}><ArrowBackIosIcon fontSize="small"/> </button> directory: {store.getCurrentFolder().path}</h1>
-                                {searchActive ? <h1 className="font-bold"> Search Results </h1> : "" }
-                                <WorkSpace  visible={checkboxVisible}
-                                            handleAllFileCheckbox={handleAllFileCheckbox}
-                                            handleFileCheckBox={handleFileCheckBox} 
-                                            data={files} 
-                                            handleClickFolder={handleClickFolder}/>
-                            </div>
-                        </div>
-                    </div>;
+            <LoadingScreen />
+            :
+            <div className="flex-nowrap">
+                <TopBar 
+                    handleQuery={handleQuery} //gets queryString and handles the query object
+                    handleQueryBuilderButton={handleQueryBuilderButton}// opens qb modal
+                     />
+                <div className="bg-black h-1"></div>
+                <div className="grid grid-flow-col justify-start">
+                    <SideBar
+                        handlePermissionMode={handlePermissionMode} // functionaility "Permission" button 
+                        cancelPermissionMode={cancelPermissionMode} // for "Exit" button under Permission Mode
+                        permissionView={permissionView} // state to on/off Permission Mode side bar
+                        showEditPermissionModal={showEditPermissionModal} //functionaility for "Edit Permisisons" under Permission Mode
+                        handleHideCheckBox={handleHideCheckBox} //hides all checkbox 
+                        handleGroupMembershipButton={handleGroupMembershipButton} //functionaility Group membership button
+                        handleRefreshButton={handleRefreshButton} // functionality for refresh button
+                        handleValidateACRButton={handleValidateACRButton} //functionaility ACR button
+                        showSwitchSnapshotModal={showSwitchSnapshotModal} // functionaility switch snapshot button
+                        handleAnalysisModal={handleAnalysisModal} // functionaility for analysis button
+                        handleHomeButton={handleHomeButton} // functionality for home button
+                        handleHistoryButton={handleHistoryButton} //functionality for history button
+                        showACRModal={handleShowACRModal} // functionaility validate ACR
+                    />
+                    <div className=" w-[85vw] h-[92vh] overflow-y-auto overflow-x-hidden text-ellipsis break-words">
+                        <div className="font-bold border-b"> Current Snapshot: {store.currentSnapshot.timestamp /* Show Current Snapshot timestamp*/} </div>
+                        <h1 className="font-bold">
+                            {/* Directory Button ternary */ store.directory.length === 1 ? "" : <button onClick={handleBackButton}>
+                                <ArrowBackIosIcon fontSize="small" />
+                            </button> }
+                            { /* ternary to show current path */searchActive ? "" : "directory: "+store.getCurrentFolder().path}
+                        </h1>
+                        { /* ternary to see if search is active */ searchActive ? <h1 className="font-bold"> Search Results. Use Home button to see your drives </h1> : ""}
+                        <WorkSpace 
+                            visible={checkboxVisible} //whether to show checkbox next to files
+                            handleAllFileCheckbox={handleAllFileCheckbox} //whehter to show checkbox 'all'
+                            handleFileCheckBox={handleFileCheckBox} //handles single checkbox funtionality
+                            data={files} //files to show on workspace
+                            handleClickFolder={handleClickFolder} //handle showing content when click folder
+                            />
+                    </div>
+                </div>
+            </div>;
 
-            
+
     }
-    return ( 
+    return (
         <div className=" min-w-fit min-h-screen  ">
-            {showQBB &&  <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
+            {showQBB && <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
             {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
-                                                 fileFolderDiff={fileFolderDiff}
-                                                 deviancyAnalysis={deviancyAnalysis}
-                                                 handleAnalysisModal={handleAnalysisModal}/>}
-            {showPermissionsModal && <PermissionModal data={selectedIDs} editPermission={editPermission} hideEditPermissionModal={hideEditPermissionModal} />}
-            {analysisResult && <AnalysisResult result={analysisResult} closeDeviancyAnalysisModal={closeDeviancyAnalysisModal}/>}
-            {ffDiffResult && <FileFolderDiffResult result={ffDiffResult} closeFFDiffModal={closeFFDiffModal}/>}
-            {showSnapshots && <SwitchSnapshotModal result={showSnapshots} closeSwitchSnapshotModal={closeSwitchSnapshotModal} confirmSwitchSnapshot={confirmSwitchSnapshot} />}
-            {showACRModal && <ACRModal acr={showACRModal} handleCloseACRModal={handleCloseACRModal} />}
-            {validateACRResult && <ValidateACRResult result={validateACRResult} handleCloseValidateACR={handleCloseValidateACR} />}
-            {groupSS && <GroupSSModal list={groupSS} handleCloseGroupSSModal={handleCloseGroupSSModal}  />}
+                fileFolderDiff={fileFolderDiff} //functionality for file/folder diff button
+                deviancyAnalysis={deviancyAnalysis} //functionality for deviancy analysis button
+                handleAnalysisModal={handleAnalysisModal} //functionality for closing analysis modal
+                />}
+            {showPermissionsModal && <PermissionModal 
+                                        data={selectedIDs} //list of file IDs to show in the modal
+                                        editPermission={editPermission}  // proceed with permissions changes
+                                        hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
+            }  
+            {analysisResult && <AnalysisResult 
+                                        result={analysisResult} //result from deviancy analysis
+                                        closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} // closes the modal
+                                        />}
+            {ffDiffResult && <FileFolderDiffResult 
+                                        result={ffDiffResult} //result from file/folder diff
+                                        closeFFDiffModal={closeFFDiffModal} // closes the modal
+                                         />}
+            {showSnapshots && <SwitchSnapshotModal 
+                                        result={showSnapshots}  //result from switch snapshot
+                                        closeSwitchSnapshotModal={closeSwitchSnapshotModal} // closes the modal
+                                        confirmSwitchSnapshot={confirmSwitchSnapshot} // confirms and switches snapshot
+                                        />}
+            {showACRModal && <ACRModal 
+                                        acr={showACRModal} //acr list to show on modal
+                                        handleCloseACRModal={handleCloseACRModal} // closes the modal
+                                         />}
+            {validateACRResult && <ValidateACRResult 
+                                        result={validateACRResult} //result after validating acr list
+                                        handleCloseValidateACR={handleCloseValidateACR} // closes the modal
+                                        />}
+            {groupSS && <GroupSSModal 
+                                        list={groupSS} //list of group membership snapshots
+                                        handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
+                                        />}
             {screen}
-            <Toast position="bottom-right"/>
+            <Toast position="bottom-right" //toast notification display
+            />
         </div>
     );
 }
