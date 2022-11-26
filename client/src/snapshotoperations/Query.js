@@ -71,7 +71,7 @@ export default class Query {
                         while (queryString.charAt(i).trim() === '') {
                             i++;
                             if(i >= queryString.length){
-                                throw new Error("Every operator must be associated with a value.");
+                                throw new Error("Operator missing value.");
                             }
                         }
                         let parsedWord = this.parseWord(queryString, i);
@@ -88,7 +88,7 @@ export default class Query {
                             }else if(parsedWord.word.toLowerCase() === 'off'){
                                 this.groupsOn = false;
                             }else{
-                                throw new Error('Groups: must be followed by "on" or "off".');
+                                throw new Error('"Groups:" must be followed by "on" or "off".');
                             }
                             while (queryString.charAt(i).trim() === '') {
                                 i++;
@@ -99,7 +99,7 @@ export default class Query {
                             if(queryString.substring(i).indexOf('and ') === 0){
                                 i+=4;
                             }else{
-                                throw new Error('Groups: must be followed by an "and".');
+                                throw new Error('"Groups:" must be followed by an "and".');
                             }
                         }else{
                             if(keyword.toLowerCase() === 'drive'){
