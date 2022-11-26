@@ -110,7 +110,8 @@ export default class Query {
                             if(keywordsWithUsers.includes(keyword) && parsedWord.word.toLowerCase() === 'me'){
                                 parsedWord.word = this.snapshot.profile[0];
                             }
-                            operatorStack.push(new Operator(keyword, parsedWord.word, null, null, this.groupsOn, this.user.groupSnapshots));
+                            operatorStack.push(new Operator(keyword, parsedWord.word, null, null, this.groupsOn, 
+                                this.user? this.user.groupSnapshots:undefined));
                         }
                         continue queryTraversal;
                     }
@@ -236,7 +237,7 @@ class Operator {
                 case '-to':
                     return this.notTo(snapshot, this.value);
                 case 'readable':
-                    return this.hasAccess(snapshot, 'read', this.value);
+                    return this.hasAccess(snapshot, 'read', this.value, snapshot.profile[0]);
                 case '-readable':
                     return this.noAccess(snapshot, 'read', this.value);
                 case 'writable':
@@ -433,7 +434,7 @@ class Operator {
         return files;
     }
 
-    hasAccess(file, accessType, user, writableRoles) { 
+    hasAccess(file, accessType, user, writableRoles, userLoggedIn) { 
         let files = [];
         if (file.profile !== undefined) {
             let validEntities = [user.toLowerCase()];
@@ -445,10 +446,10 @@ class Operator {
                 }
             }
             for (let rootFile of file.root.files) {
-                files = files.concat(this.hasAccess(rootFile, accessType, validEntities, writableRoles));
+                files = files.concat(this.hasAccess(rootFile, accessType, validEntities, writableRoles, userLoggedIn));
             }
         } else {
-            if (file.permissions.length === 0 && accessType === 'read') { 
+            if (file.permissions.length === 0 && accessType === 'read' && user === userLoggedIn) { 
                 files.push(file);
             }
             for (let permission of file.permissions) {
@@ -461,7 +462,7 @@ class Operator {
             }
             if (file.files !== undefined) {
                 for (let subFile of file.files) {
-                    files = files.concat(this.hasAccess(subFile, accessType, user, writableRoles));
+                    files = files.concat(this.hasAccess(subFile, accessType, user, writableRoles, userLoggedIn));
                 }
             }
         }
