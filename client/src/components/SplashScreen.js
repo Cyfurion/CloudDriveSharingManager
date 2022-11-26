@@ -197,17 +197,29 @@ export default function SplashScreen() {
         }
 
         //make query object with given queryString
-        let q = new Query(query, store.currentSnapshot, adapter.adapter.writable);
-        //evalute to get the files
-        let files = q.evaluate();
-        //create a "Search Folder" folder
-        let searchFile = new File("", "Search Result", [], "", "", "SYSTEM", "/Search Result", "", "");
-        let searchFolder = new Folder(searchFile, files);
+        try{
+            let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
+            //evalute to get the files
+            let files = q.evaluate();
+            //create a "Search Folder" folder
+            let searchFile = new File("", "Search Result", [], "", "", "SYSTEM", "/Search Result", "", "");
+            let searchFolder = new Folder(searchFile, files);
 
-        //set search to active and set current direcotry to the search folder
-        setSearchActive(true);
-        store.setFolder(searchFolder);
-        setFiles(null);
+            //set search to active and set current direcotry to the search folder
+            setSearchActive(true);
+            store.setFolder(searchFolder);
+            setFiles(null);
+        }catch(e){
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id : uuidv4(),
+                    type : "DANGER",
+                    title : "Query Error",
+                    message : e.message
+                }
+            });
+        }
     }
 
     //fill the search bar with query from querybuilder
