@@ -13,7 +13,7 @@ export default function WorkSpace(props) {
                             className="allfile-checkbox"
                             onChange={props.handleAllFileCheckbox}
                             type='checkbox'
-                            style={{ visibility: store.directory.length === 1 ? 'hidden' : props.visible ? 'visible' : 'hidden' }}
+                            style={{ visibility: props.visible ? 'visible' : 'hidden' }} //
                         />
                     </th>
                     <th id="heading-name" className="pl-6"> Name </th>

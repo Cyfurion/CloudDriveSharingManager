@@ -8,16 +8,9 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
 import GroupIcon from '@mui/icons-material/Group';
-import { useState, useContext } from 'react';
-import StoreContext from '../store';
-import { ToastContext } from '../toast';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { v4 as uuidv4} from "uuid";
 
 export default function SideBar( props ) {
-    const { store } = useContext(StoreContext);
-    const { dispatch} = useContext(ToastContext);
-
     const handleRefreshButton = () =>{
         props.handleRefreshButton();
     }
@@ -31,34 +24,8 @@ export default function SideBar( props ) {
     }
 
     const handlePermissionButton =  () => {
-        if(store.directory.length === 1){
-            dispatch({
-                type:"ADD_NOTIFICATION",
-                payload : {
-                    id: uuidv4(),
-                    type: "DANGER",
-                    title: "Edit permission denied",
-                    message: "Cannot edit permission of root"
-                }
-            });
-            return;
-        }
-        let [recentTimestamp] = store.user.fileSnapshotIDs.values();
-        
-        if(recentTimestamp !== store.currentSnapshot.timestamp){
-            dispatch({
-                type: "ADD_NOTIFICATION",
-                payload : {
-                    id : uuidv4(),
-                    type : "DANGER",
-                    title : "Edit permission denied",
-                    message: "Please select the most recent snapshot"
-                }
-            });
-            return;
-        }
         props.handlePermissionMode();
-        props.handlePermissionModal();
+        //props.handlePermissionModal();
     }
 
     const handleAnalysisButton = () => {
