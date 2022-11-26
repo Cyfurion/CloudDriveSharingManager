@@ -4,7 +4,6 @@ import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 import GroupSnapshot from '../classes/groupsnapshot-class';
-import { ErrorResponse } from '@remix-run/router';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
 
@@ -232,7 +231,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         permissionIds = permissionParsing.permissionIds;
         let drive = "";
         if (file.driveId !== undefined) {
-            drive = file.driveId;
+            drive = file.driveId;//if this is still "", will be populated by snapshotHelper
         }
         let owner = "N/A";
         if(file.owners !== undefined){
@@ -260,6 +259,9 @@ function snapshotHelper(parentToChildMap, folder) { //add paths to files
     if(childrenList){
         for (let i = 0; i < childrenList.length; i++) {
             childrenList[i].path = folder.path + "/" + childrenList[i].name;
+            if(childrenList[i].drive === ""){
+                childrenList[i].drive = folder.drive;
+            }
             if (parentToChildMap.has(childrenList[i].id)) {
                 // childrenList[i] is folder
                 let newFolder = new Folder(childrenList[i], []);
