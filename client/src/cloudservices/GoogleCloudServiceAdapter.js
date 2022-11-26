@@ -126,11 +126,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         snapshotHelper(parentToChildMap, sharedWithMe);
         let driveList = await this.getDrives();
         for(let drive of driveList){
-            console.log("entering");
-            let drivePermissions = await this.getPermissions(drive.id);
-            let permObj = await this.createPermissionList(drivePermissions);
-            let driveFolder = new Folder(new File(drive.id, drive.name, permObj[0],
-                permObj[1], drive.name, "SYSTEM", '/'.concat(drive.name), "", "SYSTEM"),[]);
+            //let drivePermissions = await this.getPermissions(drive.id);
+            //let permObj = await this.createPermissionList(drivePermissions);
+            let driveFolder = new Folder(new File(drive.id, drive.name, [],
+                [], drive.name, "SYSTEM", '/'.concat(drive.name), "", "SYSTEM"),[]);
+            snapshotHelper(parentToChildMap,driveFolder);
             root.files.push(driveFolder);
         }
         let snap = new FileSnapshot(
@@ -170,6 +170,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             'fileId':fileId,
             'supportsAllDrives':true,
             'fields':'*'})).result;
+        if(fileId === '1Y_GHftx0jpKGsIBgi3WbHupgYoCYZ8ZBXmtlOTfWcAc'){
+        }
         return response.permissions;
     }
 
@@ -179,7 +181,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let token = "";
         do {
             let response = (await this.endpoint.client.drive.files.list({
-                'fields': 'files(id,name,createdTime,permissions,parents,owners,sharingUser, hasAugmentedPermissions),nextPageToken',
+                'fields': 'files(id,name,createdTime,permissions(*),parents,owners,sharingUser),nextPageToken',
                 'pageSize': 1000,
                 'pageToken': token,
                 'q': 'trashed = false',
@@ -202,11 +204,14 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                         || permission.role === this.permissionTypes.fileOrganizer
                         || permission.role === this.permissionTypes.writer);
                 permissionList.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
-                    permission.emailAddress, permission.role, false, canShare));
+                    permission.type === 'domain'? permission.domain : permission.emailAddress, permission.role, false, canShare));
                 permissionIds.push(permission.id);
             }
         }
-        return (permissionList, permissionIds);
+        return {
+            permissionList:permissionList,
+            permissionIds:permissionIds
+        };
     }
 
     /**
@@ -219,23 +224,17 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let name = file.name;
         let permissions = [];
         let permissionIds = [];
-        if (file.permissions !== undefined) {
-            for (let i = 0; i < file.permissions.length; i++) {
-                let permission = file.permissions[i];
-                let canShare = (permission.role === this.permissionTypes.owner
-                        || permission.role === this.permissionTypes.organizer 
-                        || permission.role === this.permissionTypes.fileOrganizer
-                        || permission.role === this.permissionTypes.writer);
-                permissions.push(new Permission(permission.type, permission.type === 'anyone' ? 'anyone' : 
-                    permission.emailAddress, permission.role, false, canShare));
-                permissionIds.push(permission.id);
-            }
+        if (file.permissions === undefined) {
+            file.permissions = await this.getPermissions(file.id);
         }
+        let permissionParsing = await this.createPermissionList(file.permissions);
+        permissions = permissionParsing.permissionList;
+        permissionIds = permissionParsing.permissionIds;
         let drive = "";
         if (file.driveId !== undefined) {
             drive = file.driveId;
         }
-        let owner = "";
+        let owner = "N/A";
         if(file.owners !== undefined){
             owner = file.owners[0].emailAddress;
         }
@@ -255,6 +254,9 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
  */
 function snapshotHelper(parentToChildMap, folder) { //add paths to files
     let childrenList = parentToChildMap.get(folder.id);
+    if(childrenList === undefined){//occurs if shared drive is empty
+        return;
+    }
     if(childrenList){
         for (let i = 0; i < childrenList.length; i++) {
             childrenList[i].path = folder.path + "/" + childrenList[i].name;
@@ -267,7 +269,7 @@ function snapshotHelper(parentToChildMap, folder) { //add paths to files
         }
     }
     for(let child of childrenList){
-        for(let i = 0; i< child.permissionIds.length; i++){
+        for(let i = 0; i < child.permissionIds.length; i++){
             if(folder.permissionIds.includes(child.permissionIds[i])){
                 child.permissions[i].isInherited = true;
             }
