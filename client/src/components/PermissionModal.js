@@ -3,15 +3,17 @@ import StoreContext from "../store";
 import { ToastContext } from "../toast";
 import Permission from "../classes/permission-class";
 import { v4 as uuidv4 } from 'uuid';
+import AdapterContext from "../cloudservices";
+import { Selector } from ".";
+
 export default function PermissionModal(props) {
     const { dispatch } = useContext(ToastContext);
-
-    const [type, setType] = useState("Type");
+    const { adapter } = useContext(AdapterContext);
     const { store } = useContext(StoreContext);
-    const [readerList, setReaderList] = useState([]);
-    const [writerList, setWriterList] = useState([]);
+    const [addList, setAddList] = useState([]);
     const [removeList, setRemoveList] = useState([]);
-    const [typeOpen, setTypeOpen] = useState(false);
+    const [entityType, setEntityType] = useState("");
+    const [entityRole, setEntityRole] = useState("");
 
     let XIcon = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -19,16 +21,16 @@ export default function PermissionModal(props) {
 
     let folder = store.getCurrentFolder();
     let files = [];
-    folder.files.map((file)=> props.data.includes(file.id) ? files.push(file) : "");
+    folder.files.map((file) => props.data.includes(file.id) ? files.push(file) : "");
 
     // const handleChange = (e) => {
     //     console.log(e.target.value);
     // }
 
-    const handleAddReader = (e) => {
-        let readerEmail = document.querySelector("#add-email-text").value;
+    const handleAddEntityAddList = (e) => {
+        let addEntity = document.querySelector("#add-email-text").value;
 
-        if (readerEmail.length === 0) {
+        if (addEntity.length === 0) {
             dispatch({
                 type: "ADD_NOTIFICATION",
                 payload: {
@@ -41,7 +43,8 @@ export default function PermissionModal(props) {
             return;
         }
 
-        if (type === 'Type') {
+        console.log(entityType.length);
+        if (entityType.length === 0) {
             dispatch({
                 type: "ADD_NOTIFICATION",
                 payload: {
@@ -54,53 +57,26 @@ export default function PermissionModal(props) {
             return;
         }
 
-        let list = [...readerList];
-        list = [...list, { entity: readerEmail, type: type }];
-        document.querySelector("#add-email-text").value = "";
-        setType("Type");
-        setReaderList(list);
-
-    }
-
-    const handleAddWriter = (e) => {
-        let writerEmail = document.querySelector("#add-email-text").value;
-
-        if (writerEmail.length === 0) {
-            dispatch({
-                type: "ADD_NOTIFICATION",
-                payload: {
-                    id: uuidv4(),
-                    type: "DANGER",
-                    title: "Cannot add AR",
-                    message: "Please provide an entity"
-                }
-            })
-            return;
-        }
-
-        if (type === 'Type') {
+        if (entityRole.length === 0) {
             dispatch({
                 type: "ADD_NOTIFICATION",
                 payload: {
                     id: uuidv4(),
                     type: "DANGER",
                     title: "Cannot add permission",
-                    message: "Please provide an type for entity"
+                    message: "Please provide an type for role"
                 }
             })
             return;
         }
 
-
-        let list = [...writerList];
-        list = [...list, { entity: writerEmail, type: type }];
+        let list = [...addList, { entity: addEntity, type: entityType, role: entityRole }];
         document.querySelector("#add-email-text").value = "";
-        setType("Type");
-        setWriterList(list);
+        setAddList(list);
+
     }
 
     const handleAddRemoveList = (e) => {
-        e.preventDefault();
         let email = document.querySelector("#remove-email-text").value;
 
         if (email.length !== 0) {
@@ -114,25 +90,14 @@ export default function PermissionModal(props) {
         }
     }
 
-    const handleRemoveReader = (e) => {
+    const handleRemoveEntityFromAddList = (e) => {
 
         let index = e.currentTarget.id;
         if (index > -1) {
-            let list = [...readerList];
+            let list = [...addList];
             list.splice(index, 1);
-            setReaderList(list);
+            setAddList(list);
         }
-    }
-
-    const handleRemoveWriter = (e) => {
-        let index = e.currentTarget.id;
-
-        if (index > -1) {
-            let list = [...writerList];
-            list.splice(index, 1);
-            setWriterList(list);
-        }
-
     }
 
     const handleDeleteRemoveList = (e) => {
@@ -147,27 +112,27 @@ export default function PermissionModal(props) {
     }
 
     const handleProceed = async (e) => {
-        let readers = [...readerList];
-        let writers = [...writerList];
-        let deletePermissions = [...removeList];
-        if (readers.length === 0 && writers.length === 0 && deletePermissions.length === 0) {
-            dispatch({
-                type: "ADD_NOTIFICATION",
-                payload: {
-                    id: uuidv4(),
-                    type: "DANGER",
-                    title: "Cannot edit permissions",
-                    message: "No permission changes provided"
-                }
-            })
-            return;
-        }
-        let addPermissions = [];
-        readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'reader')));
-        writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'writer')));
-        let payload = { files: files, deletePermissions: deletePermissions, addPermissions : addPermissions};
-        
-        props.editPermission(payload);
+        // let readers = [...readerList];
+        // let writers = [...writerList];
+        // let deletePermissions = [...removeList];
+        // if (readers.length === 0 && writers.length === 0 && deletePermissions.length === 0) {
+        //     dispatch({
+        //         type: "ADD_NOTIFICATION",
+        //         payload: {
+        //             id: uuidv4(),
+        //             type: "DANGER",
+        //             title: "Cannot edit permissions",
+        //             message: "No permission changes provided"
+        //         }
+        //     })
+        //     return;
+        // }
+        // let addPermissions = [];
+        // readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'reader')));
+        // writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'writer')));
+        // let payload = { files: files, deletePermissions: deletePermissions, addPermissions: addPermissions };
+
+        // props.editPermission(payload);
     }
 
     const handleClose = () => {
@@ -179,10 +144,27 @@ export default function PermissionModal(props) {
             handleClose();
     }
 
-    const handleClick = (e) => {
-        setType(e.target.id);
-        setTypeOpen(false);
+    const handleEntityType = (type) => {
+        setEntityType(type);
     }
+
+    const handleRoleType = (role) => {
+        setEntityRole(role);
+    }
+
+    let displayRoleTypes = [];
+    Object.keys(adapter.adapter.permissionTypes).forEach(function (key) {
+        displayRoleTypes.push(
+            adapter.adapter.permissionTypes[key]
+        )
+    })
+
+    let displayEntityTypes = ['domain','group','user'];
+    // Object.keys(adapter.adapter.roleTypes).forEach(function (key) {
+    //     displayRoleTypes.push(
+    //         adapter.adapter.roleTypes[key]
+    //     )
+    // })
 
     return (
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
@@ -214,44 +196,27 @@ export default function PermissionModal(props) {
                         <div className="flex flex-col gap-2 items-stretch pl-4 pt-4 pb-4 dark:border-gray-600 ">
 
                             <div className="flex flex-col h-[40vh]  overflow-y-auto">
-                                <div className="flex flex-col gap-y-1 border-b border-gray-200 pb-2">
+                                <div className="flex flex-col gap-y-1">
                                     Add Permissions:
-                                    <div className="grid grid-cols-2">
-                                        <div className="flex flex-col p-2 gap-y-1"> Reader:
-                                            <div className=" max-h-52 gap-y-1 flex flex-col overflow-y-auto text-sm">
-                                                {readerList.map((entry, index) => (
-                                                    <div key={index} className="add-perm-card ">
-                                                        <div className="flex flex-col ">
-                                                            <h1 className="truncate"> Type: {entry.type}</h1>
-                                                            <h1 title={entry.entity} className="truncate max-w-xs"> Entity: {entry.entity}</h1>
-                                                        </div>
-                                                        <button className="rounded-xl hover:bg-gray-400" id={index} onClick={handleRemoveReader} > {XIcon} </button>
-                                                    </div>
-                                                ))}
+                                    <div className="flex flex-col p-2 gap-y-1">
+                                        {addList.map((entry, index) => (
+                                            <div key={uuidv4()} className="add-perm-card">
+                                                <div className="flex flex-col">
+                                                    <h1 title={entry.entity} className="truncate"> Entity: {entry.entity} </h1>
+                                                    <h1 title={entry.type} className="truncate"> Type: {entry.type} </h1>
+                                                    <h1 title={entry.type} className="truncate"> Role: {entry.role} </h1>
+                                                </div>
+                                                <button className="rounded-xl mt-2 hover:bg-gray-400" id={index} onClick={handleRemoveEntityFromAddList} > {XIcon} </button>
                                             </div>
-                                        </div>
-                                        <div className="flex flex-col p-2 gap-y-1 border-l" > Writer:
-                                            <div className=" max-h-52 gap-y-1 flex flex-col overflow-y-auto text-sm">
-                                                {writerList.map((entry, index) => (
-                                                    <div key={index} className="add-perm-card ">
-                                                        <div className="flex flex-col ">
-                                                            <h1 className="truncate"> Type: {entry.type}</h1>
-                                                            <h1 title={entry.entity} className="truncate max-w-xs"> Entity: {entry.entity}</h1>
-                                                        </div>
-                                                        <button className="rounded-xl hover:bg-gray-400" id={index} onClick={handleRemoveWriter} > {XIcon} </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
-
                                 </div>
 
                                 <div className="flex flex-col gap-y-1">
                                     Remove Permissions:
                                     <div className="flex flex-col p-2 gap-y-1">
                                         {removeList.map((entry, index) => (
-                                            <div key={index} className="remove-perm-card">
+                                            <div key={uuidv4()} className="remove-perm-card">
                                                 <h1 title={entry} className="truncate"> {entry} </h1>
                                                 <button className="rounded-xl hover:bg-gray-400" id={index} onClick={(e) => handleDeleteRemoveList(e)} > {XIcon} </button>
                                             </div>
@@ -269,22 +234,10 @@ export default function PermissionModal(props) {
                                 <input className="block p-1 pl-1 w-full text-sm bg-gray-200 " placeholder="Add Entity" type="text" id="add-email-text" />
                             </div>
 
-                            <div className="flex flex-row w-1/3 self-center ">
-
-                            </div>
-
                             <div className="flex flex-row justify-center gap-x-3">
-                                <button onClick={handleAddReader} className="rounded-md p-1 font-bold flex self-center bg-green-400 hover:bg-green-500"> Add Reader </button>
-                                <button onClick={handleAddWriter} className="rounded-md p-1 font-bold flex self-center bg-green-400 hover:bg-green-500"> Add Writer </button>
-                                <div className="bg-white ">
-                                    <button onClick={(e) => setTypeOpen((prev) => !prev)} className="block h-8 w-20 border-2 rounded-lg focus: focus:rounded-t-lg border-gray-400 focus:border-blue-400 "> {type} </button>
-                                    {typeOpen &&
-                                        <div className="absolute bg-white border border-gray-400 p-1 rounded-b-lg">
-                                            <ul onClick={handleClick} id="domain" className="block px-2 py-1 hover:bg-blue-400 hover:text-white"> domain </ul>
-                                            <ul onClick={handleClick} id="group" className="block px-2 py-1 hover:bg-blue-400 hover:text-white"> group </ul>
-                                            <ul onClick={handleClick} id="user" className="block px-2 py-1 hover:bg-blue-400 hover:text-white"> user </ul>
-                                        </div>}
-                                </div>
+                                <button onClick={handleAddEntityAddList} className="rounded-md p-1 font-bold flex self-center bg-green-400 hover:bg-green-500"> Add Entity </button>
+                                <Selector label="Role" menu={displayRoleTypes} onChange={handleEntityType} />
+                                <Selector label="Entity Type" menu={displayEntityTypes} onChange={handleRoleType} />
                             </div>
 
 

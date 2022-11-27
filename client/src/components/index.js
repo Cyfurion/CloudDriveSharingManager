@@ -25,6 +25,7 @@ import ACRCreationField from "./ACRCreationField";
 import Toast from "./Toast";
 import GroupSSModal from "./GroupSSModal";
 import FileFolderDiffCard from "./FileFolderDiffCard";
+import Selector from "./Selector";
 import SnapshotChangesModal from "./SnapshotChangesModal";
 
 export {
@@ -55,5 +56,6 @@ export {
     Toast,
     GroupSSModal,
     FileFolderDiffCard,
+    Selector,
     SnapshotChangesModal
 }
