@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { v4 as uuidv4 } from 'uuid';
+import StoreContext from "../store";
 
 export default function FileCard(props) {
+    const {store} = useContext(StoreContext);
     const [clicked, setClicked] = useState(false);
     let file = props.file;
 
@@ -41,8 +43,22 @@ export default function FileCard(props) {
                 {file.owner === "SYSTEM" ? "" :
                     <div className="flex flex-row items-start gap-x-1 ml-3">
                         {clicked && <div className="px-2"> Permissions: {file.permissions.length === 0 ? "No Permissions" : file.permissions.map((permission, index) => (
-                            <div key={uuidv4()} className="pl-2 py-1">
-                                <h1> {index + 1}. Entity: {permission.entity}, Role: {permission.role}</h1>
+                            <div key={uuidv4()} className="pl-2 py-1 flex gap-x-3">
+                                <h1 
+                                onClick={()=>{
+                                    if(store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)){
+                                        let list = store.user.groupSnapshots.filter((group)=> group.groupEmail === permission.entity);
+                                        if( list.length > 0){
+                                            props.handleGroupToShow(list[0]);
+                                        }
+                                        else{
+                                            return;
+                                        }
+                                    }
+                                }}
+                                className={"" + ( (permission.type === 'group' && store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)) ? "underline" : "") } > {index + 1}.Entity: {permission.entity} </h1>
+                                <h1>Role: {permission.role}</h1>
+                                <h1>Type: {permission.type}</h1>
                             </div>
                         ))}
                         </div>}

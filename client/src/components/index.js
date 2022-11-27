@@ -27,6 +27,7 @@ import GroupSSModal from "./GroupSSModal";
 import FileFolderDiffCard from "./FileFolderDiffCard";
 import Selector from "./Selector";
 import SnapshotChangesModal from "./SnapshotChangesModal";
+import GroupInfoModal from "./GroupInfoModal";
 
 export {
     GoogleLoginButton,
@@ -57,5 +58,6 @@ export {
     GroupSSModal,
     FileFolderDiffCard,
     Selector,
-    SnapshotChangesModal
+    SnapshotChangesModal,
+    GroupInfoModal
 }
