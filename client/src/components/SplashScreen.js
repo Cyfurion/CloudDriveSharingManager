@@ -4,11 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
+import { GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SnapshotChangesModal , QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
-import { findDeviantSharing, findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
+import { findDeviantSharing, findFileFolderSharingDifferences,compareSnapshots } from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
 import Query from '../snapshotoperations/Query';
 import AdapterContext from "../cloudservices";
@@ -27,6 +27,7 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
+    const [showSnapshotChangesModal, setSnapshotChangesModal] = useState(null);
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
@@ -297,6 +298,22 @@ export default function SplashScreen() {
         setPermissionsModal(false);
     }
 
+    //TODO
+    const snapshotChanges = () => {
+        let map = store.user.fileSnapshotIDs;
+        setSnapshotChangesModal(map);
+    }
+
+    const closeSnapshotChangesModal = () => {
+        setSnapshotChangesModal(null);
+    }
+
+    const confirmSnapshotChanges = (id1,id2) => {
+        console.log("confirmSnapshotChanges");
+        let result = new compareSnapshots(id1, id2)
+        console.log(result);
+    }
+
     //show switch snapshot modal
     const showSwitchSnapshotModal = () => {
         //retrieve map of ids and snapshots and pass to modal
@@ -401,10 +418,7 @@ export default function SplashScreen() {
         }
     }
 
-    //TODO
-    const snapshotChanges = () => {
-        console.log('snapshot changes');
-    }
+    
 
 
     //show permission mode (permissions button calls this)
@@ -558,6 +572,11 @@ export default function SplashScreen() {
             {groupSS && <GroupSSModal 
                                         list={groupSS} //list of group membership snapshots
                                         handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
+                                        />}
+            {showSnapshotChangesModal && <SnapshotChangesModal
+                                        result={showSnapshotChangesModal} //result from showSnapshotChanges analysis
+                                        closeSnapshotChangesModal={closeSnapshotChangesModal} //closes the modal
+                                        confirmSnapshotChanges={confirmSnapshotChanges} //confirm
                                         />}
             {screen}
             <Toast position="bottom-right" //toast notification display
