@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SnapshotChangesModal , QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
+import { GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SnapshotChangesModal , QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
@@ -34,6 +34,7 @@ export default function SplashScreen() {
     const [groupSS, setGroupSS] = useState(null);
     const [searchActive, setSearchActive] = useState(false);
     const [permissionView, setPermissionView] = useState(false);
+    const [groupToShow, setGroupToShow] = useState(false);
 
     //show Group Membership Modal
     const handleGroupMembershipButton = () => {
@@ -473,6 +474,17 @@ export default function SplashScreen() {
         setCheckboxVisible(false);
     }
 
+    //show group info modal with the specified group
+    //takes in a group SS object
+    const handleGroupToShow = (group) =>{
+        setGroupToShow(group);
+    }
+
+    //closes group info modal
+    const hideGroupInfoModal = () =>{
+        setGroupToShow(null);
+    }
+
     if (files === null) {
         if (store.currentSnapshot === null) {
             store.onLogin();
@@ -530,6 +542,8 @@ export default function SplashScreen() {
                             handleFileCheckBox={handleFileCheckBox} //handles single checkbox funtionality
                             data={files} //files to show on workspace
                             handleClickFolder={handleClickFolder} //handle showing content when click folder
+                            handleGroupToShow={handleGroupToShow} //handles showing the information of the specified group ss
+
                             />
                     </div>
                 </div>
@@ -539,8 +553,16 @@ export default function SplashScreen() {
     }
     return (
         <div className=" min-w-fit min-h-screen  ">
-            {showQBB && <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
-            {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
+            {groupToShow && <GroupInfoModal 
+                                group={groupToShow}  //group ss to show info about
+                                handleClose={hideGroupInfoModal} // functionally to hide group info modal
+            />}
+            {showQBB && <QueryBuilderModal 
+                                fillSearch={fillSearch} //fills search bar with the query that was built
+                                handleQueryBuilderButton={handleQueryBuilderButton} //functionally for open/close of qb modal
+                                 />}
+            {showAnalysisModal && <AnalysisModal
+                snapshotChanges={snapshotChanges} //functionality for snapshot changes modal
                 fileFolderDiff={fileFolderDiff} //functionality for file/folder diff button
                 deviancyAnalysis={deviancyAnalysis} //functionality for deviancy analysis button
                 handleAnalysisModal={handleAnalysisModal} //functionality for closing analysis modal

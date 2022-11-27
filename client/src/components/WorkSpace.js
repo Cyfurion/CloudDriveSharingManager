@@ -23,6 +23,7 @@ export default function WorkSpace(props) {
             <tbody >
                 {props.data.map((file) => (
                     <FileCard 
+                        handleGroupToShow={props.handleGroupToShow}
                         key={file.id}
                         file={file}
                         visible={props.visible}
