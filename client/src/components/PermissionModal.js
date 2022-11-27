@@ -159,12 +159,12 @@ export default function PermissionModal(props) {
         )
     })
 
-    let displayEntityTypes = ['domain','group','user'];
-    // Object.keys(adapter.adapter.roleTypes).forEach(function (key) {
-    //     displayRoleTypes.push(
-    //         adapter.adapter.roleTypes[key]
-    //     )
-    // })
+    let displayEntityTypes = [];
+    Object.keys(adapter.adapter.roleTypes).forEach(function (key) {
+        displayRoleTypes.push(
+            adapter.adapter.roleTypes[key]
+        )
+    })
 
     return (
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
