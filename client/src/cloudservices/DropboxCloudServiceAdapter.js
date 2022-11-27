@@ -5,6 +5,11 @@ import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 
 export class DropboxCloudServiceAdapter extends CloudServiceAdapter { 
+    roleTypes = {
+        domain: 'domain',
+        user: 'user'
+    }
+    
     permissionTypes = {
         owner: 'owner',
         editor: 'editor',
