@@ -6,6 +6,11 @@ import Permission from '../classes/permission-class';
 import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
+    roleTypes = {
+        domain: 'domain',
+        user: 'user',
+        group: 'group'
+    }
 
     groupsAllowed = true;
     
