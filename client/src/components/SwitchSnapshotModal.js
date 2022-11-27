@@ -3,6 +3,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import {v4 as uuidv4} from 'uuid';
 
 export default function SwitchSnapshotModal(props) {
     const [ss, setSS] = useState(props.result.keys().next().value);
@@ -28,7 +29,7 @@ export default function SwitchSnapshotModal(props) {
     if (props.result) {
         props.result.forEach((value, key) => (
             snapshotList.push(
-                <MenuItem  value={ key }>
+                <MenuItem key={uuidv4()} value={ key }>
                     {value}
                 </MenuItem> 
             )
