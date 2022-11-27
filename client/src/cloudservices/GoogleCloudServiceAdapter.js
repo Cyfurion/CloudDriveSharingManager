@@ -100,9 +100,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     async takeSnapshot() {
         let files = await this.retrieve();
         let parentToChildMap = new Map();
+        console.log(files);
         // making map of key = parent and value = list of children
         for (let i = 0; i < files.length; i++) {
             // change this when adding to file schema
+            console.log(files[i]);
             let currentFile = await this.createFileObject(files[i]);
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
@@ -119,6 +121,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let root = new Folder(rootFile, []);
         let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", "", "SYSTEM"), []);
         root.files.push(myDrive);
+        console.log("right before snapshothelper");
         snapshotHelper(parentToChildMap, myDrive);
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
@@ -169,13 +172,17 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         
 
     async getPermissions(fileId){
-        let response = (await this.endpoint.client.drive.permissions.list({
-            'fileId':fileId,
-            'supportsAllDrives':true,
-            'fields':'*'})).result;
-        if(fileId === '1Y_GHftx0jpKGsIBgi3WbHupgYoCYZ8ZBXmtlOTfWcAc'){
-        }
-        return response.permissions;
+        try{
+            let response = (await this.endpoint.client.drive.permissions.list({
+                'fileId':fileId,
+                'supportsAllDrives':true,
+                'fields':'*'})).result;
+            if(fileId === '1Y_GHftx0jpKGsIBgi3WbHupgYoCYZ8ZBXmtlOTfWcAc'){
+            }
+            return response.permissions;
+        }catch(e){
+            return [];
+        }     
     }
 
     // Returns an array of every un-trashed file accessible to the user.
@@ -256,6 +263,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
  * @param folder Folder that CDSM is currently populating
  */
 function snapshotHelper(parentToChildMap, folder) { //add paths to files
+    console.log("got to making snapshot");
     let childrenList = parentToChildMap.get(folder.id);
     if(childrenList === undefined){//occurs if shared drive is empty
         return;
