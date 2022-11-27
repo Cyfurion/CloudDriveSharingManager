@@ -181,7 +181,7 @@ export default function SplashScreen() {
     }
 
     //submits search query in search bar
-    const handleQuery = (query) => {
+    const handleQuery = async (query) => {
         //if in permission mode, disallow search
         if(permissionView){
             dispatch({
@@ -201,11 +201,14 @@ export default function SplashScreen() {
             let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
             //evalute to get the files
             let files = q.evaluate();
+            // Add this query to user's recent queries.
+            await apis.addQuery(query, store.user.profile);
+            await store.updateUser();
             //create a "Search Folder" folder
             let searchFile = new File("", "Search Result", [], "", "", "SYSTEM", "/Search Result", "", "");
             let searchFolder = new Folder(searchFile, files);
 
-            //set search to active and set current direcotry to the search folder
+            //set search to active and set current directory to the search folder
             setSearchActive(true);
             store.setFolder(searchFolder);
             setFiles(null);
