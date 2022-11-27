@@ -42,8 +42,6 @@ export default function PermissionModal(props) {
             })
             return;
         }
-
-        console.log(entityType.length);
         if (entityType.length === 0) {
             dispatch({
                 type: "ADD_NOTIFICATION",
@@ -112,27 +110,24 @@ export default function PermissionModal(props) {
     }
 
     const handleProceed = async (e) => {
-        // let readers = [...readerList];
-        // let writers = [...writerList];
-        // let deletePermissions = [...removeList];
-        // if (readers.length === 0 && writers.length === 0 && deletePermissions.length === 0) {
-        //     dispatch({
-        //         type: "ADD_NOTIFICATION",
-        //         payload: {
-        //             id: uuidv4(),
-        //             type: "DANGER",
-        //             title: "Cannot edit permissions",
-        //             message: "No permission changes provided"
-        //         }
-        //     })
-        //     return;
-        // }
-        // let addPermissions = [];
-        // readers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'reader')));
-        // writers.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, 'writer')));
-        // let payload = { files: files, deletePermissions: deletePermissions, addPermissions: addPermissions };
-
-        // props.editPermission(payload);
+        let adds = [...addList];
+        let deletePermissions = [...removeList];
+        if (adds.length === 0 && deletePermissions.length === 0) {
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Cannot edit permissions",
+                    message: "No permission changes provided"
+                }
+            })
+            return;
+        }
+        let addPermissions = [];
+        adds.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, entry.role)));
+        let payload = { files: files, deletePermissions: deletePermissions, addPermissions: addPermissions };
+        props.editPermission(payload);
     }
 
     const handleClose = () => {
@@ -203,7 +198,7 @@ export default function PermissionModal(props) {
                                             <div key={uuidv4()} className="add-perm-card">
                                                 <div className="flex flex-col">
                                                     <h1 title={entry.entity} className="truncate"> Entity: {entry.entity} </h1>
-                                                    <h1 title={entry.type} className="truncate"> Type: {entry.type} </h1>
+                                                    <h1 title={entry.type} className="truncate"> Entity Type: {entry.type} </h1>
                                                     <h1 title={entry.type} className="truncate"> Role: {entry.role} </h1>
                                                 </div>
                                                 <button className="rounded-xl mt-2 hover:bg-gray-400" id={index} onClick={handleRemoveEntityFromAddList} > {XIcon} </button>
@@ -236,8 +231,8 @@ export default function PermissionModal(props) {
 
                             <div className="flex flex-row justify-center gap-x-3">
                                 <button onClick={handleAddEntityAddList} className="rounded-md p-1 font-bold flex self-center bg-green-400 hover:bg-green-500"> Add Entity </button>
-                                <Selector label="Role" menu={displayRoleTypes} onChange={handleEntityType} />
-                                <Selector label="Entity Type" menu={displayEntityTypes} onChange={handleRoleType} />
+                                <Selector label="Role" menu={displayRoleTypes} onChange={handleRoleType} />
+                                <Selector label="Entity Type" menu={displayEntityTypes} onChange={handleEntityType} />
                             </div>
 
 
