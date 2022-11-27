@@ -308,9 +308,11 @@ export default function SplashScreen() {
         setSnapshotChangesModal(null);
     }
 
-    const confirmSnapshotChanges = (id1,id2) => {
+    async function confirmSnapshotChanges(id1,id2) {
         console.log("confirmSnapshotChanges");
-        let result = new compareSnapshots(id1, id2)
+        const snapshot1 = await apis.getSnapshot(id1);
+        const snapshot2 = await apis.getSnapshot(id2);
+        let result = new compareSnapshots(snapshot1, snapshot2)
         console.log(result);
     }
 

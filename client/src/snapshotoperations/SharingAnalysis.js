@@ -7,8 +7,10 @@ import { File } from '../classes/file-class';
 
 function compareSnapshots(snapshot1, snapshot2){
     //putting all files into a map where key is their id
-    let idToFileMap1 = makeIdToFileMap(snapshot1.root);
-    let idToFileMap2 = makeIdToFileMap(snapshot2.root);
+    let idToFileMap1 = new Map();
+    makeIdToFileMap(snapshot1.root, idToFileMap1);
+    let idToFileMap2 = new Map();
+    makeIdToFileMap(snapshot2.root, idToFileMap2);
     let snap2Ids = idToFileMap2.keys();
     let differenceMap = new Map();
     let key = 0;
@@ -16,7 +18,10 @@ function compareSnapshots(snapshot1, snapshot2){
         if(idToFileMap1.get(key) === undefined){
             differenceMap.set(key, new PermissionDifferences(idToFileMap2.get(key), idToFileMap2.get(key).permissions));
         }else{
-            differenceMap.set(key, comparePermissions(idToFileMap1.get(key), idToFileMap2.get(key)), true);
+            let permissionDiff = comparePermissions(idToFileMap1.get(key), idToFileMap2.get(key), true);
+            if(permissionDiff.addedPermissions.length !== 0 || permissionDiff.removedPermissions.length !== 0){
+                differenceMap.set(key, permissionDiff);
+            }      
         }
     }
     return new CompareSnapshotsResults(differenceMap);
@@ -47,13 +52,13 @@ function comparePermissions(file1, file2, needToStringify){
 
 }
 
-function makeIdToFileMap(file){
-    let idToFile = new Map();
-    for(let subFile of file.files){
-        idToFile = new Map(...idToFile, ...makeIdToFileMap(subFile));
+function makeIdToFileMap(file, currentMap){
+    currentMap.set(file.id, file);
+    if(file.files !== undefined){
+        for(let subFile of file.files){
+            makeIdToFileMap(subFile, currentMap);
+        }
     }
-    idToFile.set(file.id, file);
-    return idToFile;
 }
 
 /**
