@@ -26,6 +26,7 @@ import Toast from "./Toast";
 import GroupSSModal from "./GroupSSModal";
 import FileFolderDiffCard from "./FileFolderDiffCard";
 import Selector from "./Selector";
+import SnapshotChangesModal from "./SnapshotChangesModal";
 
 export {
     GoogleLoginButton,
@@ -55,5 +56,6 @@ export {
     Toast,
     GroupSSModal,
     FileFolderDiffCard,
-    Selector
+    Selector,
+    SnapshotChangesModal
 }
