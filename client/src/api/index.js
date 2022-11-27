@@ -10,6 +10,7 @@ const api = axios.create({
 
 const addACR = (payload) => api.post(`/acrs`, payload);
 const addGroupSnapshot = (payload) => api.post(`/groupsnapshots`, payload);
+const addQuery = (query, profile) => api.post(`/queries/${query}`, profile);
 const addSnapshot = (payload) => api.post(`/snapshots`, payload);
 const deleteACR = (index, profile) => api.patch(`/acrs/${index}`, profile);
 const getUser = async (profile) => {
@@ -28,6 +29,7 @@ const getSnapshot = async (id) => (new FileSnapshot()).deserialize((await api.ge
 const apis = {
     addACR,
     addGroupSnapshot,
+    addQuery,
     addSnapshot,
     deleteACR,
     getUser,
