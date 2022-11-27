@@ -1,9 +1,8 @@
-import { useContext } from 'react';
-import StoreContext from '../store';
 import { FileCard } from './';
 
 export default function WorkSpace(props) {
-    const { store } = useContext(StoreContext);
+    props.data.sort((a,b)=> a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
     return (
         <table >
             <thead className="border-b-2 border-gray-200">

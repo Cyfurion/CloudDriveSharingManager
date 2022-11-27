@@ -1,7 +1,9 @@
-import { CreationField, ACRCreationField } from "./"
+import { ACRCreationField } from "./"
+import React,{useState} from 'react'
 
 
 export default function QueryBuilderModal(props) {
+    const [groups, setGroups] = useState(false);
 
     const handleClose = () => {
         props.handleQueryBuilderButton();
@@ -11,7 +13,8 @@ export default function QueryBuilderModal(props) {
     }
 
     const handleSubmit = () => {
-        props.fillSearch(document.querySelector('#qbsearchbar').value);
+        let groupsDirective = groups ? "groups:on" : "groups:off";
+        props.fillSearch(groupsDirective + " and " + document.querySelector('#qbsearchbar').value );
     }
 
     const handleAddButton = (e, id) => {
@@ -26,6 +29,10 @@ export default function QueryBuilderModal(props) {
 
             document.querySelector(id).value = "";
         }
+    }
+
+    const handleGroupsCheckbox = () =>{
+        setGroups( (prev) => !prev);
     }
 
     const handleBlur = (e) => {
@@ -47,38 +54,45 @@ export default function QueryBuilderModal(props) {
                         </button>
                     </div>
                     <div className="space-y-6 p-6">
-                        
-                        <ACRCreationField placeholder="Build your query" inputID="qbsearchbar"/>
+
+                        <ACRCreationField placeholder="Build your query" inputID="qbsearchbar" />
                         <div className="flex justify-center items-center gap-x-10">
-                                <button onClick={handleSubmit} className="rounded-lg bg-green-600 text-white p-1 px-3"> Submit</button>
-                                <button onClick={handleClear} className="rounded-lg bg-red-600 text-white p-1 px-3"> Clear</button>
-                            </div>
+                            <button onClick={handleSubmit} className="rounded-lg bg-green-600 text-white p-1 px-3"> Submit</button>
+                            <button onClick={handleClear} className="rounded-lg bg-red-600 text-white p-1 px-3"> Clear</button>
+                        </div>
 
                         <div className="flex flex-col  gap-y-3">
-                            <ACRCreationField addIcon="Add" label="User" placeholder="user" inputID="owner" handleAdd={(e)=>handleAddButton(e, "#owner")} />
-                            
-                            <ACRCreationField addIcon="Add" label="Drive" placeholder="drive" inputID="drive" handleAdd={(e)=>handleAddButton(e, "#drive")} />
+                            <div className="justify-center flex gap-x-5">
+                                <label>
+                                    Groups? :
+                                </label> 
+                                <input id="groups-directive" onChange={handleGroupsCheckbox} type='checkbox' />
+                                {groups ? "groups:on" : "groups:off"}
+                            </div>
+                            <ACRCreationField addIcon="Add" label="User" placeholder="user" inputID="owner" handleAdd={(e) => handleAddButton(e, "#owner")} />
 
-                            <ACRCreationField addIcon="Add" label="Creator" placeholder="user" inputID="creator" handleAdd={(e)=>handleAddButton(e, "#creator")} />
-                            
-                            <ACRCreationField addIcon="Add" label="From" placeholder="user" inputID="from" handleAdd={(e)=>handleAddButton(e, "#from")} />
-                            
-                            <ACRCreationField addIcon="Add" label="To" placeholder="user" inputID="to" handleAdd={(e)=>handleAddButton(e, "#to")} />
+                            <ACRCreationField addIcon="Add" label="Drive" placeholder="drive" inputID="drive" handleAdd={(e) => handleAddButton(e, "#drive")} />
 
-                            <ACRCreationField addIcon="Add" label="Readable" placeholder="user" inputID="readable" handleAdd={(e)=>handleAddButton(e, "#readable")} />
+                            <ACRCreationField addIcon="Add" label="Creator" placeholder="user" inputID="creator" handleAdd={(e) => handleAddButton(e, "#creator")} />
 
-                            <ACRCreationField addIcon="Add" label="Writable" placeholder="user" inputID="writable" handleAdd={(e)=>handleAddButton(e, "#writable")} />
-                           
-                            <ACRCreationField addIcon="Add" label="Name" placeholder="regex" inputID="name" handleAdd={(e)=>handleAddButton(e, "#name")} />
-                            
-                            <ACRCreationField addIcon="Add" label="In Folder" placeholder="regex" inputID="inFolder" handleAdd={(e)=>handleAddButton(e, "#inFolder")} />
-                            
-                            <ACRCreationField addIcon="Add" label="Folder" placeholder="regex" inputID="folder" handleAdd={(e)=>handleAddButton(e, "#folder")} />
-                            
-                            <ACRCreationField addIcon="Add" label="Path" placeholder="path" inputID="path" handleAdd={(e)=>handleAddButton(e, "#path")} />
-                            
-                            <ACRCreationField addIcon="Add" label="Sharing" placeholder="none, anyone, user, domain" inputID="sharing" handleAdd={(e)=>handleAddButton(e, "#sharing")} />
-                            
+                            <ACRCreationField addIcon="Add" label="From" placeholder="user" inputID="from" handleAdd={(e) => handleAddButton(e, "#from")} />
+
+                            <ACRCreationField addIcon="Add" label="To" placeholder="user" inputID="to" handleAdd={(e) => handleAddButton(e, "#to")} />
+
+                            <ACRCreationField addIcon="Add" label="Readable" placeholder="user" inputID="readable" handleAdd={(e) => handleAddButton(e, "#readable")} />
+
+                            <ACRCreationField addIcon="Add" label="Writable" placeholder="user" inputID="writable" handleAdd={(e) => handleAddButton(e, "#writable")} />
+
+                            <ACRCreationField addIcon="Add" label="Name" placeholder="regex" inputID="name" handleAdd={(e) => handleAddButton(e, "#name")} />
+
+                            <ACRCreationField addIcon="Add" label="In Folder" placeholder="regex" inputID="inFolder" handleAdd={(e) => handleAddButton(e, "#inFolder")} />
+
+                            <ACRCreationField addIcon="Add" label="Folder" placeholder="regex" inputID="folder" handleAdd={(e) => handleAddButton(e, "#folder")} />
+
+                            <ACRCreationField addIcon="Add" label="Path" placeholder="path" inputID="path" handleAdd={(e) => handleAddButton(e, "#path")} />
+
+                            <ACRCreationField addIcon="Add" label="Sharing" placeholder="none, anyone, user, domain" inputID="sharing" handleAdd={(e) => handleAddButton(e, "#sharing")} />
+
                         </div>
                     </div>
                 </div>

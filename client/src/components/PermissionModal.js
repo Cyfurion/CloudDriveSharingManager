@@ -3,10 +3,6 @@ import StoreContext from "../store";
 import { ToastContext } from "../toast";
 import Permission from "../classes/permission-class";
 import { v4 as uuidv4 } from 'uuid';
-import AdapterContext from "../cloudservices";
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-
 export default function PermissionModal(props) {
     const { dispatch } = useContext(ToastContext);
 
@@ -25,9 +21,9 @@ export default function PermissionModal(props) {
     let files = [];
     folder.files.map((file)=> props.data.includes(file.id) ? files.push(file) : "");
 
-    const handleChange = (e) => {
-        console.log(e.target.value);
-    }
+    // const handleChange = (e) => {
+    //     console.log(e.target.value);
+    // }
 
     const handleAddReader = (e) => {
         let readerEmail = document.querySelector("#add-email-text").value;
@@ -60,7 +56,6 @@ export default function PermissionModal(props) {
 
         let list = [...readerList];
         list = [...list, { entity: readerEmail, type: type }];
-        console.log(list);
         document.querySelector("#add-email-text").value = "";
         setType("Type");
         setReaderList(list);
