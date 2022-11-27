@@ -104,12 +104,15 @@ export default function GroupSSModal(props) {
             })
             await apis.addGroupSnapshot(groupSS);
             await store.updateUser();
-            setGroups(store.user.groupSnapshots);
+            let gss = (await apis.getUser(store.user.profile)).groupSnapshots;
+            setGroups(gss);
         }
         reader.readAsText(uploadedFile);
 
 
     }
+
+
 
     const handleBlur = (e) => {
         if (e.target.id === 'modal-container')

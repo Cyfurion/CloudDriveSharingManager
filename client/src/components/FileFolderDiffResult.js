@@ -1,5 +1,5 @@
 import {FileFolderDiffCard} from './'
-
+import {v4 as uuidv4} from 'uuid';
 
 export default function FileFolderDiffResult(props) {
     const handleClose = () => {
@@ -14,7 +14,7 @@ export default function FileFolderDiffResult(props) {
     return (
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className=" font-mono relative min-h-[70vh] min-w-[40vw] max-w-2xl p-4 md:h-auto">
-                <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
+                <div className=" relative rounded-3xl min-h-[70vh] min-w-[40vw] bg-white shadow dark:bg-gray-700 border-2 border-black">
 
 
                     <div className="flex items-start justify-between border-b rounded-t p-4 dark:border-gray-600">
@@ -30,7 +30,7 @@ export default function FileFolderDiffResult(props) {
                              Current Folder: {props.result.folder.name}
                             <div className="flex flex-col gap-y-1">
                                 {props.result.folder.permissions.length !== 0 ? props.result.folder.permissions.map((perm)=>(
-                                    <FileFolderDiffCard perm={perm}/>
+                                    <FileFolderDiffCard key={uuidv4()} perm={perm}/>
                                 )) : <h1> No Permissions Found</h1>}
                             </div>
                          </div>
@@ -41,10 +41,10 @@ export default function FileFolderDiffResult(props) {
                                 <div className="border-b pl-5"> File Name: {file.file.name}
                                     
                                     {file.fileDifferences.map((permission)=>(
-                                        <FileFolderDiffCard perm={permission}/>
+                                        <FileFolderDiffCard key={uuidv4()} perm={permission}/>
                                     ))}
                                     {file.folderDifferences.map((permission)=>(
-                                        <FileFolderDiffCard perm={permission}/>
+                                        <FileFolderDiffCard key={uuidv4()} perm={permission}/>
                                     ))}
                                  </div>
                                 

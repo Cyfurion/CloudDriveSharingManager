@@ -516,7 +516,7 @@ export default function SplashScreen() {
                         showACRModal={handleShowACRModal} // functionaility validate ACR
                     />
                     <div className=" w-[85vw] h-[92vh] overflow-y-auto overflow-x-hidden text-ellipsis break-words">
-                        <div className="font-bold border-b"> Current Snapshot: {store.currentSnapshot.timestamp /* Show Current Snapshot timestamp*/} </div>
+                        <div className="font-bold border-b"> Current Snapshot: {store.currentSnapshot.timestamp + (store.currentSnapshot.timestamp === store.user.fileSnapshotIDs.values().next().value ? " (most recent snapshot)" : " (older snapshot)")/* Show Current Snapshot timestamp*/} </div>
                         <h1 className="font-bold">
                             {/* Directory Button ternary */ store.directory.length === 1 ? "" : <button onClick={handleBackButton}>
                                 <ArrowBackIosIcon fontSize="small" />
