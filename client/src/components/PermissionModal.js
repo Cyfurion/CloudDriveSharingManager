@@ -161,7 +161,7 @@ export default function PermissionModal(props) {
 
     let displayEntityTypes = [];
     Object.keys(adapter.adapter.roleTypes).forEach(function (key) {
-        displayRoleTypes.push(
+        displayEntityTypes.push(
             adapter.adapter.roleTypes[key]
         )
     })
