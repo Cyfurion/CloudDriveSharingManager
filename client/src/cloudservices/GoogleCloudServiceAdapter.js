@@ -12,6 +12,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         group: 'group'
     }
 
+    multipleDrivesAllowed = true;
+
     groupsAllowed = true;
     
     permissionTypes = {
@@ -122,10 +124,10 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
         let rootFile = new File("", "root", [], "", "", "SYSTEM", "/", "", "");
         let root = new Folder(rootFile, []);
-        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", "", "SYSTEM"), []);
+        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/My Drive", "", "SYSTEM"), []);
         root.files.push(myDrive);
         this.snapshotHelper(parentToChildMap, myDrive);
-        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
+        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/Shared With Me", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
         this.snapshotHelper(parentToChildMap, sharedWithMe);
         let driveList = []
