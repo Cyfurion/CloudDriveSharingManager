@@ -5,6 +5,8 @@ export class CloudServiceAdapter {
 
     roleTypes = {};
     
+    multipleDrivesAllowed = false;
+    
     groupsAllowed = false;
 
     permissionTypes = {};

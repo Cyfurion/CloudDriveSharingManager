@@ -13,19 +13,22 @@ const keywordsWithUsers = ['owner', 'creator', 'from', 'to', 'readable', 'writab
 //name in quotes
 export default class Query {  
     
-    constructor(queryString, snapshot, writableRoles, user, groupsAllowed) {
+    constructor(queryString, snapshot, writableRoles, user, groupsAllowed, drivesAllowed) {
         this.queryString = queryString;
         this.snapshot = snapshot;
         this.writableRoles =  writableRoles;
         this.groupsAllowed = groupsAllowed;
         this.groupsOn = groupsAllowed;
+        this.drivesAllowed = drivesAllowed;
         this.user = user;
         this.operators = this.parse(queryString);
     }
 
     evaluate() {
         try{
-            return this.operators.evaluate(this.snapshot, this.writableRoles, this.user);
+            let files = this.operators.evaluate(this.snapshot, this.writableRoles, this.user);
+            files = files.filter(e => !this.snapshot.root.files.includes(e));
+            return files;
         }catch(e){
             throw new Error("Incorrectly formatted query.");
         }
@@ -103,6 +106,9 @@ export default class Query {
                             }
                         }else{
                             if(keyword.toLowerCase() === 'drive'){
+                                if(!this.drivesAllowed){
+                                    throw new Error("Multiple drives not supported by this service.");
+                                }
                                 containsDrive = true;
                             }else if(keyword.toLowerCase() === 'path'){
                                 containsPath = true;
@@ -126,7 +132,7 @@ export default class Query {
         if (operatorStack.length !== 1) {
             throw new InvalidQueryError("Incorrectly formatted query.");
         }
-        if(containsPath && !containsDrive){
+        if(containsPath && this.drivesAllowed && !containsDrive){
             throw new Error("Path can only be used in conjunction with drive.");
         }
         return operatorStack[0];
@@ -177,6 +183,9 @@ export default class Query {
                 while (queryString.charAt(i) !== '"' && queryString.charAt(i-1) !== '\\') { //what if "lexi\\"
                     word += queryString.charAt(i);
                     i++;
+                    if(i >= queryString.length){
+                        throw new Error();
+                    }
                 }
             } catch(e) {
                 throw new InvalidQueryError("Quotations not closed");
@@ -334,10 +343,10 @@ class Operator {
     }
 
     driveQualifier(file, field, value) {
-        return (value === "MyDrive" && file[field] === "") || value === file[field];//TODO what is this
+        return (value.toLowerCase() === "my drive" && file[field] === "") || value === file[field];
     }
     notDriveQualifier(file, field, value) {
-        return !((value === "MyDrive" && file[field] === "") || value === file[field]);
+        return !((value.toLowerCase() === "my drive" && file[field] === "") || value === file[field]);
     }
 
     pathQualifier(file, field, value) {
