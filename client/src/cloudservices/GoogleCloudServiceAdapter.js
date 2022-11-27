@@ -123,7 +123,11 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
         snapshotHelper(parentToChildMap, sharedWithMe);
-        let driveList = await this.getDrives();
+        let driveList = []
+        try{
+            driveList = await this.getDrives();
+        }catch(e){
+        }
         for(let drive of driveList){
             //let drivePermissions = await this.getPermissions(drive.id);
             //let permObj = await this.createPermissionList(drivePermissions);
