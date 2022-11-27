@@ -134,13 +134,7 @@ export default function SplashScreen() {
         //push folder to directory and display them
         store.pushDirectory(folder);
         setFiles(null);
-    }   
-
-    //marked for removal
-    const handlePermissionModal = () => {
-        console.log("test");
-        setCheckboxVisible(true);
-    }
+    } 
 
     //Opens analysis mode options(deviancy, etc) modal
     const handleAnalysisModal = () => {
@@ -212,6 +206,7 @@ export default function SplashScreen() {
 
     //fill the search bar with query from querybuilder
     const fillSearch = (querybuilder) => {
+        console.log(querybuilder);
         //closes query builder modal
         setShowQBB((prevState) => !prevState);
         //set the string from query builder to search bard
@@ -228,7 +223,7 @@ export default function SplashScreen() {
         //if they are up-to-date, push permission changes
         if (validate) {
             // deploy permission changes
-            const post = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
 
             //close permission modal, view, hide checkbox ,set checks to unchecks, selectedIds -> []
             setPermissionsModal(false);
@@ -430,7 +425,6 @@ export default function SplashScreen() {
         }
 
         //enable the two buttons and show checkbox
-        console.log("Permission Button trigerred");
         setPermissionView(true);
         setCheckboxVisible(true);
     }
@@ -446,7 +440,6 @@ export default function SplashScreen() {
         document.querySelector('.allfile-checkbox').checked = false;
         setPermissionView(false);
         setCheckboxVisible(false);
-        console.log(selectedIDs);
     }
 
     if (files === null) {

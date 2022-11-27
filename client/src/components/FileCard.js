@@ -1,12 +1,10 @@
-import StoreContext from "../store";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function FileCard(props) {
-    const { store } = useContext(StoreContext);
     const [clicked, setClicked] = useState(false);
     let file = props.file;
 

@@ -2,7 +2,6 @@ import DeviantFileCard from "./DeviantFileCard";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function AnalysisResult(props) {
-    console.log(props.result);
     const handleClose = () => {
         props.closeDeviancyAnalysisModal();
     }
