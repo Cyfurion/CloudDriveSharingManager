@@ -38,16 +38,20 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param {Permission[]} addPermissions The list of permissions to add.
      */
     async deploy(files, deletePermissions, addPermissions) {
+        console.log(files, deletePermissions, addPermissions);
         const promises = [];
         for (let file of files) {
             // Delete specified permissions (if they exist).
-            for (let i = 0; i < file.permissions.length; i++) {
+            for (let i = file.permissions.length-1; i >= 0; i--) {
                 if (deletePermissions.includes(file.permissions[i].entity) && file.permissions[i].role !== "owner") {
                     // Matching permission found, delete.
                     promises.push(this.endpoint.client.drive.permissions.delete({
                         fileId: file.id,
                         permissionId: file.permissionIds[i]
                     }));
+                    console.log(file);
+                    file.permissionIds.splice(i, 1);
+                    console.log(file);
                 }
             }
             // Add all permissions to this file.
@@ -59,7 +63,15 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                         type: permission.type,
                         emailAddress: permission.entity
                     }
-                }));
+                }).then(response => file.permissionIds.push(response.result.id)));
+                // promises.push(this.endpoint.client.drive.permissions.create({
+                //     fileId: file.id,
+                //     resource: {
+                //         role: permission.role,
+                //         type: permission.type,
+                //         emailAddress: permission.entity
+                //     }
+                // }));
             }
         }
         await Promise.all(promises);
