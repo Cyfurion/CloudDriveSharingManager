@@ -75,16 +75,17 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         if(hasExplicitPermissions){
             directFilePermissions = await this.endpoint.sharingListFileMembers({
                 "file": pathParameter,
-                "include_inherited": false
+                "include_inherited": true
             });
         }
         if (file.shared_folder_id) {
+            permissionIds.push(file.sharedFolderId);
             sharedFolderId = file.shared_folder_id;
         }else if(file.parent_shared_folder_id){
             sharedFolderId = file.parent_shared_folder_id;
         }
         let folderPermissions = undefined;
-        if (sharedFolderId !== "") {
+        if (sharedFolderId !== "" && !directFilePermissions) {
             folderPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
         }
         if (directFilePermissions) {
@@ -102,8 +103,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
                 let p = new Permission(type, entity, role, isInherited, true);//all files are shareable by people who have access
                 permissions.push(p);
             }
-        }
-        if (folderPermissions) {
+        }else if (folderPermissions) {
             for (let user of folderPermissions.result.users) {
                 let type = 'user'; 
                 let entity = user.user.email;
