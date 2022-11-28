@@ -4,6 +4,7 @@ import { File, Folder } from '../classes/file-class';
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 import GroupSnapshot from '../classes/groupsnapshot-class';
+import Log from '../classes/log-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     roleTypes = {
@@ -36,6 +37,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param {File[]} files The files to operate on.
      * @param {String[]} deletePermissions The list of email addresses to delete.
      * @param {Permission[]} addPermissions The list of permissions to add.
+     * @returns A `Log` object detailing this change.
      */
     async deploy(files, deletePermissions, addPermissions) {
         const promises = [];
@@ -63,6 +65,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             }
         }
         await Promise.all(promises);
+        return new Log(files.map(file => file.name), deletePermissions, addPermissions, (new Date()).toString());
     }
     /**
      * Given a list of `File` objects, checks whether these files have matching (up-to-date) permissions with their
