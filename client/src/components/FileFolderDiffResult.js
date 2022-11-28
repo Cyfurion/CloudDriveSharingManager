@@ -2,7 +2,6 @@ import {FileFolderDiffCard} from './'
 import {v4 as uuidv4} from 'uuid';
 
 export default function FileFolderDiffResult(props) {
-    console.log(props);
     const handleClose = () => {
         props.closeFFDiffModal();
     }

@@ -50,7 +50,6 @@ export default function SplashScreen() {
 
     //closes acr violations modal during permission mode
     const handleCloseACRViolation = () => {
-        console.log("cancelled called");
         setACRViolations(null);
 
     }
@@ -342,6 +341,7 @@ export default function SplashScreen() {
             await store.takeSnapshot();
             setSearchActive(false);
             setFiles(null);
+
             disableLoading();
             dispatch({
                 type:"ADD_NOTIFICATION",
