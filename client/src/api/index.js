@@ -16,6 +16,7 @@ const addHistory = (payload) => api.post(`/history`, payload);
 const addQuery = (payload) => api.post(`/queries`, payload);
 const addSnapshot = (payload) => api.post(`/snapshots`, payload);
 const deleteACR = (index, profile) => api.patch(`/acrs/${index}`, profile);
+const deleteHistory = (profile) => api.patch(`/history`, profile);
 const getUser = async (profile) => {
     let user = (await api.get(`/users/${profile}`)).data;
     user.fileSnapshotIDs = new Map([...(new Map(Object.entries(user.fileSnapshotIDs))).entries()].sort().reverse());
@@ -43,6 +44,7 @@ const apis = {
     addQuery,
     addSnapshot,
     deleteACR,
+    deleteHistory,
     getUser,
     getSnapshot
 }
