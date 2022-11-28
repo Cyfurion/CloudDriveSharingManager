@@ -26,7 +26,7 @@ import Toast from "./Toast";
 import GroupSSModal from "./GroupSSModal";
 import FileFolderDiffCard from "./FileFolderDiffCard";
 import Selector from "./Selector";
-import SnapshotChangesModal from "./SnapshotChangesModal";
+import SharingChangesModal from "./SharingChangesModal";
 import GroupInfoModal from "./GroupInfoModal";
 import ValidatePermisisonViolation from "./ValidatePermissionViolation";
 
@@ -59,7 +59,8 @@ export {
     GroupSSModal,
     FileFolderDiffCard,
     Selector,
-    SnapshotChangesModal,
+    SharingChangesModal,
     GroupInfoModal,
     ValidatePermisisonViolation
+
 }

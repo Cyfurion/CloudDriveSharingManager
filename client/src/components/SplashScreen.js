@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SnapshotChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
+import { ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
@@ -27,7 +27,7 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
-    const [showSnapshotChangesModal, setSnapshotChangesModal] = useState(null);
+    const [showSharingChangesModal, setSharingChangesModal] = useState(null);
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
@@ -313,17 +313,18 @@ export default function SplashScreen() {
     }
 
     //TODO
-    const snapshotChanges = () => {
+    const sharingChanges = () => {
         let map = store.user.fileSnapshotIDs;
-        setSnapshotChangesModal(map);
+        setSharingChangesModal(map);
     }
 
-    const closeSnapshotChangesModal = () => {
-        setSnapshotChangesModal(null);
+    const closeSharingChangesModal = () => {
+        setSharingChangesModal(null);
     }
 
-    async function confirmSnapshotChanges(id1, id2) {
-        console.log("confirmSnapshotChanges");
+
+    async function confirmSharingChanges(id1,id2) {
+        console.log("confirmSharingChanges");
         const snapshot1 = await apis.getSnapshot(id1);
         const snapshot2 = await apis.getSnapshot(id2);
         let result = new compareSnapshots(snapshot1, snapshot2)
@@ -580,46 +581,47 @@ export default function SplashScreen() {
                 handleQueryBuilderButton={handleQueryBuilderButton} //functionally for open/close of qb modal
             />}
             {showAnalysisModal && <AnalysisModal
-                snapshotChanges={snapshotChanges} //functionality for snapshot changes modal
+                sharingChanges={sharingChanges} //functionality for snapshot changes modal
                 fileFolderDiff={fileFolderDiff} //functionality for file/folder diff button
                 deviancyAnalysis={deviancyAnalysis} //functionality for deviancy analysis button
                 handleAnalysisModal={handleAnalysisModal} //functionality for closing analysis modal
-            />}
-            {showPermissionsModal && <PermissionModal
-                data={selectedIDs} //list of file IDs to show in the modal
-                editPermission={editPermission}  // proceed with permissions changes
-                hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
-            }
-            {analysisResult && <AnalysisResult
-                result={analysisResult} //result from deviancy analysis
-                closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} // closes the modal
-            />}
-            {ffDiffResult && <FileFolderDiffResult
-                result={ffDiffResult} //result from file/folder diff
-                closeFFDiffModal={closeFFDiffModal} // closes the modal
-            />}
-            {showSnapshots && <SwitchSnapshotModal
-                result={showSnapshots}  //result from switch snapshot
-                closeSwitchSnapshotModal={closeSwitchSnapshotModal} // closes the modal
-                confirmSwitchSnapshot={confirmSwitchSnapshot} // confirms and switches snapshot
-            />}
-            {showACRModal && <ACRModal
-                acr={showACRModal} //acr list to show on modal
-                handleCloseACRModal={handleCloseACRModal} // closes the modal
-            />}
-            {validateACRResult && <ValidateACRResult
-                result={validateACRResult} //result after validating acr list
-                handleCloseValidateACR={handleCloseValidateACR} // closes the modal
-            />}
-            {groupSS && <GroupSSModal
-                list={groupSS} //list of group membership snapshots
-                handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
-            />}
-            {showSnapshotChangesModal && <SnapshotChangesModal
-                result={showSnapshotChangesModal} //result from showSnapshotChanges analysis
-                closeSnapshotChangesModal={closeSnapshotChangesModal} //closes the modal
-                confirmSnapshotChanges={confirmSnapshotChanges} //confirm
-            />}
+                />}
+            {showPermissionsModal && <PermissionModal 
+                                        data={selectedIDs} //list of file IDs to show in the modal
+                                        editPermission={editPermission}  // proceed with permissions changes
+                                        hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
+            }  
+            {analysisResult && <AnalysisResult 
+                                        result={analysisResult} //result from deviancy analysis
+                                        closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} // closes the modal
+                                        />}
+            {ffDiffResult && <FileFolderDiffResult 
+                                        result={ffDiffResult} //result from file/folder diff
+                                        closeFFDiffModal={closeFFDiffModal} // closes the modal
+                                         />}
+            {showSnapshots && <SwitchSnapshotModal 
+                                        result={showSnapshots}  //result from switch snapshot
+                                        closeSwitchSnapshotModal={closeSwitchSnapshotModal} // closes the modal
+                                        confirmSwitchSnapshot={confirmSwitchSnapshot} // confirms and switches snapshot
+                                        />}
+            {showACRModal && <ACRModal 
+                                        acr={showACRModal} //acr list to show on modal
+                                        handleCloseACRModal={handleCloseACRModal} // closes the modal
+                                         />}
+            {validateACRResult && <ValidateACRResult 
+                                        result={validateACRResult} //result after validating acr list
+                                        handleCloseValidateACR={handleCloseValidateACR} // closes the modal
+                                        />}
+            {groupSS && <GroupSSModal 
+                                        list={groupSS} //list of group membership snapshots
+                                        handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
+                                        />}
+            {showSharingChangesModal && <SharingChangesModal
+                                        result={showSharingChangesModal} //result from showSharingChanges analysis
+                                        closeSharingChangesModal={closeSharingChangesModal} //closes the modal
+                                        confirmSharingChanges={confirmSharingChanges} //confirm
+                                        />}
+
             {screen}
             <Toast position="bottom-right" //toast notification display
             />
