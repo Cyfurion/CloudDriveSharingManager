@@ -5,9 +5,11 @@ class AnalysisResult{
 }
 
 class CompareSnapshotsResults extends AnalysisResult{
-    constructor(idTofFileDifferenceMap){
+    constructor(fileDifferences, earlierSnapshot, laterSnapshot){
         super("compare-snapshot-results");
-        this.idTofFileDifferenceMap = idTofFileDifferenceMap;
+        this.fileDifferences = fileDifferences;
+        this.earlierSnapshot = earlierSnapshot;
+        this.laterSnapshot = laterSnapshot;
     }
 }
 
