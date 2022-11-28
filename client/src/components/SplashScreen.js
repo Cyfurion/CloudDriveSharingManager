@@ -210,7 +210,7 @@ export default function SplashScreen() {
             let files = q.evaluate();
             // Add this query to user's recent queries.
             await apis.addQuery({
-                profile: store.user.profile,
+                profile: store.user.profile, 
                 query: query
             });
             await store.updateUser();

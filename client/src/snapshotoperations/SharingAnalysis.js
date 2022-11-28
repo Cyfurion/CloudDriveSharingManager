@@ -6,25 +6,34 @@ import { DeviantAnalysisResult,
 import { File } from '../classes/file-class';
 
 function compareSnapshots(snapshot1, snapshot2){
+    let earlierSnapshot = undefined;
+    let laterSnapshot = undefined;
+    if(Date.parse(snapshot1.timestamp) < Date.parse(snapshot2.timestamp)){
+        earlierSnapshot = snapshot1;
+        laterSnapshot = snapshot2;
+    }else{
+        earlierSnapshot = snapshot2;
+        laterSnapshot = snapshot1;
+    }
     //putting all files into a map where key is their id
     let idToFileMap1 = new Map();
-    makeIdToFileMap(snapshot1.root, idToFileMap1);
+    makeIdToFileMap(earlierSnapshot.root, idToFileMap1);
     let idToFileMap2 = new Map();
-    makeIdToFileMap(snapshot2.root, idToFileMap2);
+    makeIdToFileMap(laterSnapshot.root, idToFileMap2);
     let snap2Ids = idToFileMap2.keys();
-    let differenceMap = new Map();
+    let differences = [];
     let key = 0;
     while((key = snap2Ids.next().value) !== undefined){
         if(idToFileMap1.get(key) === undefined){
-            differenceMap.set(key, new PermissionDifferences(idToFileMap2.get(key), idToFileMap2.get(key).permissions));
+            differences.push(new PermissionDifferences(idToFileMap2.get(key), idToFileMap2.get(key).permissions));
         }else{
             let permissionDiff = comparePermissions(idToFileMap1.get(key), idToFileMap2.get(key), true);
             if(permissionDiff.addedPermissions.length !== 0 || permissionDiff.removedPermissions.length !== 0){
-                differenceMap.set(key, permissionDiff);
+                differences.push(permissionDiff);
             }      
         }
     }
-    return new CompareSnapshotsResults(differenceMap);
+    return new CompareSnapshotsResults(differences, earlierSnapshot, laterSnapshot);
 }
 
 function comparePermissions(file1, file2, needToStringify){

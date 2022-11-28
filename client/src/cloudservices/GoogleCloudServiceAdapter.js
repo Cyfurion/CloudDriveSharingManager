@@ -103,58 +103,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
         return true;
     }
-    deployValidateACRs(files, deletePermissions, addPermissions, snapshot, acrs, writers, user, groupsAllowed) {
-        const originalSnapshot = (new FileSnapshot()).deserialize(JSON.stringify(snapshot));
-        for (let file of files) {
-            // Delete specified permissions (if they exist).
-            for (let i = file.permissions.length-1; i >= 0; i--) {
-                if (deletePermissions.includes(file.permissions[i].entity) && file.permissions[i].role !== "owner") {
-                    // Matching permission found, delete.
-                    const deletedEntity = file.permissions.splice(i, 1)[0].entity;
-                    if (file instanceof Folder) {
-                        this.deployValidateACRsHelper(file.files, deletedEntity, "delete");
-                    }
-                }
-            }
-            // Add all permissions to this file.
-            for (let permission of addPermissions) {
-                file.permissions.push(Object.assign(new Permission(), permission));
-            }
-            if (file instanceof Folder) {
-                this.deployValidateACRsHelper(file.files, addPermissions, "add");
-            }
-        }
-        return [snapshot.validate(acrs, writers, user, groupsAllowed), originalSnapshot];
-    }
-    deployValidateACRsHelper(files, permission, type) {
-        switch (type) {
-            case "add":
-                for (let file of files) {
-                    for (let p of permission) {
-                        file.permissions.push(Object.assign(new Permission(), p));
-                    }
-                    if (file instanceof Folder) {
-                        this.deployValidateACRsHelper(file.files, permission, "add");
-                    }
-                }
-                break;
-            case "delete":
-                for (let file of files) {
-                    for (let i = file.permissions.length-1; i >= 0; i--) {
-                        if (file.permissions[i].entity === permission && file.permissions[i].isInherited) {
-                            const deletedEntity = file.permissions.splice(i, 1)[0].entity;
-                            file.permissionIds.splice(i, 1);
-                            if (file instanceof Folder) {
-                                this.deployValidateACRsHelper(file.files, deletedEntity, "delete");
-                            }
-                        }
-                    }
-                }
-                break;
-            default:
-                return;
-        }
-    }
     
     async takeGroupSnapshot(snapshotString, groupEmail, timestamp, name) {
         let members = snapshotString.match(/"mailto:[^"]*"/g);
