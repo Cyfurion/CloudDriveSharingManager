@@ -35,7 +35,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         for (let file of files) {
             // Delete specified permissions (if they exist).
             for (let i = 0; i < file.permissions.length; i++) {
-                if (deletePermissions.includes(file.permissions[i].entity)) {
+                if (deletePermissions.includes(file.permissions[i].entity) && file.permissions[i].role !== "owner") {
                     // Matching permission found, delete.
                     promises.push(this.endpoint.client.drive.permissions.delete({
                         fileId: file.id,
@@ -45,6 +45,14 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             }
             // Add all permissions to this file.
             for (let permission of addPermissions) {
+                // promises.push(this.endpoint.client.drive.permissions.create({
+                //     fileId: file.id,
+                //     resource: {
+                //         role: permission.role,
+                //         type: permission.type,
+                //         emailAddress: permission.entity
+                //     }
+                // }).then(response => file.permissionIds.push(response.result.id)));
                 promises.push(this.endpoint.client.drive.permissions.create({
                     fileId: file.id,
                     resource: {
@@ -63,7 +71,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
      * @param {File[]} files The list of files to check.
      * @returns `true` if the local files permissions match the cloud drive files permissions, and `false` otherwise.
      */
-    async deployValidate(files) {
+    async deployValidatePermissions(files) {
         for (let file of files) {
             let upstreamPermissions;
             try {
@@ -84,6 +92,57 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
         return true;
     }
+    deployValidateACRs(files, deletePermissions, addPermissions, snapshot, acrs, writers, user, groupsAllowed) {
+        const originalSnapshot = (new FileSnapshot()).deserialize(JSON.stringify(snapshot));
+        for (let file of files) {
+            // Delete specified permissions (if they exist).
+            for (let i = 0; i < file.permissions.length; i++) {
+                if (deletePermissions.includes(file.permissions[i].entity) && file.permissions[i].role !== "owner") {
+                    // Matching permission found, delete.
+                    const deletedEntity = file.permissions.splice(i, 1)[0].entity;
+                    if (file instanceof Folder) {
+                        this.deployValidateACRsHelper(file.files, deletedEntity, "delete");
+                    }
+                }
+            }
+            // Add all permissions to this file.
+            for (let permission of addPermissions) {
+                file.permissions.push(Object.assign(new Permission(), permission));
+            }
+            if (file instanceof Folder) {
+                this.deployValidateACRsHelper(file.files, addPermissions, "add");
+            }
+        }
+        return [snapshot.validate(acrs, writers, user, groupsAllowed), originalSnapshot];
+    }
+    deployValidateACRsHelper(files, permission, type) {
+        switch (type) {
+            case "add":
+                for (let file of files) {
+                    for (let p of permission) {
+                        file.permissions.push(Object.assign(new Permission(), p));
+                    }
+                    if (file instanceof Folder) {
+                        this.deployValidateACRsHelper(file.files, permission, "add");
+                    }
+                }
+                break;
+            case "delete":
+                for (let file of files) {
+                    for (let i = 0; i < file.permissions.length; i++) {
+                        if (file.permissions[i].entity === permission && file.permissions[i].isInherited) {
+                            const deletedEntity = file.permissions.splice(i, 1)[0].entity;
+                            if (file instanceof Folder) {
+                                this.deployValidateACRsHelper(file.files, deletedEntity, "delete");
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                return;
+        }
+    }
     
     async takeGroupSnapshot(snapshotString, groupEmail, timestamp, name) {
         let members = snapshotString.match(/"mailto:[^"]*"/g);
@@ -100,11 +159,9 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     async takeSnapshot() {
         let files = await this.retrieve();
         let parentToChildMap = new Map();
-        console.log(files);
         // making map of key = parent and value = list of children
         for (let i = 0; i < files.length; i++) {
             // change this when adding to file schema
-            console.log(files[i]);
             let currentFile = await this.createFileObject(files[i]);
             if (files[i].parents === undefined) {
                 files[i].parents = [""];
@@ -121,7 +178,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let root = new Folder(rootFile, []);
         let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", "", "SYSTEM"), []);
         root.files.push(myDrive);
-        console.log("right before snapshothelper");
         snapshotHelper(parentToChildMap, myDrive);
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
@@ -177,8 +233,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 'fileId':fileId,
                 'supportsAllDrives':true,
                 'fields':'*'})).result;
-            if(fileId === '1Y_GHftx0jpKGsIBgi3WbHupgYoCYZ8ZBXmtlOTfWcAc'){
-            }
             return response.permissions;
         }catch(e){
             return [];
@@ -263,7 +317,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
  * @param folder Folder that CDSM is currently populating
  */
 function snapshotHelper(parentToChildMap, folder) { //add paths to files
-    console.log("got to making snapshot");
     let childrenList = parentToChildMap.get(folder.id);
     if(childrenList === undefined){//occurs if shared drive is empty
         return;

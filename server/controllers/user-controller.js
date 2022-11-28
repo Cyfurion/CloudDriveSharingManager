@@ -26,11 +26,11 @@ addGroupSnapshot = async (req, res) => {
 }
 
 addQuery = async (req, res) => {
-    const user = await User.findOne({ profile: req.body });
+    const user = await User.findOne({ profile: req.params.profile });
     if (user.queries.length >= 5) {
         user.queries.pop();
     }
-    user.queries.unshift(req.params.query);
+    user.queries.unshift(req.body);
     await user.save();
     await mongoose.syncIndexes();
     return res.status(201).json({ success: true }).send();

@@ -221,7 +221,6 @@ export default function SplashScreen() {
 
     //fill the search bar with query from querybuilder
     const fillSearch = (querybuilder) => {
-        console.log(querybuilder);
         //closes query builder modal
         setShowQBB((prevState) => !prevState);
         //set the string from query builder to search bard
@@ -233,7 +232,7 @@ export default function SplashScreen() {
     //handles permission changes upon clicking 'proceed'
     const editPermission = async (payload) => {
         //check if current files to push changes on have up-to-date permissions
-        let validate = await adapter.adapter.deployValidate(payload.files);
+        let validate = await adapter.adapter.deployValidatePermissions(payload.files);
 
         //if they are up-to-date, push permission changes
         if (validate) {
@@ -251,9 +250,11 @@ export default function SplashScreen() {
             document.querySelector('.allfile-checkbox').checked = false;
             setSelectedIDs([]);
 
-            //take snapshot
+            // take snapshot
             await store.takeSnapshot();
             setFiles(null);
+            // console.log(store.currentSnapshot);
+            // console.log(await adapter.adapter.endpoint.client.drive.permissions.list({ fileId: "1HwJg-GBTh6tadXEEuFtBzNZUCPTqVtzt63U4R7aK6Ao" }))
         }
 
         // if not up-to-date, dispatch toast

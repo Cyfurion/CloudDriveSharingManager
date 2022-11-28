@@ -14,6 +14,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     writable = [this.permissionTypes.owner, this.permissionTypes.editor];
 
     deploy() {
+        
     }
 
     async takeSnapshot() {
