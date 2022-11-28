@@ -36,7 +36,15 @@ export default function SplashScreen() {
     const [permissionView, setPermissionView] = useState(false);
     const [groupToShow, setGroupToShow] = useState(false);
     const [ACRViolations, setACRViolations] = useState(null);
-    const [showACRViolationsModal, setShowACRViolationsModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const enableLoading = () =>{
+        setLoading(true);
+    }
+
+    const disableLoading = () =>{
+        setLoading(false);
+    }
 
     //closes acr violations modal during permission mode
     const handleCloseACRViolation = () => {
@@ -245,11 +253,10 @@ export default function SplashScreen() {
     }
 
     const finalizePermissionChanges = async (payload) => {
-        await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
 
+        enableLoading();
         setPermissionView(false);
         setCheckboxVisible(false);
-        setShowACRViolationsModal(false);
         setACRViolations(null);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
@@ -257,6 +264,13 @@ export default function SplashScreen() {
         }
         document.querySelector('.allfile-checkbox').checked = false;
         setSelectedIDs([]);
+        await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+
+
+        await store.takeSnapshot();
+        setSearchActive(false);
+        setFiles(null);
+        disableLoading();
     }
 
     //handles permission changes upon clicking 'proceed'
@@ -293,13 +307,10 @@ export default function SplashScreen() {
         //no violations from ACRs
         if (result.size === 0) {
             //deploy changes
-            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-
-            //close permission modal
+            enableLoading();
             setPermissionsModal(false);
             setPermissionView(false);
             setCheckboxVisible(false);
-            setShowACRViolationsModal(false);
             setACRViolations(null);
             let list = document.querySelectorAll('.file-checkbox');
             for (let i = 0; i < list.length; i++) {
@@ -307,6 +318,12 @@ export default function SplashScreen() {
             }
             document.querySelector('.allfile-checkbox').checked = false;
             setSelectedIDs([]);
+            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            await store.takeSnapshot();
+            setSearchActive(false);
+            setFiles(null);
+            disableLoading();
+            return;
         }
         //yes violdations
 
@@ -543,6 +560,13 @@ export default function SplashScreen() {
         <LoginPage />
     </div>;
 
+    if(loading){
+        return (
+            <div>
+                <LoadingScreen label="Editting Permissions" />
+            </div>
+        )
+    }
     //show loggedIn screen
     if (auth.isAuthorized) {
         screen = store.currentSnapshot === null ?
@@ -620,6 +644,7 @@ export default function SplashScreen() {
                 data={selectedIDs} //list of file IDs to show in the modal
                 editPermission={editPermission}  // proceed with permissions changes
                 hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
+                
             }
             {analysisResult && <AnalysisResult
                 result={analysisResult} //result from deviancy analysis
