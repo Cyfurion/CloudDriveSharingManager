@@ -177,11 +177,11 @@ export default function SplashScreen() {
     }
 
     //shows Modal with all permission changes
-    const handleHistoryButton = async () => {
+    const handleHistoryButton = () => {
         //retrieve history from db
-
+        let history = store.user.history;
         
-        setShowHistoryModal(true);
+        setShowHistoryModal(history);
     }
 
     //go back up one directory
@@ -268,8 +268,9 @@ export default function SplashScreen() {
         }
         document.querySelector('.allfile-checkbox').checked = false;
         setSelectedIDs([]);
-        await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-
+        let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+        await apis.addHistory({profile: store.user.profile, log:log});
+        await store.updateUser();
 
         await store.takeSnapshot();
         setSearchActive(false);
@@ -332,7 +333,12 @@ export default function SplashScreen() {
             }
             document.querySelector('.allfile-checkbox').checked = false;
             setSelectedIDs([]);
-            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+
+            await apis.addHistory({profile: store.user.profile, log:log});
+            await store.updateUser();
+
+            
             await store.takeSnapshot();
             setSearchActive(false);
             setFiles(null);
@@ -704,7 +710,7 @@ export default function SplashScreen() {
                 closeSharingChangesModal={closeSharingChangesModal} //closes the modal
                 confirmSharingChanges={confirmSharingChanges} //confirm
             />}
-            {showHistoryModal && <HistoryModal handleClose={handleCloseHistoryModal}/>
+            {showHistoryModal && <HistoryModal logs={showHistoryModal} handleClose={handleCloseHistoryModal}/>
 
             }
 

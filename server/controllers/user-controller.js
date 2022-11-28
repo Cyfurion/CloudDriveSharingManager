@@ -27,7 +27,7 @@ addGroupSnapshot = async (req, res) => {
 
 addHistory = async (req, res) => {
     const user = await User.findOne({ profile: req.body.profile });
-    user.history.push(req.body.log);
+    user.history.unshift(JSON.stringify(req.body.log));
     await user.save();
     await mongoose.syncIndexes();
     return res.status(201).json({ success: true }).send();
