@@ -125,7 +125,7 @@ export default function PermissionModal(props) {
             return;
         }
         let addPermissions = [];
-        adds.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, entry.role, false, false))); //chage the last param
+        adds.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, entry.role, false, (adapter.adapter.multipleDrivesAllowed ? (entry.role ==='writer' ? true : false) : true )))); //chage the last param
         let payload = { files: files, deletePermissions: deletePermissions, addPermissions: addPermissions };
         props.editPermission(payload);
     }
@@ -176,12 +176,12 @@ export default function PermissionModal(props) {
                     <div className="grid grid-cols-2 justify-center px-6">
                         <div className="flex gap-2 flex-col pr-4 pt-4 pb-4 max-h-[70vh] border-r overflow-y-auto dark:border-gray-600">
                             {files.map((file) => (
-                                <div className=" p-2 border-b border-black">
+                                <div key={uuidv4()} className=" p-2 border-b border-black">
                                     <h1 className="font-bold underline"> {file.files !== undefined ? "Folder:" : "File:"} {file.name}</h1>
                                     <div className="p-2 ">
                                         <h1 className="font-bold"> Permission:</h1>
                                         {file.permissions.map((permission, index) => (
-                                            <h1 className="pl-3"> {index + 1}. Entity: {permission.entity}, Role: {permission.role}, Type: {permission.type}</h1>
+                                            <h1 key={uuidv4()} className="pl-3"> {index + 1}. Entity: {permission.entity}, Role: {permission.role}, Type: {permission.type}</h1>
                                         ))}
                                     </div>
                                 </div>

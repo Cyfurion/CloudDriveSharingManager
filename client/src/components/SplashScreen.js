@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SharingChangesResult, SwitchSnapshotModal } from './';
+import { HistoryModal, ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SharingChangesResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
@@ -37,7 +37,16 @@ export default function SplashScreen() {
     const [permissionView, setPermissionView] = useState(false);
     const [groupToShow, setGroupToShow] = useState(false);
     const [ACRViolations, setACRViolations] = useState(null);
-    const [showACRViolationsModal, setShowACRViolationsModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [showHistoryModal, setShowHistoryModal] = useState(null);
+
+    const enableLoading = () =>{
+        setLoading(true);
+    }
+
+    const disableLoading = () =>{
+        setLoading(false);
+    }
 
     //closes acr violations modal during permission mode
     const handleCloseACRViolation = () => {
@@ -169,8 +178,10 @@ export default function SplashScreen() {
     }
 
     //shows Modal with all permission changes
-    const handleHistoryButton = (folder) => {
-        return;
+    const handleHistoryButton = () => {
+        //retrieve history from db
+        let history = store.user.history;
+        setShowHistoryModal(history);
     }
 
     //go back up one directory
@@ -246,11 +257,10 @@ export default function SplashScreen() {
     }
 
     const finalizePermissionChanges = async (payload) => {
-        await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
 
+        enableLoading();
         setPermissionView(false);
         setCheckboxVisible(false);
-        setShowACRViolationsModal(false);
         setACRViolations(null);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
@@ -258,6 +268,24 @@ export default function SplashScreen() {
         }
         document.querySelector('.allfile-checkbox').checked = false;
         setSelectedIDs([]);
+        let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+        await apis.addHistory({profile: store.user.profile, log:log});
+        await store.updateUser();
+
+        await store.takeSnapshot();
+        setSearchActive(false);
+        setFiles(null);
+        disableLoading();
+        dispatch({
+            type:"ADD_NOTIFICATION",
+            payload :{
+                id: uuidv4(),
+                type: "SUCCESS",
+                title: "Successful Changes!",
+                message: "Permission changes have been applied"
+
+            }
+        })
     }
 
     //handles permission changes upon clicking 'proceed'
@@ -294,13 +322,10 @@ export default function SplashScreen() {
         //no violations from ACRs
         if (result.size === 0) {
             //deploy changes
-            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-
-            //close permission modal
+            enableLoading();
             setPermissionsModal(false);
             setPermissionView(false);
             setCheckboxVisible(false);
-            setShowACRViolationsModal(false);
             setACRViolations(null);
             let list = document.querySelectorAll('.file-checkbox');
             for (let i = 0; i < list.length; i++) {
@@ -308,10 +333,30 @@ export default function SplashScreen() {
             }
             document.querySelector('.allfile-checkbox').checked = false;
             setSelectedIDs([]);
+            let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+
+            await apis.addHistory({profile: store.user.profile, log:log});
+            await store.updateUser();
+
+
+            await store.takeSnapshot();
+            setSearchActive(false);
+            setFiles(null);
+            disableLoading();
+            dispatch({
+                type:"ADD_NOTIFICATION",
+                payload :{
+                    id: uuidv4(),
+                    type: "SUCCESS",
+                    title: "Successful Changes!",
+                    message: "Permission changes have been applied"
+
+                }
+            })
+            return;
         }
         //yes violdations
 
-        
         setPermissionsModal(false);
         setACRViolations( {result : result, payload:payload});
 
@@ -536,6 +581,11 @@ export default function SplashScreen() {
         setGroupToShow(null);
     }
 
+    //handle closing history modal
+    const handleCloseHistoryModal = () =>{
+        setShowHistoryModal(null);
+    }
+
     if (files === null) {
         if (store.currentSnapshot === null) {
             store.onLogin();
@@ -551,6 +601,13 @@ export default function SplashScreen() {
         <LoginPage />
     </div>;
 
+    if(loading){
+        return (
+            <div>
+                <LoadingScreen label="Editting Permissions" />
+            </div>
+        )
+    }
     //show loggedIn screen
     if (auth.isAuthorized) {
         screen = store.currentSnapshot === null ?
@@ -628,6 +685,7 @@ export default function SplashScreen() {
                 data={selectedIDs} //list of file IDs to show in the modal
                 editPermission={editPermission}  // proceed with permissions changes
                 hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
+                
             }
             {analysisResult && <AnalysisResult
                 result={analysisResult} //result from deviancy analysis
@@ -663,6 +721,9 @@ export default function SplashScreen() {
                 closeSharingChangesModal={closeSharingChangesModal} //closes the modal
                 confirmSharingChanges={confirmSharingChanges} //confirm
             />}
+            {showHistoryModal && <HistoryModal logs={showHistoryModal} handleClose={handleCloseHistoryModal}/>
+
+            }
 
             {screen}
             <Toast position="bottom-right" //toast notification display
