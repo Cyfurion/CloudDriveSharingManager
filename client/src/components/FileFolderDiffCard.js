@@ -31,6 +31,8 @@ export default function FileFolderDiffCard({perm, type}){
                 
         )
         }
+        
+    
     if(type ==='file'){
     return (
         <div className="flex flex-col justify-center ">
