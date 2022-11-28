@@ -44,7 +44,7 @@ export default function HistoryModal({ logs,handleClose }) {
                                 <FileFolderDiffCard perm={permission} type={'original'} />
                             ))}
                         </div>
-                        <div className="flex flex-col p-1 items-center ">
+                        <div className="flex flex-col p-1  ">
                             <h1> Removed Permisisons</h1>
                             {log.deletePermissions.map((permission) => (
                                 <h1> {permission}</h1>
