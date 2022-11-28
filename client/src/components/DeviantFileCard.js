@@ -27,12 +27,6 @@ export default function DeviantFileCard(props) {
         </div>
     ));
 
-    let samePermissionsList = file.samePermissions.map((permission, index) => (
-        <div key={uuidv4()} className="w-5/6 flex gap-x-5">
-            <h1 className="truncate">Entity: {permission.entity}</h1>
-            <h1 className="flex flex-nowrap">Role: {permission.role}</h1>
-        </div>
-    ));
 
     const handlePermView = () => {
         setPermView((prevClicked) => !prevClicked);
@@ -47,8 +41,7 @@ export default function DeviantFileCard(props) {
             </div>
             {/* {permView && <div className="flex flex-col pl-5 rounded-xl bg-gray-300 font-bold"> {permList} </div>} */}
             {permView && <div className="flex flex-col pl-5 rounded-xl bg-red-300 font-bold"> {removedPermissionsList} </div>} 
-            {permView && <div className="flex flex-col pl-5 rounded-xl bg-red-300 font-bold"> {addedPermissionsList} </div>}
-            {permView && <div className="flex flex-col pl-5 rounded-xl bg-gray-300 font-bold"> {samePermissionsList} </div>}
+            {permView && <div className="flex flex-col pl-5 rounded-xl bg-green-300 font-bold"> {addedPermissionsList} </div>}
         </div>
     )
 }

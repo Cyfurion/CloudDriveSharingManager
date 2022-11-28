@@ -13,26 +13,27 @@ export default function SharingChangesCard(props){
     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
     </svg>
 
-    let removedPermissionsList = file.removedPermissions.map((permission, index) => (
+    let removedPermissionsList = file.removedPermissions ? file.removedPermissions.map((permission, index) => (
     <div key={uuidv4()} className="w-5/6 flex gap-x-5">
         <h1 className="truncate">- Entity: {permission.entity}</h1>
         <h1 className="flex flex-nowrap">Role: {permission.role}</h1>
     </div>
-    ));
+    )) : [];
 
-    let addedPermissionsList = file.addedPermissions.map((permission, index) => (
+    let addedPermissionsList = file.addedPermissions ? file.addedPermissions.map((permission, index) => (
         <div key={uuidv4()} className="flex gap-x-5">
             <h1 className="truncate">+ Entity: {permission.entity}</h1>
             <h1 className="flex flex-nowrap">Role: {permission.role}</h1>
             <h1 className="flex flex-nowrap">Type: {permission.type}</h1>
         </div>
-    ));
+    )) : [];
 
 
     const handlePermView = () => {
         setPermView((prevClicked) => !prevClicked);
     }
 
+    
     return (
         <div key={file.file.id} className="flex flex-col pl-2">
             <div className="flex gap-x-2 ">
