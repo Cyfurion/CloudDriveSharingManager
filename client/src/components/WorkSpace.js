@@ -1,4 +1,5 @@
 import { FileCard } from './';
+import {v4 as uuidv4} from 'uuid';
 
 export default function WorkSpace(props) {
     props.data.sort((a,b)=> a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
@@ -24,7 +25,7 @@ export default function WorkSpace(props) {
                 {props.data.map((file) => (
                     <FileCard 
                         handleGroupToShow={props.handleGroupToShow}
-                        key={file.id}
+                        key={uuidv4()}
                         file={file}
                         visible={props.visible}
                         handleFileCheckBox={props.handleFileCheckBox}
