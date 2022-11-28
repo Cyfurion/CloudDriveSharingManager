@@ -206,7 +206,10 @@ export default function SplashScreen() {
             //evalute to get the files
             let files = q.evaluate();
             // Add this query to user's recent queries.
-            await apis.addQuery(query, store.user.profile);
+            await apis.addQuery({
+                profile: store.user.profile, 
+                query: query
+            });
             await store.updateUser();
             //create a "Search Folder" folder
             let searchFile = new File("", "Search Result", [], "", "", "SYSTEM", "/Search Result", "", "");
