@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
+import { HistoryModal, ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
@@ -37,6 +37,7 @@ export default function SplashScreen() {
     const [groupToShow, setGroupToShow] = useState(false);
     const [ACRViolations, setACRViolations] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showHistoryModal, setShowHistoryModal] = useState(null);
 
     const enableLoading = () =>{
         setLoading(true);
@@ -176,8 +177,11 @@ export default function SplashScreen() {
     }
 
     //shows Modal with all permission changes
-    const handleHistoryButton = (folder) => {
-        return;
+    const handleHistoryButton = async () => {
+        //retrieve history from db
+
+        
+        setShowHistoryModal(true);
     }
 
     //go back up one directory
@@ -564,6 +568,11 @@ export default function SplashScreen() {
         setGroupToShow(null);
     }
 
+    //handle closing history modal
+    const handleCloseHistoryModal = () =>{
+        setShowHistoryModal(null);
+    }
+
     if (files === null) {
         if (store.currentSnapshot === null) {
             store.onLogin();
@@ -695,6 +704,9 @@ export default function SplashScreen() {
                 closeSharingChangesModal={closeSharingChangesModal} //closes the modal
                 confirmSharingChanges={confirmSharingChanges} //confirm
             />}
+            {showHistoryModal && <HistoryModal handleClose={handleCloseHistoryModal}/>
+
+            }
 
             {screen}
             <Toast position="bottom-right" //toast notification display

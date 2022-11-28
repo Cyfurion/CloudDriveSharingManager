@@ -29,7 +29,7 @@ import Selector from "./Selector";
 import SharingChangesModal from "./SharingChangesModal";
 import GroupInfoModal from "./GroupInfoModal";
 import ValidatePermisisonViolation from "./ValidatePermissionViolation";
-
+import HistoryModal from "./HistoryModal";
 export {
     GoogleLoginButton,
     AppLogo,
@@ -61,6 +61,6 @@ export {
     Selector,
     SharingChangesModal,
     GroupInfoModal,
-    ValidatePermisisonViolation
-
+    ValidatePermisisonViolation,
+    HistoryModal
 }
