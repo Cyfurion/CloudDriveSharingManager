@@ -36,11 +36,22 @@ export default function SplashScreen() {
     const [permissionView, setPermissionView] = useState(false);
     const [groupToShow, setGroupToShow] = useState(false);
     const [ACRViolations, setACRViolations] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const enableLoading = () =>{
+        setLoading(true);
+    }
+
+    const disableLoading = () =>{
+        setLoading(false);
+    }
 
     //closes acr violations modal during permission mode
-    const handleCloseACRViolation = () =>{
+    const handleCloseACRViolation = () => {
+        console.log("cancelled called");
         setACRViolations(null);
-    } 
+
+    }
 
     //show Group Membership Modal
     const handleGroupMembershipButton = () => {
@@ -241,20 +252,35 @@ export default function SplashScreen() {
         handleQuery(querybuilder);
     }
 
-    const finalizePermissionChanges = async () => {
-        setPermissionsModal(false);
+    const finalizePermissionChanges = async (payload) => {
+
+        enableLoading();
         setPermissionView(false);
         setCheckboxVisible(false);
+        setACRViolations(null);
         let list = document.querySelectorAll('.file-checkbox');
         for (let i = 0; i < list.length; i++) {
             list[i].checked = false;
         }
         document.querySelector('.allfile-checkbox').checked = false;
         setSelectedIDs([]);
+        await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
 
-        //take snapshot
+
         await store.takeSnapshot();
+        setSearchActive(false);
         setFiles(null);
+        disableLoading();
+        dispatch({
+            type:"ADD_NOTIFICATION",
+            payload :{
+                id: uuidv4(),
+                type: "SUCCESS",
+                title: "Successful Changes!",
+                message: "Permission changes have been applied"
+
+            }
+        })
     }
 
     //handles permission changes upon clicking 'proceed'
@@ -262,22 +288,8 @@ export default function SplashScreen() {
         //check if current files to push changes on have up-to-date permissions
         let validate = await adapter.adapter.deployValidatePermissions(payload.files);
 
-        //if they are up-to-date, push permission changes
-        if (validate) {
-            //checks if acr has been violated 
-
-            // take snapshot
-            // console.log(store.currentSnapshot);
-            // console.log(await adapter.adapter.endpoint.client.drive.permissions.list({ fileId: "1HwJg-GBTh6tadXEEuFtBzNZUCPTqVtzt63U4R7aK6Ao" }));
-
-            //if fails, show modal with the acr thats been violated
-
-
-            //else, finalize the changes
-            
-        }
         // if not up-to-date, dispatch toast
-        else {
+        if (validate === false) {
             dispatch({
                 type: "ADD_NOTIFICATION",
                 payload: {
@@ -289,6 +301,54 @@ export default function SplashScreen() {
             })
             return;
         }
+        //files are up to date
+
+        //validate ACRs
+        let result = adapter.adapter.deployValidateACRs(
+            payload.files,
+            payload.deletePermissions,
+            payload.addPermissions,
+            store.currentSnapshot,
+            store.user.acrs,
+            adapter.adapter.writable,
+            store.user,
+            adapter.adapter.groupsAllowed);
+
+        //no violations from ACRs
+        if (result.size === 0) {
+            //deploy changes
+            enableLoading();
+            setPermissionsModal(false);
+            setPermissionView(false);
+            setCheckboxVisible(false);
+            setACRViolations(null);
+            let list = document.querySelectorAll('.file-checkbox');
+            for (let i = 0; i < list.length; i++) {
+                list[i].checked = false;
+            }
+            document.querySelector('.allfile-checkbox').checked = false;
+            setSelectedIDs([]);
+            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            await store.takeSnapshot();
+            setSearchActive(false);
+            setFiles(null);
+            disableLoading();
+            dispatch({
+                type:"ADD_NOTIFICATION",
+                payload :{
+                    id: uuidv4(),
+                    type: "SUCCESS",
+                    title: "Successful Changes!",
+                    message: "Permission changes have been applied"
+
+                }
+            })
+            return;
+        }
+        //yes violdations
+
+        setPermissionsModal(false);
+        setACRViolations( {result : result, payload:payload});
 
     }
 
@@ -328,7 +388,7 @@ export default function SplashScreen() {
     }
 
 
-    async function confirmSharingChanges(id1,id2) {
+    async function confirmSharingChanges(id1, id2) {
         console.log("confirmSharingChanges");
         const snapshot1 = await apis.getSnapshot(id1);
         const snapshot2 = await apis.getSnapshot(id2);
@@ -519,6 +579,13 @@ export default function SplashScreen() {
         <LoginPage />
     </div>;
 
+    if(loading){
+        return (
+            <div>
+                <LoadingScreen label="Editting Permissions" />
+            </div>
+        )
+    }
     //show loggedIn screen
     if (auth.isAuthorized) {
         screen = store.currentSnapshot === null ?
@@ -572,11 +639,12 @@ export default function SplashScreen() {
     }
     return (
         <div className=" min-w-fit min-h-screen  ">
-            {ACRViolations && <ValidatePermisisonViolation 
-                                finalizePermissionChanges={finalizePermissionChanges} //finalize the changes
-                                violations={ACRViolations} //violations resulting from staging permission changes
-                                handleClose={handleCloseACRViolation} //closes the warning modal
-                                />}
+            {ACRViolations && <ValidatePermisisonViolation
+                handleCloseACRViolation={handleCloseACRViolation}
+                finalizePermissionChanges={finalizePermissionChanges} //finalize the changes
+                violations={ACRViolations} //violations resulting from staging permission changes
+            //closes the warning modal
+            />}
             {groupToShow && <GroupInfoModal
                 group={groupToShow}  //group ss to show info about
                 handleClose={hideGroupInfoModal} // functionally to hide group info modal
@@ -590,42 +658,43 @@ export default function SplashScreen() {
                 fileFolderDiff={fileFolderDiff} //functionality for file/folder diff button
                 deviancyAnalysis={deviancyAnalysis} //functionality for deviancy analysis button
                 handleAnalysisModal={handleAnalysisModal} //functionality for closing analysis modal
-                />}
-            {showPermissionsModal && <PermissionModal 
-                                        data={selectedIDs} //list of file IDs to show in the modal
-                                        editPermission={editPermission}  // proceed with permissions changes
-                                        hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
-            }  
-            {analysisResult && <AnalysisResult 
-                                        result={analysisResult} //result from deviancy analysis
-                                        closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} // closes the modal
-                                        />}
-            {ffDiffResult && <FileFolderDiffResult 
-                                        result={ffDiffResult} //result from file/folder diff
-                                        closeFFDiffModal={closeFFDiffModal} // closes the modal
-                                         />}
-            {showSnapshots && <SwitchSnapshotModal 
-                                        result={showSnapshots}  //result from switch snapshot
-                                        closeSwitchSnapshotModal={closeSwitchSnapshotModal} // closes the modal
-                                        confirmSwitchSnapshot={confirmSwitchSnapshot} // confirms and switches snapshot
-                                        />}
-            {showACRModal && <ACRModal 
-                                        acr={showACRModal} //acr list to show on modal
-                                        handleCloseACRModal={handleCloseACRModal} // closes the modal
-                                         />}
-            {validateACRResult && <ValidateACRResult 
-                                        result={validateACRResult} //result after validating acr list
-                                        handleCloseValidateACR={handleCloseValidateACR} // closes the modal
-                                        />}
-            {groupSS && <GroupSSModal 
-                                        list={groupSS} //list of group membership snapshots
-                                        handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
-                                        />}
+            />}
+            {showPermissionsModal && <PermissionModal
+                data={selectedIDs} //list of file IDs to show in the modal
+                editPermission={editPermission}  // proceed with permissions changes
+                hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
+                
+            }
+            {analysisResult && <AnalysisResult
+                result={analysisResult} //result from deviancy analysis
+                closeDeviancyAnalysisModal={closeDeviancyAnalysisModal} // closes the modal
+            />}
+            {ffDiffResult && <FileFolderDiffResult
+                result={ffDiffResult} //result from file/folder diff
+                closeFFDiffModal={closeFFDiffModal} // closes the modal
+            />}
+            {showSnapshots && <SwitchSnapshotModal
+                result={showSnapshots}  //result from switch snapshot
+                closeSwitchSnapshotModal={closeSwitchSnapshotModal} // closes the modal
+                confirmSwitchSnapshot={confirmSwitchSnapshot} // confirms and switches snapshot
+            />}
+            {showACRModal && <ACRModal
+                acr={showACRModal} //acr list to show on modal
+                handleCloseACRModal={handleCloseACRModal} // closes the modal
+            />}
+            {validateACRResult && <ValidateACRResult
+                result={validateACRResult} //result after validating acr list
+                handleCloseValidateACR={handleCloseValidateACR} // closes the modal
+            />}
+            {groupSS && <GroupSSModal
+                list={groupSS} //list of group membership snapshots
+                handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
+            />}
             {showSharingChangesModal && <SharingChangesModal
-                                        result={showSharingChangesModal} //result from showSharingChanges analysis
-                                        closeSharingChangesModal={closeSharingChangesModal} //closes the modal
-                                        confirmSharingChanges={confirmSharingChanges} //confirm
-                                        />}
+                result={showSharingChangesModal} //result from showSharingChanges analysis
+                closeSharingChangesModal={closeSharingChangesModal} //closes the modal
+                confirmSharingChanges={confirmSharingChanges} //confirm
+            />}
 
             {screen}
             <Toast position="bottom-right" //toast notification display
