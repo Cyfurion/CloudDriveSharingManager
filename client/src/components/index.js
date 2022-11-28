@@ -28,6 +28,7 @@ import FileFolderDiffCard from "./FileFolderDiffCard";
 import Selector from "./Selector";
 import SharingChangesModal from "./SharingChangesModal";
 import GroupInfoModal from "./GroupInfoModal";
+import ValidatePermisisonViolation from "./ValidatePermissionViolation";
 
 export {
     GoogleLoginButton,
@@ -59,5 +60,7 @@ export {
     FileFolderDiffCard,
     Selector,
     SharingChangesModal,
-    GroupInfoModal
+    GroupInfoModal,
+    ValidatePermisisonViolation
+
 }
