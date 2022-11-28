@@ -155,13 +155,13 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         }
         if (file.shared_folder_id) {
             sharedFolderId = file.shared_folder_id;
+            id = sharedFolderId;
         }else if(file.parent_shared_folder_id){
             sharedFolderId = file.parent_shared_folder_id;
         }
         let folderPermissions = undefined;
         if (sharedFolderId !== "") {
             folderPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
-            id = sharedFolderId;
         }
         if (directFilePermissions) {
             for (let user of directFilePermissions.result.users) {

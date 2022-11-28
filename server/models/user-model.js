@@ -7,7 +7,8 @@ const UserSchema = new Schema(
         acrs: { type: [String], required: false },
         fileSnapshotIDs: { type: Map, required: true },
         queries: { type: [String], required: false },
-        groupSnapshots: { type: [String], required: false }
+        groupSnapshots: { type: [String], required: false },
+        history: { type: [String], required: false }
     }
 );
 

@@ -25,6 +25,14 @@ addGroupSnapshot = async (req, res) => {
     return res.status(201).json({ success: true }).send();
 }
 
+addHistory = async (req, res) => {
+    const user = await User.findOne({ profile: req.body.profile });
+    user.history.push(req.body.log);
+    await user.save();
+    await mongoose.syncIndexes();
+    return res.status(201).json({ success: true }).send();
+}
+
 addQuery = async (req, res) => {
     const user = await User.findOne({ profile: req.body.profile });
     if (user.queries.length >= 5) {
@@ -61,6 +69,7 @@ getUser = async (req, res) => {
 module.exports = {
     addACR,
     addGroupSnapshot,
+    addHistory,
     addQuery,
     deleteACR,
     getUser,
