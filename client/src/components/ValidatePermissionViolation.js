@@ -57,9 +57,9 @@ export default function ValidatePermissionViolation({ violations, finalizePermis
     }
 
     return (
-        <div id="modal-container"  tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
-            <div className="flex justify-center  relative min-h-[60vh] min-w-[50vw] max-w-2xl p-4 md:h-auto font-mono">
-                <div className=" relative rounded-3xl bg-white shadow w-full dark:bg-gray-700 border-2 border-black">
+        <div id="modal-container"  tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full h-50vh">
+            <div className="relative min-h-[50vh] min-w-[50vw] max-w-2xl p-4 md:h-auto font-mono">
+                <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
 
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
                         <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Validate ACR Result</h3>

@@ -271,6 +271,16 @@ export default function SplashScreen() {
         setSearchActive(false);
         setFiles(null);
         disableLoading();
+        dispatch({
+            type:"ADD_NOTIFICATION",
+            payload :{
+                id: uuidv4(),
+                type: "SUCCESS",
+                title: "Successful Changes!",
+                message: "Permission changes have been applied"
+
+            }
+        })
     }
 
     //handles permission changes upon clicking 'proceed'
@@ -323,11 +333,20 @@ export default function SplashScreen() {
             setSearchActive(false);
             setFiles(null);
             disableLoading();
+            dispatch({
+                type:"ADD_NOTIFICATION",
+                payload :{
+                    id: uuidv4(),
+                    type: "SUCCESS",
+                    title: "Successful Changes!",
+                    message: "Permission changes have been applied"
+
+                }
+            })
             return;
         }
         //yes violdations
 
-        
         setPermissionsModal(false);
         setACRViolations( {result : result, payload:payload});
 

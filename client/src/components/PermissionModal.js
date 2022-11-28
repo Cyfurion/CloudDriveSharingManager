@@ -125,7 +125,7 @@ export default function PermissionModal(props) {
             return;
         }
         let addPermissions = [];
-        adds.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, entry.role, false, false))); //chage the last param
+        adds.forEach((entry) => addPermissions.push(new Permission(entry.type, entry.entity, entry.role, false, (adapter.adapter.multipleDrivesAllowed ? (entry.role ==='writer' ? true : false) : true )))); //chage the last param
         let payload = { files: files, deletePermissions: deletePermissions, addPermissions: addPermissions };
         props.editPermission(payload);
     }
