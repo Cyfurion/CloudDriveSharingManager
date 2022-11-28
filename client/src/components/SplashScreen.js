@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { HistoryModal, ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
+import { HistoryModal, ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SharingChangesResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
@@ -27,6 +27,7 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
+    const [sharingChangesResult,setSharingChangesResult] = useState(null);
     const [showSharingChangesModal, setSharingChangesModal] = useState(null);
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
@@ -389,6 +390,7 @@ export default function SplashScreen() {
     //TODO
     const sharingChanges = () => {
         let map = store.user.fileSnapshotIDs;
+        setShowAnalysisModal(false);
         setSharingChangesModal(map);
     }
 
@@ -398,11 +400,17 @@ export default function SplashScreen() {
 
 
     async function confirmSharingChanges(id1, id2) {
-        console.log("confirmSharingChanges");
         const snapshot1 = await apis.getSnapshot(id1);
         const snapshot2 = await apis.getSnapshot(id2);
-        let result = new compareSnapshots(snapshot1, snapshot2)
-        console.log(result);
+        let result = new compareSnapshots(snapshot1, snapshot2);
+        setSharingChangesModal(null);
+        setSharingChangesResult(result);
+
+        // console.log(result);
+    }
+
+    const closeSharingResultsModal = () => {
+        setSharingChangesResult(null);
     }
 
     //show switch snapshot modal
@@ -686,6 +694,10 @@ export default function SplashScreen() {
             {ffDiffResult && <FileFolderDiffResult
                 result={ffDiffResult} //result from file/folder diff
                 closeFFDiffModal={closeFFDiffModal} // closes the modal
+            />}
+            {sharingChangesResult && <SharingChangesResult
+                result={sharingChangesResult} //result from file/folder diff
+                closeSharingResultsModal={closeSharingResultsModal} // closes the modal
             />}
             {showSnapshots && <SwitchSnapshotModal
                 result={showSnapshots}  //result from switch snapshot
