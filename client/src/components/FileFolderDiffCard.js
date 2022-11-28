@@ -3,7 +3,6 @@ import { useState} from 'react';
 
 
 export default function FileFolderDiffCard({perm, type}){
-    console.log(type==='file');
     const [showDetails, setShowDetails] = useState(false);
 
     const handleShowDetails = () =>{
