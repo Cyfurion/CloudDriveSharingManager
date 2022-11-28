@@ -180,7 +180,6 @@ export default function SplashScreen() {
     const handleHistoryButton = () => {
         //retrieve history from db
         let history = store.user.history;
-        
         setShowHistoryModal(history);
     }
 
@@ -338,7 +337,7 @@ export default function SplashScreen() {
             await apis.addHistory({profile: store.user.profile, log:log});
             await store.updateUser();
 
-            
+
             await store.takeSnapshot();
             setSearchActive(false);
             setFiles(null);

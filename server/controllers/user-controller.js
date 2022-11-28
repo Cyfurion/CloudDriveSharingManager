@@ -52,6 +52,14 @@ deleteACR = async (req, res) => {
     return res.status(200).json({ success: true }).send();
 }
 
+deleteHistory = async (req, res) => {
+    const user = await User.findOne({ profile: req.body });
+    user.history = []
+    await user.save();
+    await mongoose.syncIndexes();
+    return res.status(200).json({ success: true }).send();
+}
+
 getUser = async (req, res) => {
     const str = req.params.profile;
     const profile = [str.substring(0, str.lastIndexOf(',')), str.substring(str.lastIndexOf(',') + 1)];
@@ -72,6 +80,7 @@ module.exports = {
     addHistory,
     addQuery,
     deleteACR,
+    deleteHistory,
     getUser,
     addGroupSnapshot
 }

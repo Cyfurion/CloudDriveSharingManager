@@ -2,11 +2,49 @@ import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { v4 as uuidv4 } from 'uuid';
 import FileFolderDiffCard from "./FileFolderDiffCard";
+import apis from "../api";
+import StoreContext from "../store";
+import { ToastContext } from "../toast";
+import { useContext } from "react";
 
 export default function HistoryModal({ logs,handleClose }) {
+    const {store} = useContext(StoreContext);
+    const {dispatch} = useContext(ToastContext);
+
     //history = [Log]
     // Log{ timestamp, files, deletePermissions, addPermissions }
     
+    const handleClearHistory = async () =>{
+
+        if(logs.length !== 0){
+            await apis.deleteHistory(store.user.profile);
+            await store.updateUser();
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type: "SUCCESS",
+                    title: "History clear success!",
+                    message: "All logs of permission changes have been cleared"
+                }
+            })
+            handleClose();
+        }
+        else{
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "History clear error!",
+                    message: "There are no logs to clear"
+                }
+            })
+            return
+        }
+
+        
+    }
 
     const handleCloseButton = () => {
         handleClose();
@@ -68,6 +106,10 @@ export default function HistoryModal({ logs,handleClose }) {
                             <svg aria-hidden="true" className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
                             <span className="sr-only">Close modal</span>
                         </button>
+                    </div>
+
+                    <div onClick={handleClearHistory} className=" flex justify-center p-4"> 
+                        <button className="bg-red-600 hover:bg-red-700 p-1 rounded text-white px-3"> Clear History </button>
                     </div>
 
                     <div className="flex flex-col max-h-[65vh] p-4 gap-y-2 overflow-y-auto px-10">
