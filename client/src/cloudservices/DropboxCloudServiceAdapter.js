@@ -17,8 +17,35 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
 
     writable = [this.permissionTypes.owner, this.permissionTypes.editor];
 
-    deploy() {
+    async deploy() {
         
+    }
+    /**
+     * Given a list of `File` objects, checks whether these files have matching (up-to-date) permissions with their
+     * counterparts in the cloud drive.
+     * @param {File[]} files The list of files to check.
+     * @returns `true` if the local files permissions match the cloud drive files permissions, and `false` otherwise.
+     */
+     async deployValidatePermissions(files) {
+        for (let file of files) {
+            let upstreamPermissions;
+            try {
+                upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id }));
+            } catch {
+                // File wasn't found.
+                return false;
+            }
+            upstreamPermissions = upstreamPermissions.result.permissions;
+            if (file.permissionIds.length !== upstreamPermissions.length) {
+                return false;
+            }
+            for (let i = 0; i < upstreamPermissions.length; i++) {
+                if (!file.permissionIds.includes(upstreamPermissions[i].id)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     async takeSnapshot() {
