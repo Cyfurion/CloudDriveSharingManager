@@ -2,6 +2,7 @@ import {FileFolderDiffCard} from './'
 import {v4 as uuidv4} from 'uuid';
 
 export default function FileFolderDiffResult(props) {
+    console.log(props);
     const handleClose = () => {
         props.closeFFDiffModal();
     }
@@ -30,7 +31,7 @@ export default function FileFolderDiffResult(props) {
                              Current Folder: {props.result.folder.name}
                             <div className="flex flex-col gap-y-1">
                                 {props.result.folder.permissions.length !== 0 ? props.result.folder.permissions.map((perm)=>(
-                                    <FileFolderDiffCard key={uuidv4()} perm={perm}/>
+                                    <FileFolderDiffCard key={uuidv4()} perm={perm} type={'original'}/>
                                 )) : <h1> No Permissions Found</h1>}
                             </div>
                          </div>
@@ -41,10 +42,10 @@ export default function FileFolderDiffResult(props) {
                                 <div className="border-b pl-5"> File Name: {file.file.name}
                                     
                                     {file.fileDifferences.map((permission)=>(
-                                        <FileFolderDiffCard key={uuidv4()} perm={permission}/>
+                                        <FileFolderDiffCard key={uuidv4()} perm={permission} type={'file'}/>
                                     ))}
                                     {file.folderDifferences.map((permission)=>(
-                                        <FileFolderDiffCard key={uuidv4()} perm={permission}/>
+                                        <FileFolderDiffCard key={uuidv4()} perm={permission} type={'folder'}/>
                                     ))}
                                  </div>
                                 
