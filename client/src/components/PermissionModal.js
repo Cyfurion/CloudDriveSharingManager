@@ -160,7 +160,6 @@ export default function PermissionModal(props) {
             adapter.adapter.roleTypes[key]
         )
     })
-
     return (
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className="bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="flex justify-center  relative min-h-[70vh] min-w-[85vw] max-w-2xl p-4 md:h-auto font-mono">
@@ -182,7 +181,7 @@ export default function PermissionModal(props) {
                                     <div className="p-2 ">
                                         <h1 className="font-bold"> Permission:</h1>
                                         {file.permissions.map((permission, index) => (
-                                            <h1 className="pl-3"> {index + 1}. Entity: {permission.entity}, Role: {permission.role}</h1>
+                                            <h1 className="pl-3"> {index + 1}. Entity: {permission.entity}, Role: {permission.role}, Type: {permission.type}</h1>
                                         ))}
                                     </div>
                                 </div>

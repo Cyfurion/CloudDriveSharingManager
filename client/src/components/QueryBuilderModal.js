@@ -1,9 +1,11 @@
 import { ACRCreationField } from "./"
-import React,{useState} from 'react'
+import React,{useState, useContext} from 'react'
+import StoreContext from "../store";
 
 
 export default function QueryBuilderModal(props) {
     const [groups, setGroups] = useState(false);
+    const {store} = useContext(StoreContext);
 
     const handleClose = () => {
         props.handleQueryBuilderButton();
@@ -62,13 +64,13 @@ export default function QueryBuilderModal(props) {
                         </div>
 
                         <div className="flex flex-col  gap-y-3">
-                            <div className="justify-center flex gap-x-5">
+                            {store.user.profile[1] === 'Google Drive' ? <div className="justify-center flex gap-x-5">
                                 <label>
                                     Groups? :
                                 </label> 
                                 <input id="groups-directive" onChange={handleGroupsCheckbox} type='checkbox' />
                                 {groups ? "groups:on" : "groups:off"}
-                            </div>
+                            </div> : null}
                             <ACRCreationField addIcon="Add" label="User" placeholder="user" inputID="owner" handleAdd={(e) => handleAddButton(e, "#owner")} />
 
                             <ACRCreationField addIcon="Add" label="Drive" placeholder="drive" inputID="drive" handleAdd={(e) => handleAddButton(e, "#drive")} />

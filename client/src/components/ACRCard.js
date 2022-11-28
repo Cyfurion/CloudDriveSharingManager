@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import StoreContext from "../store";
 
 
 export default function ACRCard(props) {
+    const {store} = useContext(StoreContext);
     const [showDetails, setShowDetails] = useState(false);
 
     let plusIcon = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -48,10 +50,10 @@ export default function ACRCard(props) {
                         <h1 className="ml-5">{index + 1}. {writer} </h1>
                     ))}
                 </div>
-                <div className=" flex ml-5 gap-x-1">
+                {store.user.profile[1] === 'Google Drive' ? <div className=" flex ml-5 gap-x-1">
                     <h1 className="underline"> Take group membership into account?:</h1>
                     {"" + entry.grp}
-                </div>
+                </div> : ""}
             </div> : ""}
         </div>
     )
