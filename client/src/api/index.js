@@ -10,7 +10,7 @@ const api = axios.create({
 
 const addACR = (payload) => api.post(`/acrs`, payload);
 const addGroupSnapshot = (payload) => api.post(`/groupsnapshots`, payload);
-const addQuery = (query, profile) => api.post(`/queries/${profile}`, query);
+const addQuery = (payload) => api.post(`/queries`, payload);
 const addSnapshot = (payload) => api.post(`/snapshots`, payload);
 const deleteACR = (index, profile) => api.patch(`/acrs/${index}`, profile);
 const getUser = async (profile) => {
