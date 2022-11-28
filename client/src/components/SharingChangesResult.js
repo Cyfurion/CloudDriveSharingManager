@@ -40,9 +40,9 @@ export default function SharingChangesResult(props) {
 
                     <h1 className="border-b"> Differing Files: { "[" + props.result.fileDifferences.length + " found]"} </h1>
                         <div className="flex  flex-col max-h-64 overflow-y-auto  ">
-                            {props.result.fileDifferences.map((file,index) =>(
+                            {props.result.fileDifferences ? props.result.fileDifferences.map((file,index) =>(
                                 <SharingChangesCard key={uuidv4()} data={file} index={index} />
-                            ))}
+                            )) : ""}
                             </div>
                         </div>
                 </div>
