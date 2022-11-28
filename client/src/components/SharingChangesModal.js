@@ -5,7 +5,6 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 export default function SharingChangesModal(props) {
-    console.log(props);
     const [ss1, setSS1] = useState(props.result.keys().next().value);
     const [ss2, setSS2] = useState(props.result.keys().next().value);
 

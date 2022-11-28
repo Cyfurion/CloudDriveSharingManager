@@ -15,6 +15,7 @@ import PermissionModal from "./PermissionModal";
 import LoadingScreen from "./LoadingScreen";
 import AnalysisResult from "./AnalysisResult";
 import FileFolderDiffResult from "./FileFolderDiffResult";
+import SharingChangesResult from "./SharingChangesResult";
 import SwitchSnapshotModal from "./SwitchSnapshotModal";
 import FileCard from './FileCard';
 import DeviantFileCard from "./DeviantFileCard";
@@ -48,6 +49,7 @@ export {
     LoadingScreen,
     AnalysisResult,
     FileFolderDiffResult,
+    SharingChangesResult,
     FileCard,
     SwitchSnapshotModal,
     DeviantFileCard,
