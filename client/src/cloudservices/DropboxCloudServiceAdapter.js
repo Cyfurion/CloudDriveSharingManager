@@ -17,8 +17,49 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
 
     writable = [this.permissionTypes.owner, this.permissionTypes.editor];
 
-    async deploy() {
-        
+    async deploy(files, deletePermissions, addPermissions) {
+        const promises = [];
+        for (let file of files) {
+            // Delete specified permissions (if they exist).
+            for (let i = 0; i < file.permissions.length; i++) {
+                if (deletePermissions.includes(file.permissions[i].entity) && file.permissions[i].role !== "owner") {
+                    // Matching permission found, delete.
+                    const payload = { email: file.permissions[i].entity }
+                    payload['.tag'] = 'email';
+                    if (file instanceof Folder) {
+                        promises.push(this.endpoint.sharingRemoveFolderMember({
+                            shared_folder_id: file.id,
+                            member: payload
+                        }));
+                    } else {
+                        promises.push(this.endpoint.sharingRemoveFileMember2({
+                            file: file.path,
+                            member: payload
+                        }));
+                    }
+                }
+            }
+            // Add all permissions to this file.
+            for (let permission of addPermissions) {
+                const payload = { email: permission.entity }
+                payload['.tag'] = 'email';
+                if (file instanceof Folder) {
+                    promises.push(this.endpoint.sharingAddFileMember({
+                        shared_folder_id: file.id,
+                        members: [payload]
+                    }));
+                } else {
+                    const accessLevel = { }
+                    accessLevel['.tag'] = permission.role;
+                    promises.push(this.endpoint.sharingAddFolderMember({
+                        file: file.path,
+                        members: [payload],
+                        access_level: accessLevel
+                    }));
+                }
+            }
+        }
+        await Promise.all(promises);
     }
     /**
      * Given a list of `File` objects, checks whether these files have matching (up-to-date) permissions with their
@@ -30,19 +71,25 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         for (let file of files) {
             let upstreamPermissions;
             try {
-                upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id }));
+                if (file instanceof Folder) {
+                    upstreamPermissions = (await this.endpoint.sharingListFolderMembers({ shared_folder_id: file.id })).result.users;
+                } else {
+                    upstreamPermissions = (await this.endpoint.sharingListFileMembers({ file: file.path })).result.users;
+                }
             } catch {
                 // File wasn't found.
                 return false;
             }
-            upstreamPermissions = upstreamPermissions.result.permissions;
-            if (file.permissionIds.length !== upstreamPermissions.length) {
+            if (file.permissions.length !== upstreamPermissions.length) {
                 return false;
             }
-            for (let i = 0; i < upstreamPermissions.length; i++) {
-                if (!file.permissionIds.includes(upstreamPermissions[i].id)) {
-                    return false;
+            outer: for (let i = 0; i < file.permissions.length; i++) {
+                for (let k = 0; k < upstreamPermissions.length; k++) {
+                    if (upstreamPermissions[k].user.email.toLowerCase() === file.permissions[i].entity.toLowerCase()) {
+                        continue outer;
+                    }
                 }
+                return false;
             }
         }
         return true;
@@ -114,6 +161,7 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         let folderPermissions = undefined;
         if (sharedFolderId !== "") {
             folderPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
+            id = sharedFolderId;
         }
         if (directFilePermissions) {
             for (let user of directFilePermissions.result.users) {
