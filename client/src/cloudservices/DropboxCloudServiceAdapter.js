@@ -5,6 +5,10 @@ import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
 
 export class DropboxCloudServiceAdapter extends CloudServiceAdapter { 
+    roleTypes = {
+        user: 'user'
+    }
+    
     permissionTypes = {
         owner: 'owner',
         editor: 'editor',
@@ -55,24 +59,37 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
         let permissions = [];
         let permissionIds = [];
         let owner = parent.owner;
-        let permissionsMap = new Map();
         let sharedFolderId = "";
+        let pathParameter = '';
+        if(parent.path === '/'){
+            pathParameter = parent.path + file.name;
+        }else{
+            pathParameter = parent.path + "/" + file.name;
+        }
+        let hasExplicitPermissions = (await this.endpoint.filesGetMetadata({
+                "include_deleted": false,
+                "include_has_explicit_shared_members": true,
+                "include_media_info": false,
+                "path": pathParameter
+            })).result.has_explicit_shared_members;
+        let directFilePermissions = undefined;
+        if(hasExplicitPermissions){
+            directFilePermissions = await this.endpoint.sharingListFileMembers({
+                "file": pathParameter,
+                "include_inherited": false
+            });
+        }
         if (file.shared_folder_id) {
             sharedFolderId = file.shared_folder_id;
         }else if(file.parent_shared_folder_id){
             sharedFolderId = file.parent_shared_folder_id;
         }
-        //creating permissions map
-        for (let i = 0; i < permissions.length; i++) {
-            permissionsMap.set(permissionIds[i], permissions[i]);
-        }
-        let dropboxPermissions = undefined;
+        let folderPermissions = undefined;
         if (sharedFolderId !== "") {
-            //use this to find group and user permissions
-            dropboxPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
+            folderPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
         }
-        if (dropboxPermissions) {
-            for (let user of dropboxPermissions.result.users) {
+        if (directFilePermissions) {
+            for (let user of directFilePermissions.result.users) {
                 let type = 'user'; 
                 let entity = user.user.email;
                 if (user.access_type[".tag"] === owner) {
@@ -85,7 +102,22 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
                 }
                 let p = new Permission(type, entity, role, isInherited, true);//all files are shareable by people who have access
                 permissions.push(p);
-                permissionIds.push(file.shared_folder_id);
+            }
+        }
+        if (folderPermissions) {
+            for (let user of folderPermissions.result.users) {
+                let type = 'user'; 
+                let entity = user.user.email;
+                if (user.access_type[".tag"] === owner) {
+                    owner = user.user.email;
+                }
+                let role = user.access_type[".tag"];
+                let isInherited = user.is_inherited;
+                if (file[".tag"] !== "folder") {
+                    isInherited = true;
+                }
+                let p = new Permission(type, entity, role, isInherited, true);//all files are shareable by people who have access
+                permissions.push(p);
             }
         }
         let createdTime = 'N/A';

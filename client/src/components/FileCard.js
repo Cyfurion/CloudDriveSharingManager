@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import { v4 as uuidv4 } from 'uuid';
+import StoreContext from "../store";
 
 export default function FileCard(props) {
+    const { store } = useContext(StoreContext);
     const [clicked, setClicked] = useState(false);
     let file = props.file;
 
@@ -23,7 +25,7 @@ export default function FileCard(props) {
         <tr key={file.id} className="filecard border-b-2 hover:bg-gray-100">
             <th>
                 <input
-                    style={{ visibility:  props.visible ? 'visible' : 'hidden' }} //
+                    style={{ visibility: props.visible ? 'visible' : 'hidden' }} //
                     className="file-checkbox"
                     value={file.id}
                     onChange={props.handleFileCheckBox}
@@ -41,8 +43,26 @@ export default function FileCard(props) {
                 {file.owner === "SYSTEM" ? "" :
                     <div className="flex flex-row items-start gap-x-1 ml-3">
                         {clicked && <div className="px-2"> Permissions: {file.permissions.length === 0 ? "No Permissions" : file.permissions.map((permission, index) => (
-                            <div key={uuidv4()} className="pl-2 py-1">
-                                <h1> {index + 1}. Entity: {permission.entity}, Role: {permission.role}</h1>
+                            <div key={uuidv4()} className="px-2 py-1 flex gap-x-3 flex-col border-b rounded bg-gray-400">
+                                <h1
+                                    onClick={() => {
+                                        if (store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)) {
+                                            let list = store.user.groupSnapshots.filter((group) => group.groupEmail === permission.entity);
+                                            if (list.length > 0) {
+                                                props.handleGroupToShow(list[0]);
+                                            }
+                                            else {
+                                                return;
+                                            }
+                                        }
+                                    }}
+                                    className={" " + ((permission.type === 'group' && store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)) ? "underline" : "")} > {index + 1}.Entity: {permission.entity} </h1>
+                                <div className="flex gap-x-2 ml-5">
+                                    <h1>Role: {permission.role},</h1>
+                                    <h1>Type: {permission.type},</h1>
+                                    <h1>Can Share: {permission.canShare ? "Yes" : "No"},</h1>
+                                    <h1>Inherited: {permission.isInherited ? "Yes" : "No"}</h1>
+                                </div>
                             </div>
                         ))}
                         </div>}

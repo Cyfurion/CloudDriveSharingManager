@@ -4,11 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 //our stuff
-import { GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
+import { ValidatePermisisonViolation, GroupInfoModal, GroupSSModal, Toast, ValidateACRResult, ACRModal, LoginPage, WorkSpace, TopBar, SideBar, AnalysisModal, SharingChangesModal, QueryBuilderModal, PermissionModal, LoadingScreen, AnalysisResult, FileFolderDiffResult, SwitchSnapshotModal } from './';
 import AuthContext from '../auth';
 import { ToastContext } from '../toast';
 import StoreContext from '../store';
-import { findDeviantSharing, findFileFolderSharingDifferences } from '../snapshotoperations/SharingAnalysis';
+import { findDeviantSharing, findFileFolderSharingDifferences, compareSnapshots } from '../snapshotoperations/SharingAnalysis';
 import apis from '../api';
 import Query from '../snapshotoperations/Query';
 import AdapterContext from "../cloudservices";
@@ -27,12 +27,20 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
+    const [showSharingChangesModal, setSharingChangesModal] = useState(null);
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
     const [validateACRResult, setValidateACRResult] = useState(null);
     const [groupSS, setGroupSS] = useState(null);
     const [searchActive, setSearchActive] = useState(false);
     const [permissionView, setPermissionView] = useState(false);
+    const [groupToShow, setGroupToShow] = useState(false);
+    const [ACRViolations, setACRViolations] = useState(null);
+
+    //closes acr violations modal during permission mode
+    const handleCloseACRViolation = () =>{
+        setACRViolations(null);
+    } 
 
     //show Group Membership Modal
     const handleGroupMembershipButton = () => {
@@ -51,7 +59,7 @@ export default function SplashScreen() {
         store.reset();
         await store.takeSnapshot();
         setFiles(null);
-    }   
+    }
 
     //shows ACR Modal
     const handleShowACRModal = () => {
@@ -69,7 +77,8 @@ export default function SplashScreen() {
     const handleValidateACRButton = () => {
         //retrieves acr List and validate, pass to modal
         let ACRList = store.user.acrs;
-        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
+        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed,
+            adapter.adapter.multipleDrivesAllowed);
         setValidateACRResult(result);
 
     }
@@ -86,7 +95,7 @@ export default function SplashScreen() {
         //if checked, then add to selectedIDs
         if (checked) {
             setSelectedIDs([...selectedIDs, e.target.value]);
-        } 
+        }
         //if not checked, then remove from selectedIDs
         else {
             const allCheck = document.querySelector('.allfile-checkbox');
@@ -134,7 +143,7 @@ export default function SplashScreen() {
         //push folder to directory and display them
         store.pushDirectory(folder);
         setFiles(null);
-    } 
+    }
 
     //Opens analysis mode options(deviancy, etc) modal
     const handleAnalysisModal = () => {
@@ -177,12 +186,12 @@ export default function SplashScreen() {
     //submits search query in search bar
     const handleQuery = async (query) => {
         //if in permission mode, disallow search
-        if(permissionView){
+        if (permissionView) {
             dispatch({
                 type: "ADD_NOTIFICATION",
-                payload : {
-                    id : uuidv4(),
-                    type : "WARNING",
+                payload: {
+                    id: uuidv4(),
+                    type: "WARNING",
                     title: "Cannot handle query",
                     message: "Cannot search while in edit permissions"
                 }
@@ -191,8 +200,9 @@ export default function SplashScreen() {
         }
 
         //make query object with given queryString
-        try{
-            let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed);
+        try {
+            let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed,
+                adapter.adapter.multipleDrivesAllowed);
             //evalute to get the files
             let files = q.evaluate();
             // Add this query to user's recent queries.
@@ -206,14 +216,14 @@ export default function SplashScreen() {
             setSearchActive(true);
             store.setFolder(searchFolder);
             setFiles(null);
-        }catch(e){
+        } catch (e) {
             dispatch({
                 type: "ADD_NOTIFICATION",
                 payload: {
-                    id : uuidv4(),
-                    type : "DANGER",
-                    title : "Query Error",
-                    message : e.message
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Query Error",
+                    message: e.message
                 }
             });
         }
@@ -228,6 +238,21 @@ export default function SplashScreen() {
         handleQuery(querybuilder);
     }
 
+    const finalizePermissionChanges = async () => {
+        setPermissionsModal(false);
+        setPermissionView(false);
+        setCheckboxVisible(false);
+        let list = document.querySelectorAll('.file-checkbox');
+        for (let i = 0; i < list.length; i++) {
+            list[i].checked = false;
+        }
+        document.querySelector('.allfile-checkbox').checked = false;
+        setSelectedIDs([]);
+
+        //take snapshot
+        await store.takeSnapshot();
+        setFiles(null);
+    }
 
     //handles permission changes upon clicking 'proceed'
     const editPermission = async (payload) => {
@@ -236,27 +261,18 @@ export default function SplashScreen() {
 
         //if they are up-to-date, push permission changes
         if (validate) {
-            // deploy permission changes
-            await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-
-            //close permission modal, view, hide checkbox ,set checks to unchecks, selectedIds -> []
-            setPermissionsModal(false);
-            setPermissionView(false);
-            setCheckboxVisible(false);
-            let list = document.querySelectorAll('.file-checkbox');
-            for (let i = 0; i < list.length; i++) {
-                list[i].checked = false;
-            }
-            document.querySelector('.allfile-checkbox').checked = false;
-            setSelectedIDs([]);
+            //checks if acr has been violated 
 
             // take snapshot
-            await store.takeSnapshot();
-            setFiles(null);
             // console.log(store.currentSnapshot);
-            // console.log(await adapter.adapter.endpoint.client.drive.permissions.list({ fileId: "1HwJg-GBTh6tadXEEuFtBzNZUCPTqVtzt63U4R7aK6Ao" }))
-        }
+            // console.log(await adapter.adapter.endpoint.client.drive.permissions.list({ fileId: "1HwJg-GBTh6tadXEEuFtBzNZUCPTqVtzt63U4R7aK6Ao" }));
 
+            //if fails, show modal with the acr thats been violated
+
+
+            //else, finalize the changes
+            
+        }
         // if not up-to-date, dispatch toast
         else {
             dispatch({
@@ -296,6 +312,25 @@ export default function SplashScreen() {
     // Close Modal to edit permissions
     const hideEditPermissionModal = () => {
         setPermissionsModal(false);
+    }
+
+    //TODO
+    const sharingChanges = () => {
+        let map = store.user.fileSnapshotIDs;
+        setSharingChangesModal(map);
+    }
+
+    const closeSharingChangesModal = () => {
+        setSharingChangesModal(null);
+    }
+
+
+    async function confirmSharingChanges(id1,id2) {
+        console.log("confirmSharingChanges");
+        const snapshot1 = await apis.getSnapshot(id1);
+        const snapshot2 = await apis.getSnapshot(id2);
+        let result = new compareSnapshots(snapshot1, snapshot2)
+        console.log(result);
     }
 
     //show switch snapshot modal
@@ -384,7 +419,7 @@ export default function SplashScreen() {
         setShowAnalysisModal(false);
 
         //if current file is owned by system do analyis
-        if ( store.getCurrentFolder().owner !== "SYSTEM")   {
+        if (store.getCurrentFolder().owner !== "SYSTEM") {
             setFFDiffResult(findFileFolderSharingDifferences(store.getCurrentFolder()));
         }
         // else dispatch toast
@@ -402,24 +437,21 @@ export default function SplashScreen() {
         }
     }
 
-    //TODO
-    const snapshotChanges = () => {
-        console.log('snapshot changes');
-    }
+
 
 
     //show permission mode (permissions button calls this)
     const handlePermissionMode = () => {
         let [recentTimestamp] = store.user.fileSnapshotIDs.values();
-        
+
         //check if current snapshot is the most recent
-        if(recentTimestamp !== store.currentSnapshot.timestamp){
+        if (recentTimestamp !== store.currentSnapshot.timestamp) {
             dispatch({
                 type: "ADD_NOTIFICATION",
-                payload : {
-                    id : uuidv4(),
-                    type : "DANGER",
-                    title : "Edit permission denied",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Edit permission denied",
                     message: "Please select the most recent snapshot"
                 }
             });
@@ -427,10 +459,10 @@ export default function SplashScreen() {
         }
 
         //prevent edit permission if at root and search is not active
-        if(store.directory.length === 1 && !searchActive){
+        if (store.directory.length === 1 && !searchActive && adapter.adapter.multipleDrivesAllowed === true) {
             dispatch({
-                type:"ADD_NOTIFICATION",
-                payload : {
+                type: "ADD_NOTIFICATION",
+                payload: {
                     id: uuidv4(),
                     type: "DANGER",
                     title: "Edit permission denied",
@@ -458,6 +490,17 @@ export default function SplashScreen() {
         setCheckboxVisible(false);
     }
 
+    //show group info modal with the specified group
+    //takes in a group SS object
+    const handleGroupToShow = (group) => {
+        setGroupToShow(group);
+    }
+
+    //closes group info modal
+    const hideGroupInfoModal = () => {
+        setGroupToShow(null);
+    }
+
     if (files === null) {
         if (store.currentSnapshot === null) {
             store.onLogin();
@@ -479,10 +522,10 @@ export default function SplashScreen() {
             <LoadingScreen />
             :
             <div className="flex-nowrap">
-                <TopBar 
+                <TopBar
                     handleQuery={handleQuery} //gets queryString and handles the query object
                     handleQueryBuilderButton={handleQueryBuilderButton}// opens qb modal
-                     />
+                />
                 <div className="bg-black h-1"></div>
                 <div className="grid grid-flow-col justify-start">
                     <SideBar
@@ -501,21 +544,23 @@ export default function SplashScreen() {
                         showACRModal={handleShowACRModal} // functionaility validate ACR
                     />
                     <div className=" w-[85vw] h-[92vh] overflow-y-auto overflow-x-hidden text-ellipsis break-words">
-                        <div className="font-bold border-b"> Current Snapshot: {store.currentSnapshot.timestamp /* Show Current Snapshot timestamp*/} </div>
+                        <div className="font-bold border-b"> Current Snapshot: {store.currentSnapshot.timestamp + (store.currentSnapshot.timestamp === store.user.fileSnapshotIDs.values().next().value ? " (most recent snapshot)" : " (older snapshot)")/* Show Current Snapshot timestamp*/} </div>
                         <h1 className="font-bold">
                             {/* Directory Button ternary */ store.directory.length === 1 ? "" : <button onClick={handleBackButton}>
                                 <ArrowBackIosIcon fontSize="small" />
-                            </button> }
-                            { /* ternary to show current path */searchActive ? "" : "directory: "+store.getCurrentFolder().path}
+                            </button>}
+                            { /* ternary to show current path */searchActive ? "" : "directory: " + store.getCurrentFolder().path}
                         </h1>
                         { /* ternary to see if search is active */ searchActive ? <h1 className="font-bold"> Search Results. Use Home button to see your drives </h1> : ""}
-                        <WorkSpace 
+                        <WorkSpace
                             visible={checkboxVisible} //whether to show checkbox next to files
                             handleAllFileCheckbox={handleAllFileCheckbox} //whehter to show checkbox 'all'
                             handleFileCheckBox={handleFileCheckBox} //handles single checkbox funtionality
                             data={files} //files to show on workspace
                             handleClickFolder={handleClickFolder} //handle showing content when click folder
-                            />
+                            handleGroupToShow={handleGroupToShow} //handles showing the information of the specified group ss
+
+                        />
                     </div>
                 </div>
             </div>;
@@ -524,8 +569,21 @@ export default function SplashScreen() {
     }
     return (
         <div className=" min-w-fit min-h-screen  ">
-            {showQBB && <QueryBuilderModal fillSearch={fillSearch} handleQueryBuilderButton={handleQueryBuilderButton} />}
-            {showAnalysisModal && <AnalysisModal snapshotChanges={snapshotChanges}
+            {ACRViolations && <ValidatePermisisonViolation 
+                                finalizePermissionChanges={finalizePermissionChanges} //finalize the changes
+                                violations={ACRViolations} //violations resulting from staging permission changes
+                                handleClose={handleCloseACRViolation} //closes the warning modal
+                                />}
+            {groupToShow && <GroupInfoModal
+                group={groupToShow}  //group ss to show info about
+                handleClose={hideGroupInfoModal} // functionally to hide group info modal
+            />}
+            {showQBB && <QueryBuilderModal
+                fillSearch={fillSearch} //fills search bar with the query that was built
+                handleQueryBuilderButton={handleQueryBuilderButton} //functionally for open/close of qb modal
+            />}
+            {showAnalysisModal && <AnalysisModal
+                sharingChanges={sharingChanges} //functionality for snapshot changes modal
                 fileFolderDiff={fileFolderDiff} //functionality for file/folder diff button
                 deviancyAnalysis={deviancyAnalysis} //functionality for deviancy analysis button
                 handleAnalysisModal={handleAnalysisModal} //functionality for closing analysis modal
@@ -560,6 +618,12 @@ export default function SplashScreen() {
                                         list={groupSS} //list of group membership snapshots
                                         handleCloseGroupSSModal={handleCloseGroupSSModal} // closes the modal
                                         />}
+            {showSharingChangesModal && <SharingChangesModal
+                                        result={showSharingChangesModal} //result from showSharingChanges analysis
+                                        closeSharingChangesModal={closeSharingChangesModal} //closes the modal
+                                        confirmSharingChanges={confirmSharingChanges} //confirm
+                                        />}
+
             {screen}
             <Toast position="bottom-right" //toast notification display
             />

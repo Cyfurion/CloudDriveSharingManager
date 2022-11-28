@@ -25,6 +25,10 @@ import ACRCreationField from "./ACRCreationField";
 import Toast from "./Toast";
 import GroupSSModal from "./GroupSSModal";
 import FileFolderDiffCard from "./FileFolderDiffCard";
+import Selector from "./Selector";
+import SharingChangesModal from "./SharingChangesModal";
+import GroupInfoModal from "./GroupInfoModal";
+import ValidatePermisisonViolation from "./ValidatePermissionViolation";
 
 export {
     GoogleLoginButton,
@@ -53,5 +57,10 @@ export {
     ACRCreationField,
     Toast,
     GroupSSModal,
-    FileFolderDiffCard
+    FileFolderDiffCard,
+    Selector,
+    SharingChangesModal,
+    GroupInfoModal,
+    ValidatePermisisonViolation
+
 }

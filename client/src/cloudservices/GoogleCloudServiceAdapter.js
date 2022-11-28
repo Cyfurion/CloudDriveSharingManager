@@ -6,6 +6,13 @@ import Permission from '../classes/permission-class';
 import GroupSnapshot from '../classes/groupsnapshot-class';
 
 export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
+    roleTypes = {
+        domain: 'domain',
+        user: 'user',
+        group: 'group'
+    }
+
+    multipleDrivesAllowed = true;
 
     groupsAllowed = true;
     
@@ -176,12 +183,12 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
         let rootFile = new File("", "root", [], "", "", "SYSTEM", "/", "", "");
         let root = new Folder(rootFile, []);
-        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/myDrive", "", "SYSTEM"), []);
+        let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/My Drive", "", "SYSTEM"), []);
         root.files.push(myDrive);
-        snapshotHelper(parentToChildMap, myDrive);
-        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/sharedWithMe", "", "SYSTEM"), []);
+        this.snapshotHelper(parentToChildMap, myDrive);
+        let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/Shared With Me", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
-        snapshotHelper(parentToChildMap, sharedWithMe);
+        this.snapshotHelper(parentToChildMap, sharedWithMe);
         let driveList = []
         try{
             driveList = await this.getDrives();
@@ -192,7 +199,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             //let permObj = await this.createPermissionList(drivePermissions);
             let driveFolder = new Folder(new File(drive.id, drive.name, [],
                 [], drive.name, "SYSTEM", '/'.concat(drive.name), "", "SYSTEM"),[]);
-            snapshotHelper(parentToChildMap,driveFolder);
+            this.snapshotHelper(parentToChildMap,driveFolder,true);
             root.files.push(driveFolder);
         }
         let snap = new FileSnapshot(
@@ -289,7 +296,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let permissions = [];
         let permissionIds = [];
         if (file.permissions === undefined) {
-            file.permissions = await this.getPermissions(file.id);
+            file.permissions = [];
         }
         let permissionParsing = await this.createPermissionList(file.permissions);
         permissions = permissionParsing.permissionList;
@@ -309,40 +316,46 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }
         return new File(id, name, permissions, permissionIds, drive, owner, "", createdTime, sharedBy);
     }
+    /**
+     * Helper method to recursively make snapshot tree.
+     * @param parentToChildMap Map to get subfiles
+     * @param folder Folder that CDSM is currently populating
+     */
+    async snapshotHelper(parentToChildMap, folder, retrievePermissions) { //add paths to files
+        let childrenList = parentToChildMap.get(folder.id);
+        if(childrenList === undefined){//occurs if shared drive is empty
+            return;
+        }
+        if(childrenList){
+            for (let i = 0; i < childrenList.length; i++) {
+                childrenList[i].path = folder.path + "/" + childrenList[i].name;
+                if(childrenList[i].drive === ""){
+                    childrenList[i].drive = folder.drive;
+                }
+                if (parentToChildMap.has(childrenList[i].id)) {
+                    // childrenList[i] is folder
+                    let newFolder = new Folder(childrenList[i], []);
+                    childrenList[i] = newFolder;
+                    this.snapshotHelper(parentToChildMap, newFolder, retrievePermissions);
+                }
+            }
+        }
+        for(let child of childrenList){
+            if(child.permissions.length === 0 && retrievePermissions){
+                child.permissions = await this.getPermissions(child.id);
+                let permissionParsing = await this.createPermissionList(child.permissions);
+                child.permissions = permissionParsing.permissionList;
+                child.permissionIds = permissionParsing.permissionIds;
+            }
+            for(let i = 0; i < child.permissionIds.length; i++){
+                if(folder.permissionIds.includes(child.permissionIds[i])){
+                    child.permissions[i].isInherited = true;
+                }
+            }
+        }
+        folder.files = childrenList;
+    }
 }
 
-/**
- * Helper method to recursively make snapshot tree.
- * @param parentToChildMap Map to get subfiles
- * @param folder Folder that CDSM is currently populating
- */
-function snapshotHelper(parentToChildMap, folder) { //add paths to files
-    let childrenList = parentToChildMap.get(folder.id);
-    if(childrenList === undefined){//occurs if shared drive is empty
-        return;
-    }
-    if(childrenList){
-        for (let i = 0; i < childrenList.length; i++) {
-            childrenList[i].path = folder.path + "/" + childrenList[i].name;
-            if(childrenList[i].drive === ""){
-                childrenList[i].drive = folder.drive;
-            }
-            if (parentToChildMap.has(childrenList[i].id)) {
-                // childrenList[i] is folder
-                let newFolder = new Folder(childrenList[i], []);
-                childrenList[i] = newFolder;
-                snapshotHelper(parentToChildMap, newFolder);
-            }
-        }
-    }
-    for(let child of childrenList){
-        for(let i = 0; i < child.permissionIds.length; i++){
-            if(folder.permissionIds.includes(child.permissionIds[i])){
-                child.permissions[i].isInherited = true;
-            }
-        }
-    }
-    folder.files = childrenList;
-}
 
 

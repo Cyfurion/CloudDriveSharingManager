@@ -18,8 +18,8 @@ export default function AnalysisModal(props) {
         props.fileFolderDiff();
     }
 
-    const snapshotChangesButton = () => {
-        props.snapshotChanges();
+    const sharingChangesButton = () => {
+        props.sharingChanges();
     }
 
     const handleThresholdSlider = () =>{
@@ -82,9 +82,9 @@ export default function AnalysisModal(props) {
                                 <SnippetFolderIcon fontSize="large" />
                                 <h1> File-Folder Difference </h1>
                             </button>
-                            <button onClick={snapshotChangesButton} className="analysisbtn">
+                            <button onClick={sharingChangesButton} className="analysisbtn">
                                 <CameraEnhanceIcon fontSize="large" />
-                                <h1> Snapshot Changes </h1>
+                                <h1> Sharing Changes </h1>
                             </button>
                         </div>
                     </div>}

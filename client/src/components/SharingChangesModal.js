@@ -3,16 +3,20 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import {v4 as uuidv4} from 'uuid';
 
-export default function SwitchSnapshotModal(props) {
-    const [ss, setSS] = useState(props.result.keys().next().value);
+export default function SharingChangesModal(props) {
+    console.log(props);
+    const [ss1, setSS1] = useState(props.result.keys().next().value);
+    const [ss2, setSS2] = useState(props.result.keys().next().value);
 
-    const handleChange = (e) =>{
-       setSS(e.target.value);
+    const handleChangeSS1 = (e) =>{
+       setSS1(e.target.value);
     }
+    const handleChangeSS2 = (e) =>{
+        setSS2(e.target.value);
+     }
     const handleClose = () => {
-        props.closeSwitchSnapshotModal();
+        props.closeSharingChangesModal();
     }
 
     const handleBlur = (e) => {
@@ -21,7 +25,7 @@ export default function SwitchSnapshotModal(props) {
     }
 
     const handleSubmit = () =>{
-        props.confirmSwitchSnapshot(ss);
+        props.confirmSharingChanges(ss1,ss2);
     }
 
     let snapshotList = [];
@@ -29,7 +33,7 @@ export default function SwitchSnapshotModal(props) {
     if (props.result) {
         props.result.forEach((value, key) => (
             snapshotList.push(
-                <MenuItem key={uuidv4()} value={ key }>
+                <MenuItem  value={ key }>
                     {value}
                 </MenuItem> 
             )
@@ -43,7 +47,7 @@ export default function SwitchSnapshotModal(props) {
                     <div className=" relative rounded-3xl bg-white shadow dark:bg-gray-700 border-2 border-black">
 
                         <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
-                            <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Switch Snapshot</h3>
+                            <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Sharing Changes</h3>
                             <button onClick={handleClose} type="button" className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="defaultModal">
                                 <svg aria-hidden="true" className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -54,12 +58,25 @@ export default function SwitchSnapshotModal(props) {
 
                         <div className="p-4">
                             <FormControl fullWidth>
-                                <InputLabel id="snapshot-label">Snapshot</InputLabel>
+                                <InputLabel id="snapshot-label">Snapshot1</InputLabel>
                                 <Select
                                     id="snapshot-select"
-                                    value={ss}
+                                    value={ss1}
                                     label="Snapshot"
-                                    onChange={handleChange}
+                                    onChange={handleChangeSS1}
+                                >
+                                    {snapshotList}
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <div className="p-4">
+                            <FormControl fullWidth>
+                                <InputLabel id="snapshot-label">Snapshot2</InputLabel>
+                                <Select
+                                    id="snapshot-select"
+                                    value={ss2}
+                                    label="Snapshot"
+                                    onChange={handleChangeSS2}
                                 >
                                     {snapshotList}
                                 </Select>

@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 export default function Toast(props) {
     const { state, dispatch } = useContext(ToastContext);
 
-    let timeoutInterval = 4000; //ms
+    let timeoutInterval = 10000; //ms
     let transitionFrom = "bottom-right";
 
     if (props.position) {
@@ -61,8 +61,8 @@ export default function Toast(props) {
                         <CloseIcon onClick={() => dispatch({ type: "DELETE_NOTIFICATION", payload: notification.id })} className="absolute top-2 right-2 hover:bg-red-700 hover:text-white rounded-xl " fontSize="medium" />
                         <div className="notif-image"> {getIcon(notification.type)}</div>
                         <div>
-                            <p className="notif-title"> {notification.title}</p>
-                            <p className="notif-msg">{notification.message}</p>
+                            <p title={notification.title} className="notif-title"> {notification.title}</p>
+                            <p title={notification.message} className="notif-msg">{notification.message}</p>
                         </div>
                     </div>
                 );
