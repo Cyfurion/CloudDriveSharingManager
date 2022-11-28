@@ -9,8 +9,12 @@ import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
 import GroupIcon from '@mui/icons-material/Group';
 import CancelIcon from '@mui/icons-material/Cancel';
+import StoreContext from '../store';
+import { useContext } from 'react';
 
 export default function SideBar( props ) {
+    const {store  } = useContext(StoreContext);
+
     const handleRefreshButton = () =>{
         props.handleRefreshButton();
     }
@@ -99,11 +103,10 @@ export default function SideBar( props ) {
                     Validate ACR
                 </button>
 
-                
-                <button onClick={handleGroupMembershipButton} className="sidebarbtn" >
+                {store.user.profile[1] === 'Google Drive' ? <button onClick={handleGroupMembershipButton} className="sidebarbtn" >
                     <GroupIcon fontSize="small" sx={{color: 'black'}}/>
                     Group Membership Snapshot
-                </button>
+                </button> : null}
 
                 <button onClick={handleHomeButton} className="sidebarbtn" >
                     <HomeIcon fontSize="small" sx={{color: 'black'}}/>

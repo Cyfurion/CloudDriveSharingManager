@@ -445,7 +445,7 @@ export default function SplashScreen() {
         }
 
         //prevent edit permission if at root and search is not active
-        if(store.directory.length === 1 && !searchActive){
+        if(store.directory.length === 1 && !searchActive && adapter.adapter.multipleDrivesAllowed === true){
             dispatch({
                 type:"ADD_NOTIFICATION",
                 payload : {

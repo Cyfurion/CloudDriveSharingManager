@@ -203,7 +203,7 @@ export default function ACRModal(props) {
             <ACRCard acr={entry} index={index} />
             <button id={index} onClick={(e)=> handleDeleteACR(e)} className="bg-red-600 hover:bg-red-700 text-white rounded-full p-1 ml-2"> {trashIcon} </button>
         </div>
-    ))
+    ));
 
     let ACRCreationScreen =
         <div className="flex flex-col border-t p-4 gap-y-3 max-h-[70vh] overflow-y-auto ">
@@ -215,10 +215,10 @@ export default function ACRModal(props) {
             <ACRCreationField label={"Denied Readers"} placeholder="entity" list={DR} inputID={"acr-dr-input-bar"} handleAdd={handleAddDR} handleDelete={handleDeleteDR}/>
             <ACRCreationField label={"Denied Writers"} placeholder="entity" list={DW} inputID={"acr-dw-input-bar"} handleAdd={handleAddDW} handleDelete={handleDeleteDW}/>
 
-            <div className="flex w-full justify-center gap-x-2">
+            {store.user.profile[1] === 'Google Drive' ? <div className="flex w-full justify-center gap-x-2">
                 Take group membership into account?
                 <input checked={Grp} onChange={(e) => setGrp((prevState) => !prevState)} type="checkbox" />
-            </div>
+            </div> : null}
 
             <div className="flex w-full justify-center gap-x-5  ">
                 <button onClick={handleSubmit} className="bg-green-600 text-white rounded-xl p-1 px-3 hover:bg-green-700"> Submit </button>
