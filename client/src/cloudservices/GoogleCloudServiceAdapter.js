@@ -67,15 +67,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                         type: permission.type,
                         emailAddress: permission.entity
                     }
-                }).then(response => file.permissionIds.push(response.result.id)));
-                // promises.push(this.endpoint.client.drive.permissions.create({
-                //     fileId: file.id,
-                //     resource: {
-                //         role: permission.role,
-                //         type: permission.type,
-                //         emailAddress: permission.entity
-                //     }
-                // }));
+                }));
             }
         }
         await Promise.all(promises);
