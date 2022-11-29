@@ -46,7 +46,7 @@ export default function FileCard(props) {
                             <div key={uuidv4()} className="px-2 py-1 flex gap-x-3 flex-col border-b rounded bg-gray-400">
                                 <h1
                                     onClick={() => {
-                                        if (store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)) {
+                                        if (store.user.groupSnapshots.some( (group) => group.groupEmail === permission.entity)) {
                                             let list = store.user.groupSnapshots.filter((group) => group.groupEmail === permission.entity);
                                             if (list.length > 0) {
                                                 props.handleGroupToShow(list[0]);
@@ -56,7 +56,8 @@ export default function FileCard(props) {
                                             }
                                         }
                                     }}
-                                    className={" " + ((permission.type === 'group' && store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)) ? "underline" : "")} > {index + 1}.Entity: {permission.entity} </h1>
+                                    className="flex" > {index + 1}.Entity: {(permission.type === 'group' && store.user.groupSnapshots.some(group => group.groupEmail === permission.entity)) ? 
+                                    <h1 className="underline">{store.user.groupSnapshots.filter((group) => group.groupEmail === permission.entity)[0].name}</h1> : permission.entity} </h1>
                                 <div className="flex gap-x-2 ml-5">
                                     <h1>Role: {permission.role},</h1>
                                     <h1>Type: {permission.type},</h1>
