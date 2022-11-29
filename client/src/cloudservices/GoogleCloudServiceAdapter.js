@@ -151,8 +151,6 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         }catch(e){
         }
         for(let drive of driveList){
-            //let drivePermissions = await this.getPermissions(drive.id);
-            //let permObj = await this.createPermissionList(drivePermissions);
             let driveFolder = new Folder(new File(drive.id, drive.name, [],
                 [], drive.name, "SYSTEM", '/'.concat(drive.name), "", "SYSTEM"),[]);
             this.snapshotHelper(parentToChildMap,driveFolder,true);

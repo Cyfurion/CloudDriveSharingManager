@@ -27,7 +27,7 @@ export default function SplashScreen() {
     const [checkboxVisible, setCheckboxVisible] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
     const [ffDiffResult, setFFDiffResult] = useState(null);
-    const [sharingChangesResult,setSharingChangesResult] = useState(null);
+    const [sharingChangesResult, setSharingChangesResult] = useState(null);
     const [showSharingChangesModal, setSharingChangesModal] = useState(null);
     const [showSnapshots, setShowSnapshots] = useState(null);
     const [showACRModal, setShowACRModal] = useState(null);
@@ -40,11 +40,11 @@ export default function SplashScreen() {
     const [loading, setLoading] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(null);
 
-    const enableLoading = () =>{
+    const enableLoading = () => {
         setLoading(true);
     }
 
-    const disableLoading = () =>{
+    const disableLoading = () => {
         setLoading(false);
     }
 
@@ -221,7 +221,7 @@ export default function SplashScreen() {
             let files = q.evaluate();
             // Add this query to user's recent queries.
             await apis.addQuery({
-                profile: store.user.profile, 
+                profile: store.user.profile,
                 query: query
             });
             await store.updateUser();
@@ -258,33 +258,54 @@ export default function SplashScreen() {
     const finalizePermissionChanges = async (payload) => {
 
         enableLoading();
-        setPermissionView(false);
-        setCheckboxVisible(false);
-        setACRViolations(null);
-        let list = document.querySelectorAll('.file-checkbox');
-        for (let i = 0; i < list.length; i++) {
-            list[i].checked = false;
-        }
-        document.querySelector('.allfile-checkbox').checked = false;
-        setSelectedIDs([]);
-        let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-        await apis.addHistory({profile: store.user.profile, log:log});
-        await store.updateUser();
+        try {
+            let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            await apis.addHistory({ profile: store.user.profile, log: log });
+            await store.updateUser();
 
-        await store.takeSnapshot();
-        setSearchActive(false);
-        setFiles(null);
-        disableLoading();
-        dispatch({
-            type:"ADD_NOTIFICATION",
-            payload :{
-                id: uuidv4(),
-                type: "SUCCESS",
-                title: "Successful Changes!",
-                message: "Permission changes have been applied"
-
+            setPermissionsModal(false);
+            setPermissionView(false);
+            setCheckboxVisible(false);
+            setACRViolations(null);
+            let list = document.querySelectorAll('.file-checkbox');
+            for (let i = 0; i < list.length; i++) {
+                list[i].checked = false;
             }
-        })
+            document.querySelector('.allfile-checkbox').checked = false;
+            setSelectedIDs([]);
+
+
+            await store.takeSnapshot();
+            setSearchActive(false);
+            setFiles(null);
+
+            disableLoading();
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type: "SUCCESS",
+                    title: "Successful Changes!",
+                    message: "Permission changes have been applied"
+
+                }
+            })
+            return;
+
+        } catch (e) {
+            disableLoading();
+            dispatch({
+                type: "ADD_NOTIFICATION",
+                payload: {
+                    id: uuidv4(),
+                    type: "DANGER",
+                    title: "Invalid Request",
+                    message: "Could not edit permissions!"
+
+                }
+            })
+            return;
+        }
     }
 
     //handles permission changes upon clicking 'proceed'
@@ -322,43 +343,60 @@ export default function SplashScreen() {
         if (result.size === 0) {
             //deploy changes
             enableLoading();
-            setPermissionsModal(false);
-            setPermissionView(false);
-            setCheckboxVisible(false);
-            setACRViolations(null);
-            let list = document.querySelectorAll('.file-checkbox');
-            for (let i = 0; i < list.length; i++) {
-                list[i].checked = false;
-            }
-            document.querySelector('.allfile-checkbox').checked = false;
-            setSelectedIDs([]);
-            let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+            try {
+                let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+                await apis.addHistory({ profile: store.user.profile, log: log });
+                await store.updateUser();
 
-            await apis.addHistory({profile: store.user.profile, log:log});
-            await store.updateUser();
-
-
-            await store.takeSnapshot();
-            setSearchActive(false);
-            setFiles(null);
-
-            disableLoading();
-            dispatch({
-                type:"ADD_NOTIFICATION",
-                payload :{
-                    id: uuidv4(),
-                    type: "SUCCESS",
-                    title: "Successful Changes!",
-                    message: "Permission changes have been applied"
-
+                setPermissionsModal(false);
+                setPermissionView(false);
+                setCheckboxVisible(false);
+                setACRViolations(null);
+                let list = document.querySelectorAll('.file-checkbox');
+                for (let i = 0; i < list.length; i++) {
+                    list[i].checked = false;
                 }
-            })
-            return;
+                document.querySelector('.allfile-checkbox').checked = false;
+                setSelectedIDs([]);
+
+
+                await store.takeSnapshot();
+                setSearchActive(false);
+                setFiles(null);
+
+                disableLoading();
+                dispatch({
+                    type: "ADD_NOTIFICATION",
+                    payload: {
+                        id: uuidv4(),
+                        type: "SUCCESS",
+                        title: "Successful Changes!",
+                        message: "Permission changes have been applied"
+
+                    }
+                })
+                return;
+
+            } catch (e) {
+                disableLoading();
+                dispatch({
+                    type: "ADD_NOTIFICATION",
+                    payload: {
+                        id: uuidv4(),
+                        type: "DANGER",
+                        title: "Invalid Request",
+                        message: "Could not edit permissions!"
+
+                    }
+                })
+                return;
+            }
+
         }
         //yes violdations
 
         setPermissionsModal(false);
-        setACRViolations( {result : result, payload:payload});
+        setACRViolations({ result: result, payload: payload });
 
     }
 
@@ -580,7 +618,7 @@ export default function SplashScreen() {
     }
 
     //handle closing history modal
-    const handleCloseHistoryModal = () =>{
+    const handleCloseHistoryModal = () => {
         setShowHistoryModal(null);
     }
 
@@ -599,7 +637,7 @@ export default function SplashScreen() {
         <LoginPage />
     </div>;
 
-    if(loading){
+    if (loading) {
         return (
             <div>
                 <LoadingScreen label="Editting Permissions" />
@@ -683,7 +721,7 @@ export default function SplashScreen() {
                 data={selectedIDs} //list of file IDs to show in the modal
                 editPermission={editPermission}  // proceed with permissions changes
                 hideEditPermissionModal={hideEditPermissionModal} /> // closes the modal
-                
+
             }
             {analysisResult && <AnalysisResult
                 result={analysisResult} //result from deviancy analysis
@@ -719,7 +757,7 @@ export default function SplashScreen() {
                 closeSharingChangesModal={closeSharingChangesModal} //closes the modal
                 confirmSharingChanges={confirmSharingChanges} //confirm
             />}
-            {showHistoryModal && <HistoryModal logs={showHistoryModal} handleClose={handleCloseHistoryModal}/>
+            {showHistoryModal && <HistoryModal logs={showHistoryModal} handleClose={handleCloseHistoryModal} />
 
             }
 

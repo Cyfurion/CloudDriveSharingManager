@@ -22,7 +22,7 @@ export default function FileCard(props) {
     }
 
     return (
-        <tr key={uuidv4()} id={file.id.length === 0 ? uuidv4() : file.id} className="filecard border-b-2 hover:bg-gray-100">
+        <tr key={file.id} className="filecard border-b-2 hover:bg-gray-100">
             <th>
                 <input
                     style={{ visibility: props.visible ? 'visible' : 'hidden' }} //
