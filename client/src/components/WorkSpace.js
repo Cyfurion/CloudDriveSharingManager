@@ -25,7 +25,7 @@ export default function WorkSpace(props) {
                 {props.data.map((file) => (
                     <FileCard 
                         handleGroupToShow={props.handleGroupToShow}
-                        key={uuidv4()}
+                        key={file.id}
                         file={file}
                         visible={props.visible}
                         handleFileCheckBox={props.handleFileCheckBox}
