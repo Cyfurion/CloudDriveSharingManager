@@ -6,10 +6,10 @@ import StoreContext from "../store";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import apis from "../api";
-import {  ACRCreationField} from './'
+import { ACRCreationField } from './'
 
 export default function GroupSSModal(props) {
-    const {store } = useContext(StoreContext);
+    const { store } = useContext(StoreContext);
     const { dispatch } = useContext(ToastContext);
     const { adapter } = useContext(AdapterContext);
     const [uploadedFile, setUploadedFile] = useState(null);
@@ -97,7 +97,7 @@ export default function GroupSSModal(props) {
                 type: "ADD_NOTIFICATION",
                 payload: {
                     id: uuidv4(),
-                    type : "SUCCESS",
+                    type: "SUCCESS",
                     title: "Group Snapshot Made",
                     message: "Successfully made group snapshot "
                 }
@@ -135,7 +135,7 @@ export default function GroupSSModal(props) {
         <div id="modal-container" onClick={handleBlur} tabIndex="-1" aria-hidden="true" className=" bg-black bg-opacity-30 fixed top-0 right-0 left-0 z-50 flex w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
             <div className="font-mono flex justify-center relative min-h-[80vh] min-w-[50vw] max-w-2xl p-4 md:h-auto text-mono">
                 <div className=" relative rounded-3xl bg-white shadow w-full dark:bg-gray-700 border-2 border-black">
-        
+
 
                     <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
                         <h3 className="text-xl font-mono font-semibold text-gray-900 dark:text-white">Group Memberships</h3>
@@ -146,8 +146,8 @@ export default function GroupSSModal(props) {
                     </div>
 
                     <div className="flex flex-col border-t p-4 gap-y-3  border-b-2 ">
-                        <ACRCreationField label ="Group Name" inputID="group-ss-name" placeholder="name" />
-                        <ACRCreationField label ="Group Email" inputID="group-email" placeholder="email" />
+                        <ACRCreationField label="Group Name" inputID="group-ss-name" placeholder="name" />
+                        <ACRCreationField label="Group Email" inputID="group-email" placeholder="email" />
 
                         <div className="flex w-full justify-center items-baseline ">
                             <h1 className="p-1 ml-16 pl-2 justify-self-start ">  Upload HTML: </h1>
@@ -162,7 +162,7 @@ export default function GroupSSModal(props) {
 
                     <h1 className="flex justify-center" > Group Snapshots: </h1>
                     <div className="flex flex-col max-h-96  gap-y-2 overflow-y-auto px-10">
-                        
+
                         {groups.map((group, index) => (
                             <div className="flex gap-x-3 items-start">
                                 <Accordion sx={{
@@ -176,18 +176,18 @@ export default function GroupSSModal(props) {
                                                 <h1 className="font-bold"> {index + 1}. Group Name: </h1>
                                                 <h1> {group.name} </h1>
                                             </div>
-                                            <div className="flex gap-x-2">
-                                                <h1 className="font-bold"> Group Email: </h1>
-                                                <h1> {group.groupEmail} </h1>
-                                            </div>
                                         </div>
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         <div className="flex gap-x-2">
+                                            <h1 className="font-bold"> Group Email: </h1>
+                                            <h1> {group.groupEmail} </h1>
+                                        </div>
+                                        <div className="flex gap-x-2">
                                             <h1 className="font-bold"> Timestamp: </h1>
                                             <h1> {group.timestamp} </h1>
                                         </div>
-                                        <p className="font-bold"> Memebers {"("+group.members.length+")"} : </p>
+                                        <p className="font-bold"> Memebers {"(" + group.members.length + ")"} : </p>
                                         <div className="ml-10">
                                             {group.members.map((member, index) => (
                                                 <p> {index + 1}. {member}</p>

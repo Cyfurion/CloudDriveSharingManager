@@ -29,7 +29,7 @@ addGroupSnapshot = async (req, res) => {
 
 addHistory = async (req, res) => {
     const user = await User.findOne({ profile: req.body.profile });
-    user.history.push(req.body.log);
+    user.history.unshift(JSON.stringify(req.body.log));
     await user.save();
     await mongoose.syncIndexes();
     return res.status(201).json({ success: true }).send();
@@ -49,6 +49,14 @@ addQuery = async (req, res) => {
 deleteACR = async (req, res) => {
     const user = await User.findOne({ profile: req.body });
     user.acrs.splice(req.params.index, 1);
+    await user.save();
+    await mongoose.syncIndexes();
+    return res.status(200).json({ success: true }).send();
+}
+
+deleteHistory = async (req, res) => {
+    const user = await User.findOne({ profile: req.body });
+    user.history = []
     await user.save();
     await mongoose.syncIndexes();
     return res.status(200).json({ success: true }).send();
@@ -74,6 +82,7 @@ module.exports = {
     addHistory,
     addQuery,
     deleteACR,
+    deleteHistory,
     getUser,
     addGroupSnapshot
 }

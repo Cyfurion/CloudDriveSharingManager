@@ -1,7 +1,6 @@
 import React from 'react'
 
 export default function ValidatePermissionViolation({ violations, finalizePermissionChanges,handleCloseACRViolation }) {
-    console.log(violations);
     let ACRViolationList = violations.result; //MAP
     let payload = violations.payload;
     // let rollback = violations.result[1];
@@ -48,7 +47,6 @@ export default function ValidatePermissionViolation({ violations, finalizePermis
 
 
     const handleProceedButton = () =>{
-        console.log("proceed with violations")
         finalizePermissionChanges(payload);
     }
 

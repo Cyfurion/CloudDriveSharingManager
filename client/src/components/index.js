@@ -15,6 +15,7 @@ import PermissionModal from "./PermissionModal";
 import LoadingScreen from "./LoadingScreen";
 import AnalysisResult from "./AnalysisResult";
 import FileFolderDiffResult from "./FileFolderDiffResult";
+import SharingChangesResult from "./SharingChangesResult";
 import SwitchSnapshotModal from "./SwitchSnapshotModal";
 import FileCard from './FileCard';
 import DeviantFileCard from "./DeviantFileCard";
@@ -29,7 +30,7 @@ import Selector from "./Selector";
 import SharingChangesModal from "./SharingChangesModal";
 import GroupInfoModal from "./GroupInfoModal";
 import ValidatePermisisonViolation from "./ValidatePermissionViolation";
-
+import HistoryModal from "./HistoryModal";
 export {
     GoogleLoginButton,
     AppLogo,
@@ -48,6 +49,7 @@ export {
     LoadingScreen,
     AnalysisResult,
     FileFolderDiffResult,
+    SharingChangesResult,
     FileCard,
     SwitchSnapshotModal,
     DeviantFileCard,
@@ -61,6 +63,6 @@ export {
     Selector,
     SharingChangesModal,
     GroupInfoModal,
-    ValidatePermisisonViolation
-
+    ValidatePermisisonViolation,
+    HistoryModal
 }

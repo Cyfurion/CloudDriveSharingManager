@@ -27,7 +27,9 @@ export default class Query {
     evaluate() {
         try{
             let files = this.operators.evaluate(this.snapshot, this.writableRoles, this.user);
-            files = files.filter(e => !this.snapshot.root.files.includes(e));
+            if(this.drivesAllowed){
+                files = files.filter(e => !this.snapshot.root.files.includes(e));
+            }
             return files;
         }catch(e){
             throw new Error("Incorrectly formatted query.");
@@ -379,7 +381,7 @@ class Operator {
                 files = files.concat(this.basicFieldChecker(rootFile, booleanQualifier, field));
             }
         } else {
-            if(file[field] === '' && field === 'sharedBy'){
+            if(file[field].length === 0 && field === 'sharedBy'){
                 throw new Error("This query is not applicable to selected drive service.");
             }
             if (booleanQualifier(file, field, this.value)) {
@@ -451,6 +453,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }
@@ -485,6 +488,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }   
@@ -609,6 +613,8 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
+                        
                     }
                 }
             }  
@@ -639,6 +645,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }  
@@ -673,6 +680,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }  
@@ -703,6 +711,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }  
