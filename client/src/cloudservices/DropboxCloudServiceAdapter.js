@@ -11,13 +11,12 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     }
     
     permissionTypes = {
-        owner: 'owner',
         editor: 'editor',
         viewer: 'viewer'
     }
 
-    writable = [this.permissionTypes.owner, this.permissionTypes.editor];
-
+    writable = ["owner", this.permissionTypes.editor];
+    
     async deploy(files, deletePermissions, addPermissions) {
         const promises = [];
         for (let file of files) {

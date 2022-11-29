@@ -319,7 +319,7 @@ export default function SplashScreen() {
                     id: uuidv4(),
                     type: "DANGER",
                     title: "Edit permission failed",
-                    message: "current permissions mismatch with cloud drive"
+                    message: "Current permissions mismatch with cloud drive."
                 }
             })
             return;
@@ -342,7 +342,13 @@ export default function SplashScreen() {
             //deploy changes
             enableLoading();
             try {
-                let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+                let log;
+                try{
+                log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
+                }catch(e){
+                    console.log("ouch");
+                    console.log(e);
+                }
                 await apis.addHistory({ profile: store.user.profile, log: log });
                 await store.updateUser();
 
