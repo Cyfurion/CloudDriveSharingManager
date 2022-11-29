@@ -451,6 +451,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }
@@ -485,6 +486,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }   
@@ -609,6 +611,8 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
+                        
                     }
                 }
             }  
@@ -639,6 +643,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }  
@@ -673,6 +678,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }  
@@ -703,6 +709,7 @@ class Operator {
                 for(let gsnap of this.groupSnapshots){
                     if(gsnap.members.includes(user)){
                         validEntities.push(gsnap.groupEmail);
+                        validEntities.push(gsnap.name);
                     }
                 }
             }  
