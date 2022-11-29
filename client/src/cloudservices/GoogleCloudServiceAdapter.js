@@ -137,7 +137,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 }   
             }   
         }
-        let rootFile = new File("", "root", [], "", "", "SYSTEM", "/", "", "");
+        let rootFile = new File("root", "root", [], "", "", "SYSTEM", "/", "", "");
         let root = new Folder(rootFile, []);
         let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/My Drive", "", "SYSTEM"), []);
         root.files.push(myDrive);

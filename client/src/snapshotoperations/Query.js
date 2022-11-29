@@ -379,7 +379,7 @@ class Operator {
                 files = files.concat(this.basicFieldChecker(rootFile, booleanQualifier, field));
             }
         } else {
-            if(file[field] === '' && field === 'sharedBy'){
+            if(file[field].length === 0 && field === 'sharedBy'){
                 throw new Error("This query is not applicable to selected drive service.");
             }
             if (booleanQualifier(file, field, this.value)) {
