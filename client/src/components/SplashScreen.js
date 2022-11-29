@@ -342,13 +342,7 @@ export default function SplashScreen() {
             //deploy changes
             enableLoading();
             try {
-                let log;
-                try{
-                log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-                }catch(e){
-                    console.log("ouch");
-                    console.log(e);
-                }
+                let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
                 await apis.addHistory({ profile: store.user.profile, log: log });
                 await store.updateUser();
 
