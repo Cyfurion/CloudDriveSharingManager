@@ -179,7 +179,7 @@ export default class Query {
         if (queryString.charAt(i) === '"') {
             i++;
             try {
-                while (queryString.charAt(i) !== '"' && queryString.charAt(i-1) !== '\\') { //what if "lexi\\"
+                while (queryString.charAt(i) !== '"') { //what if "lexi\\"
                     word += queryString.charAt(i);
                     i++;
                     if(i >= queryString.length){
