@@ -20,16 +20,13 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
     groupsAllowed = true;
     
     permissionTypes = {
-        owner: 'owner',
-        organizer: 'organizer',
-        fileOrganizer: 'fileOrganizer',
         writer: 'writer',
         commenter: 'commenter',
         reader: 'reader'
     }
 
     writable = [this.permissionTypes.writer, this.permissionTypes.fileOrganizer, 
-        this.permissionTypes.organizer, this.permissionTypes.owner
+        this.permissionTypes.organizer, "owner"
     ]
     
     /**
@@ -50,6 +47,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
                 if (deletePermissions.includes(file.permissions[i].entity) && file.permissions[i].role !== "owner") {
                     // Matching permission found, delete.
                     promises.push(this.endpoint.client.drive.permissions.delete({
+                        supportsAllDrives: true,
                         fileId: file.id,
                         permissionId: file.permissionIds[i]
                     }));
@@ -61,6 +59,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
             // Add all permissions to this file.
             for (let permission of addPermissions) {
                 promises.push(this.endpoint.client.drive.permissions.create({
+                    supportsAllDrives: true,
                     fileId: file.id,
                     resource: {
                         role: permission.role,
@@ -83,7 +82,10 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         for (let file of files) {
             let upstreamPermissions;
             try {
-                upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ fileId: file.id }));
+                upstreamPermissions = (await this.endpoint.client.drive.permissions.list({ 
+                    'fileId':file.id,
+                    'supportsAllDrives':true,
+                    'fields':'*' }));
             } catch {
                 // File wasn't found.
                 return false;
@@ -218,7 +220,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let permissionIds = [];
         if (permissions !== undefined) {
             for (let permission of permissions) {
-                let canShare = (permission.role === this.permissionTypes.owner
+                let canShare = (permission.role === "owner"
                         || permission.role === this.permissionTypes.organizer 
                         || permission.role === this.permissionTypes.fileOrganizer
                         || permission.role === this.permissionTypes.writer);

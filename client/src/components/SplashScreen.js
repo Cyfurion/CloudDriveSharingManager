@@ -310,7 +310,7 @@ export default function SplashScreen() {
                     id: uuidv4(),
                     type: "DANGER",
                     title: "Edit permission failed",
-                    message: "current permissions mismatch with cloud drive"
+                    message: "Current permissions mismatch with cloud drive."
                 }
             })
             return;
