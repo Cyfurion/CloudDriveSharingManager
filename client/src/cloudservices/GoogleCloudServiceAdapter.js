@@ -12,6 +12,8 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         user: 'user',
         group: 'group'
     }
+    
+    fromAllowed = true;
 
     multipleDrivesAllowed = true;
 

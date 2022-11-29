@@ -89,8 +89,7 @@ export default function SplashScreen() {
     const handleValidateACRButton = () => {
         //retrieves acr List and validate, pass to modal
         let ACRList = store.user.acrs;
-        let result = store.currentSnapshot.validate(ACRList, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed,
-            adapter.adapter.multipleDrivesAllowed);
+        let result = store.currentSnapshot.validate(ACRList, store.user, adapter.adapter);
         setValidateACRResult(result);
 
     }
@@ -215,8 +214,7 @@ export default function SplashScreen() {
 
         //make query object with given queryString
         try {
-            let q = new Query(query, store.currentSnapshot, adapter.adapter.writable, store.user, adapter.adapter.groupsAllowed,
-                adapter.adapter.multipleDrivesAllowed);
+            let q = new Query(query, store.currentSnapshot, store.user, adapter.adapter);
             //evalute to get the files
             let files = q.evaluate();
             // Add this query to user's recent queries.
