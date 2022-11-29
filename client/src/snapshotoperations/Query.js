@@ -27,7 +27,9 @@ export default class Query {
     evaluate() {
         try{
             let files = this.operators.evaluate(this.snapshot, this.writableRoles, this.user);
-            files = files.filter(e => !this.snapshot.root.files.includes(e));
+            if(this.drivesAllowed){
+                files = files.filter(e => !this.snapshot.root.files.includes(e));
+            }
             return files;
         }catch(e){
             throw new Error("Incorrectly formatted query.");
