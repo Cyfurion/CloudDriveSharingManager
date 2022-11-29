@@ -1,7 +1,3 @@
-import { Folder } from '../classes/file-class';
-import FileSnapshot from '../classes/filesnapshot-class';
-import apis from '../api';
-
 const keywords = ['groups', 'drive', 'owner', 'creator', 'from', 'to', 'readable', 'writable', 
     'shareable', 'name', 'inFolder', 'folder', 'path', 'sharing',
     '-drive', '-owner', '-creator', '-from', '-to', '-readable', '-writable', 
@@ -13,13 +9,14 @@ const keywordsWithUsers = ['owner', 'creator', 'from', 'to', 'readable', 'writab
 //name in quotes
 export default class Query {  
     
-    constructor(queryString, snapshot, writableRoles, user, groupsAllowed, drivesAllowed) {
+    constructor(queryString, snapshot, user, adapter) {
         this.queryString = queryString;
         this.snapshot = snapshot;
-        this.writableRoles =  writableRoles;
-        this.groupsAllowed = groupsAllowed;
-        this.groupsOn = groupsAllowed;
-        this.drivesAllowed = drivesAllowed;
+        this.writableRoles = adapter.writableRoles;
+        this.groupsAllowed = adapter.groupsAllowed;
+        this.groupsOn = adapter.groupsAllowed;
+        this.fromAllowed = adapter.fromAllowed;
+        this.drivesAllowed = adapter.multipleDrivesAllowed;
         this.user = user;
         this.operators = this.parse(queryString);
     }
@@ -345,10 +342,10 @@ class Operator {
     }
 
     driveQualifier(file, field, value) {
-        return (value.toLowerCase() === "my drive" && file[field] === "") || value === file[field];
+        return (value.toLowerCase() === "my drive" && file[field] === "") || value.toLowerCase() === file[field].toLowerCase();
     }
     notDriveQualifier(file, field, value) {
-        return !((value.toLowerCase() === "my drive" && file[field] === "") || value === file[field]);
+        return !((value.toLowerCase() === "my drive" && file[field] === "") || value.toLowerCase() === file[field].toLowerCase());
     }
 
     pathQualifier(file, field, value) {
@@ -381,9 +378,6 @@ class Operator {
                 files = files.concat(this.basicFieldChecker(rootFile, booleanQualifier, field));
             }
         } else {
-            if(file[field].length === 0 && field === 'sharedBy'){
-                throw new Error("This query is not applicable to selected drive service.");
-            }
             if (booleanQualifier(file, field, this.value)) {
                 files.push(file);
             }

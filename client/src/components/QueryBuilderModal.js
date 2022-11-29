@@ -1,11 +1,12 @@
 import { ACRCreationField } from "./"
 import React,{useState, useContext} from 'react'
 import StoreContext from "../store";
-
+import AdapterContext from "../cloudservices";
 
 export default function QueryBuilderModal(props) {
     const [groups, setGroups] = useState(false);
     const {store} = useContext(StoreContext);
+    const { adapter } = useContext(AdapterContext);
 
     const handleClose = () => {
         props.handleQueryBuilderButton();
@@ -15,8 +16,11 @@ export default function QueryBuilderModal(props) {
     }
 
     const handleSubmit = () => {
-        let groupsDirective = groups ? "groups:on" : "groups:off";
-        props.fillSearch(groupsDirective + " and " + document.querySelector('#qbsearchbar').value );
+        let groupsDirective = groups ? "groups:on and " : "groups:off and ";
+        if(!adapter.adapter.groupsAllowed){
+            groupsDirective = '';
+        }
+        props.fillSearch(groupsDirective + document.querySelector('#qbsearchbar').value );
     }
 
     const handleAddButton = (e, id) => {

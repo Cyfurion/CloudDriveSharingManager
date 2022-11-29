@@ -8,6 +8,8 @@ export class CloudServiceAdapter {
     }
 
     roleTypes = {};
+
+    fromAllowed = false;
     
     multipleDrivesAllowed = false;
     
