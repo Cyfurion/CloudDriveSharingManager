@@ -137,10 +137,10 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         let root = new Folder(rootFile, []);
         let myDrive = new Folder(new File(await this.getRootID(), "My Drive", [], "", "", "SYSTEM", "/My Drive", "", "SYSTEM"), []);
         root.files.push(myDrive);
-        this.snapshotHelper(parentToChildMap, myDrive);
+        await this.snapshotHelper(parentToChildMap, myDrive);
         let sharedWithMe = new Folder(new File("", "Shared With Me", [], "", "", "SYSTEM", "/Shared With Me", "", "SYSTEM"), []);
         root.files.push(sharedWithMe);
-        this.snapshotHelper(parentToChildMap, sharedWithMe);
+        await this.snapshotHelper(parentToChildMap, sharedWithMe);
         let driveList = []
         try{
             driveList = await this.getDrives();
@@ -149,7 +149,7 @@ export class GoogleCloudServiceAdapter extends CloudServiceAdapter {
         for(let drive of driveList){
             let driveFolder = new Folder(new File(drive.id, drive.name, [],
                 [], drive.name, "SYSTEM", '/'.concat(drive.name), "", "SYSTEM"),[]);
-            this.snapshotHelper(parentToChildMap,driveFolder,true);
+            await this.snapshotHelper(parentToChildMap,driveFolder,true);
             root.files.push(driveFolder);
         }
         let snap = new FileSnapshot(
