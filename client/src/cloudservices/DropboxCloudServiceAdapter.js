@@ -3,6 +3,7 @@ import { CloudServiceAdapter } from "./CloudServiceAdapter";
 import { File, Folder } from "../classes/file-class";
 import FileSnapshot from '../classes/filesnapshot-class';
 import Permission from '../classes/permission-class';
+import Log from "../classes/log-class";
 
 export class DropboxCloudServiceAdapter extends CloudServiceAdapter { 
     roleTypes = {
@@ -29,11 +30,12 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
                     if (file instanceof Folder) {
                         promises.push(this.endpoint.sharingRemoveFolderMember({
                             shared_folder_id: file.id,
-                            member: payload
+                            member: payload,
+                            leave_a_copy: false
                         }));
                     } else {
                         promises.push(this.endpoint.sharingRemoveFileMember2({
-                            file: file.path,
+                            file: file.id,
                             member: payload
                         }));
                     }
@@ -43,23 +45,37 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
             for (let permission of addPermissions) {
                 const payload = { email: permission.entity }
                 payload['.tag'] = 'email';
+                const accessLevel = { }
+                accessLevel['.tag'] = permission.role;
                 if (file instanceof Folder) {
-                    promises.push(this.endpoint.sharingAddFileMember({
+                    if (file.id.substring(0, 3) === "id:") {
+                        file.id = (await this.endpoint.sharingShareFolder({
+                            path: file.path,
+                            force_async: false,
+                            access_inheritance: 'inherit'
+                        })).result.shared_folder_id;
+                    }
+                    promises.push(this.endpoint.sharingAddFolderMember({
                         shared_folder_id: file.id,
-                        members: [payload]
+                        members: [{
+                            member: payload,
+                            access_level: accessLevel
+                        }],
+                        quiet: false
                     }));
                 } else {
-                    const accessLevel = { }
-                    accessLevel['.tag'] = permission.role;
-                    promises.push(this.endpoint.sharingAddFolderMember({
-                        file: file.path,
+                    promises.push(this.endpoint.sharingAddFileMember({
+                        file: file.id,
                         members: [payload],
-                        access_level: accessLevel
+                        access_level: accessLevel,
+                        quiet: false,
+                        add_message_as_comment: false
                     }));
                 }
             }
         }
         await Promise.all(promises);
+        return new Log(files.map(file => file.name), deletePermissions, addPermissions, (new Date()).toString());
     }
     /**
      * Given a list of `File` objects, checks whether these files have matching (up-to-date) permissions with their
@@ -72,7 +88,11 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
             let upstreamPermissions;
             try {
                 if (file instanceof Folder) {
-                    upstreamPermissions = (await this.endpoint.sharingListFolderMembers({ shared_folder_id: file.id })).result.users;
+                    if (file.id.substring(0, 3) !== "id:") {
+                        upstreamPermissions = (await this.endpoint.sharingListFolderMembers({ shared_folder_id: file.id })).result.users;
+                    } else {
+                        continue;
+                    }
                 } else {
                     upstreamPermissions = (await this.endpoint.sharingListFileMembers({ file: file.path })).result.users;
                 }
@@ -98,109 +118,70 @@ export class DropboxCloudServiceAdapter extends CloudServiceAdapter {
     async takeSnapshot() {
         let rootFile = new File("", "root", [], "", "dropbox", "SYSTEM", "/", "");
         let root = new Folder(rootFile, []);
-        await this.takeSnapshotHelper(root, '');
+        const topLevelFiles = (await this.endpoint.filesListFolder({ path: '' })).result.entries;
+        for (let file of topLevelFiles) {
+            root.files.push(await this.build(file));
+        }
         return new FileSnapshot(await this.getProfile(), root, (new Date()).toString());
+    }
+    async build(file) {
+        const permissions = [];
+        let owner = (await this.getProfile())[0];
+        if (file['.tag'] === 'file') {
+            const result = (await this.endpoint.sharingListFileMembers({ file: file.id })).result;
+            for (let permission of result.users) {
+                permissions.push(
+                    new Permission(
+                        'user', 
+                        permission.user.email, 
+                        permission.access_type['.tag'],
+                        permission.is_inherited,
+                        true
+                    )
+                );
+                if (permission.access_type['.tag'] === 'owner') { owner = permission.user.email; }
+            }
+            return new File(file.id, file.name, permissions, [], 'dropbox', owner, file.path_display, file.client_modified, "");
+        } else {
+            if (file.shared_folder_id) {
+                const result = (await this.endpoint.sharingListFolderMembers({ shared_folder_id: file.shared_folder_id })).result;
+                for (let permission of result.users) {
+                    permissions.push(
+                        new Permission(
+                            'user', 
+                            permission.user.email, 
+                            permission.access_type['.tag'],
+                            permission.is_inherited,
+                            true
+                        )
+                    );
+                    if (permission.access_type['.tag'] === 'owner') { owner = permission.user.email; }
+                }
+            } else {
+                permissions.push(new Permission('user', owner, 'owner', false, true));
+            }
+            let children = (await this.endpoint.filesListFolder({ path: file.id })).result.entries;
+            const childrenArray = []
+            for (let child of children) {
+                childrenArray.push(await this.build(child));
+            }
+            return new Folder(
+                new File(
+                    file.shared_folder_id ? file.shared_folder_id : file.id, 
+                    file.name, 
+                    permissions, 
+                    [], 
+                    'dropbox', 
+                    owner, 
+                    file.path_display, 
+                    "", 
+                    ""
+                ), 
+            childrenArray);
+        }
     }
 
     async getProfile() {
         return [(await this.endpoint.usersGetCurrentAccount()).result.email, "Dropbox"];
     }
-
-    async takeSnapshotHelper(folder, path) {
-        let response = await this.endpoint.filesListFolder({ path: path });
-        let isRoot = (folder.id === '');
-        if(isRoot){
-            folder.owner = (await this.getProfile())[0];
-        }
-        for (let element of response.result.entries) {
-            let newFile = await this.createFileObject(element, folder);
-            if (element[".tag"] === "folder") {
-                let newFolder = new Folder(newFile, []);
-                await this.takeSnapshotHelper(newFolder, path + "/" + element.name);
-                folder.files.push(newFolder);
-            } else {
-                folder.files.push(newFile);
-            }
-        }
-        if(isRoot){
-            folder.owner = 'SYSTEM';
-        }
-    }
-    
-    async createFileObject(file, parent) {
-        let id = file.id;
-        let name = file.name;
-        let permissions = [];
-        let permissionIds = [];
-        let owner = parent.owner;
-        let sharedFolderId = "";
-        let pathParameter = '';
-        if(parent.path === '/'){
-            pathParameter = parent.path + file.name;
-        }else{
-            pathParameter = parent.path + "/" + file.name;
-        }
-        let hasExplicitPermissions = (await this.endpoint.filesGetMetadata({
-                "include_deleted": false,
-                "include_has_explicit_shared_members": true,
-                "include_media_info": false,
-                "path": pathParameter
-            })).result.has_explicit_shared_members;
-        let directFilePermissions = undefined;
-        if(hasExplicitPermissions){
-            directFilePermissions = await this.endpoint.sharingListFileMembers({
-                "file": pathParameter,
-                "include_inherited": true
-            });
-        }
-        if (file.shared_folder_id) {
-            permissionIds.push(file.sharedFolderId);
-            sharedFolderId = file.shared_folder_id;
-            id = sharedFolderId;
-        }else if(file.parent_shared_folder_id){
-            sharedFolderId = file.parent_shared_folder_id;
-        }
-        let folderPermissions = undefined;
-        if (sharedFolderId !== "" && !directFilePermissions) {
-            folderPermissions = await this.endpoint.sharingListFolderMembers({"shared_folder_id": sharedFolderId});
-        }
-        if (directFilePermissions) {
-            for (let user of directFilePermissions.result.users) {
-                let type = 'user'; 
-                let entity = user.user.email;
-                if (user.access_type[".tag"] === owner) {
-                    owner = user.user.email;
-                }
-                let role = user.access_type[".tag"];
-                let isInherited = user.is_inherited;
-                if (file[".tag"] !== "folder") {
-                    isInherited = true;
-                }
-                let p = new Permission(type, entity, role, isInherited, true);//all files are shareable by people who have access
-                permissions.push(p);
-            }
-        }else if (folderPermissions) {
-            for (let user of folderPermissions.result.users) {
-                let type = 'user'; 
-                let entity = user.user.email;
-                if (user.access_type[".tag"] === owner) {
-                    owner = user.user.email;
-                }
-                let role = user.access_type[".tag"];
-                let isInherited = user.is_inherited;
-                if (file[".tag"] !== "folder") {
-                    isInherited = true;
-                }
-                let p = new Permission(type, entity, role, isInherited, true);//all files are shareable by people who have access
-                permissions.push(p);
-            }
-        }
-        let createdTime = 'N/A';
-        if (file.client_modified) {
-            createdTime = file.client_modified;
-        }
-        return new File(id, name, permissions, permissionIds, 'dropbox', owner, file.path_display, createdTime, "");
-        //dropbox doesnt have sharedby
-    }
 }
-
