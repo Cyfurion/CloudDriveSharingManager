@@ -254,42 +254,33 @@ export default function SplashScreen() {
     }
 
     const finalizePermissionChanges = async (payload) => {
-
+        setACRViolations(null);
         enableLoading();
         try {
             let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
-            await apis.addHistory({ profile: store.user.profile, log: log });
-            await store.updateUser();
+                await apis.addHistory({ profile: store.user.profile, log: log });
+                await store.updateUser();
+                await store.takeSnapshot();
+                setFiles(null);
+                disableLoading();
 
-            setPermissionsModal(false);
-            setPermissionView(false);
-            setCheckboxVisible(false);
-            setACRViolations(null);
-            let list = document.querySelectorAll('.file-checkbox');
-            for (let i = 0; i < list.length; i++) {
-                list[i].checked = false;
-            }
-            document.querySelector('.allfile-checkbox').checked = false;
-            setSelectedIDs([]);
+                setPermissionsModal(false);
+                setCheckboxVisible(false);
+                setSelectedIDs([]);
+                setSearchActive(false);
+                setPermissionView(false);
 
+                dispatch({
+                    type: "ADD_NOTIFICATION",
+                    payload: {
+                        id: uuidv4(),
+                        type: "SUCCESS",
+                        title: "Successful Changes!",
+                        message: "Permission changes have been applied"
 
-            await store.takeSnapshot();
-            setSearchActive(false);
-            setFiles(null);
-
-            disableLoading();
-            dispatch({
-                type: "ADD_NOTIFICATION",
-                payload: {
-                    id: uuidv4(),
-                    type: "SUCCESS",
-                    title: "Successful Changes!",
-                    message: "Permission changes have been applied"
-
-                }
-            })
-            return;
-
+                    }
+                })
+                return;
         } catch (e) {
             disableLoading();
             dispatch({
@@ -345,24 +336,16 @@ export default function SplashScreen() {
                 let log = await adapter.adapter.deploy(payload.files, payload.deletePermissions, payload.addPermissions);
                 await apis.addHistory({ profile: store.user.profile, log: log });
                 await store.updateUser();
+                await store.takeSnapshot();
+                setFiles(null);
+                disableLoading();
 
                 setPermissionsModal(false);
-                setPermissionView(false);
                 setCheckboxVisible(false);
-                setACRViolations(null);
-                let list = document.querySelectorAll('.file-checkbox');
-                for (let i = 0; i < list.length; i++) {
-                    list[i].checked = false;
-                }
-                document.querySelector('.allfile-checkbox').checked = false;
                 setSelectedIDs([]);
-
-
-                await store.takeSnapshot();
                 setSearchActive(false);
-                setFiles(null);
+                setPermissionView(false);
 
-                disableLoading();
                 dispatch({
                     type: "ADD_NOTIFICATION",
                     payload: {
